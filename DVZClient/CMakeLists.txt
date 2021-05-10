@@ -1,9 +1,14 @@
 
-set(SOURCE_FILES 
-	"./src/main.cpp"
+set(HEADER_FILES 
+	"./include/client/window.hpp"
 )
 
-add_executable(DVZClient ${SOURCE_FILES})
+set(SOURCE_FILES 
+	"./src/main.cpp"
+	"./src/window.cpp"
+)
+
+add_executable(DVZClient ${HEADER_FILES} ${SOURCE_FILES})
 
 find_package(glfw3 REQUIRED)
 find_package(glew REQUIRED)

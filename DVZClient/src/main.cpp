@@ -1,10 +1,25 @@
 #include <iostream>
-#include <glm/glm.hpp>
-#include "core/test.hpp"
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "core/test.hpp"
+#include "client/window.hpp"
+
+
 int main() {
-	glm::vec3 v{0, 2, 3};
+	DVZ::Window& window = DVZ::Window::createInstance(1280, 1024, "Level One Adventure");
 	std::cout << DVZ::add(10, 10);
+	
+	glewExperimental = GL_TRUE;
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK) {
+		std::cout << "FATAL\n";
+	}
+
+	while (!window.shouldClose()) {
+		window.update();
+	}
+
+	DVZ::Window::destroyInstance();
+	exit(EXIT_SUCCESS);
 }
