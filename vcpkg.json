@@ -1,0 +1,10 @@
+{
+	"name": "dwarves-vs-zombies",
+	"version-string": "0.0.1",
+	"description": "C++ Multiplayer Voxel Game",
+	"dependencies": [
+		"glm",
+		"glfw3",
+		"glew"
+	]
+}

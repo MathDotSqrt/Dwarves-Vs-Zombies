@@ -9,4 +9,10 @@ set(SOURCE_FILES
 
 add_library(DVZCore ${HEADER_FILES} ${SOURCE_FILES})
 
-target_include_directories(DVZCore PUBLIC "./include")
+find_package(glm REQUIRED)
+
+
+target_include_directories(DVZCore PUBLIC "./include") 
+target_link_libraries(DVZCore PUBLIC 
+	glm::glm 
+)
