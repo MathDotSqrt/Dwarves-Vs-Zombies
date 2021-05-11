@@ -1,5 +1,6 @@
 
 set(HEADER_FILES 
+	"./include/core/common.hpp"
 	"./include/core/test.hpp"
 )
 
@@ -8,6 +9,7 @@ set(SOURCE_FILES
 )
 
 add_library(DVZCore ${HEADER_FILES} ${SOURCE_FILES})
+target_compile_features(DVZCore PUBLIC cxx_std_17)
 
 find_package(glm REQUIRED)
 

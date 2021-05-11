@@ -5,6 +5,9 @@
 	"dependencies": [
 		"glm",
 		"glfw3",
-		"glew"
+		"glew",
+		"entt",
+		"spdlog",
+		"stb"
 	]
 }
