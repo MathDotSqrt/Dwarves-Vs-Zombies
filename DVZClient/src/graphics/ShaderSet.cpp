@@ -9,7 +9,7 @@
 using namespace DVZ::Graphics;
 
 std::optional<std::string> read_file(const std::string& filename) {
-	std::ifstream reader(RES_PATH"shaders/" + filename);
+	std::ifstream reader("./res/shaders/" + filename);
 	if (reader) {
 		std::stringstream buffer;
 		buffer << reader.rdbuf();
@@ -17,7 +17,7 @@ std::optional<std::string> read_file(const std::string& filename) {
 		return file;
 	}
 	else {
-		spdlog::warn("Could not find file: {}", RES_PATH"shaders/" + filename);
+		spdlog::warn("Could not find file: {}", "./res/shaders/shaders/" + filename);
 		return {};
 	}
 }
@@ -74,7 +74,7 @@ std::optional<std::string> preprocessor(std::string& source) {
 	include_file.erase(0, 1);						//erase first "
 	include_file.erase(include_file.size() - 1);	//erase last  "
 
-	auto replace_string = read_file(include_file);
+	auto replace_string = read_file("include/" + include_file);
 	if (replace_string.has_value()) {
 		const auto iter = std::find(replace_string->begin(), replace_string->end(), '\0');
 		replace_string->erase(iter, replace_string->end());

@@ -3,8 +3,10 @@ set(HEADER_FILES
 	"./include/client/engine.hpp"
 	"./include/client/window.hpp"
 
+	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
 	"./include/client/graphics/GLSLProgram.hpp"
+	"./include/client/graphics/Geometry.hpp"
 	"./include/client/graphics/ShaderSet.hpp"
 	"./include/client/graphics/TEX.hpp"
 	"./include/client/graphics/VAO.hpp"
@@ -17,6 +19,7 @@ set(SOURCE_FILES
 	"./src/main.cpp"
 	"./src/window.cpp"
 
+	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"
 	"./src/graphics/GLSLProgram.cpp"
 	"./src/graphics/ShaderSet.cpp"
@@ -26,8 +29,8 @@ set(SOURCE_FILES
 )
 
 add_executable(DVZClient ${HEADER_FILES} ${SOURCE_FILES})
-
-target_compile_definitions(DVZClient PRIVATE RES_PATH="${PROJECT_SOURCE_DIR}/res/")
+target_compile_features(DVZClient PUBLIC cxx_std_17)
+target_compile_definitions(DVZClient PRIVATE RES_PATH="${PROJECT_SOURCE_DIR}/DVZClient/res/")
 
 find_package(glfw3 REQUIRED)
 find_package(glew REQUIRED)
@@ -37,6 +40,7 @@ find_path(STB_INCLUDE_DIRS "stb.h" REQUIRED)
 
 target_include_directories(DVZClient PRIVATE 
 	"./include"
+	"./res/shaders/include"
 	${STB_INCLUDE_DIRS}
 )
 
@@ -47,3 +51,18 @@ target_link_libraries(DVZClient PRIVATE
 	EnTT::EnTT
 	spdlog::spdlog spdlog::spdlog_header_only
 )
+
+# Create symlink
+function(create_symlink src dest)
+	message("Creating Symlink: ${src} ${dest}")
+
+	if (UNIX)
+		execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${src}" "${dest}")
+	else()
+		file(TO_NATIVE_PATH "${dest}" _dstDir)
+		file(TO_NATIVE_PATH "${src}" _srcDir)
+		execute_process(COMMAND cmd.exe /c mklink /J "${_dstDir}" "${_srcDir}")
+	endif()
+endfunction(create_symlink)
+
+create_symlink("${CMAKE_CURRENT_SOURCE_DIR}/res/" "${CMAKE_CURRENT_BINARY_DIR}/res/")

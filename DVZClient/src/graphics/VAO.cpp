@@ -3,11 +3,13 @@
 #include <GL/glew.h>
 #include <algorithm>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace DVZ::Graphics;
 
 VAO::VAO() {
 	glGenVertexArrays(1, &vaoID);
+	spdlog::debug("VAO: generated with ID [{}]", vaoID);
 }
 
 VAO::~VAO() {
@@ -48,6 +50,8 @@ void VAO::vertexAttribDivisor(u32 ptr, u32 divisor) {
 void VAO::dispose() {
 	if (vaoID) {
 		glDeleteVertexArrays(1, &vaoID);
+		spdlog::debug("VAO: disposed with ID [{}]", vaoID);
+
 		vaoID = 0;
 	}
 }

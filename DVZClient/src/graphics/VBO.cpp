@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <GL/glew.h>
+#include <spdlog/spdlog.h>
 
 using namespace DVZ::Graphics;
 
@@ -33,6 +34,7 @@ constexpr GLenum toGL(VBO::BufferHint type) {
 
 VBO::VBO(VBO::BufferType type) : vboID(0), type(type), bytes(0) {
 	glGenBuffers(1, &vboID);
+	spdlog::debug("VBO: generated with ID [{}]", vboID);
 	assert(vboID);
 }
 
@@ -69,11 +71,13 @@ void VBO::bufferOrphan() {
 }
 
 void VBO::bufferData(size_t bytes, void* data, BufferHint hint) {
+	spdlog::debug("VBO: buffered bytes [{}]", bytes);
 	glBufferData(toGL(type), bytes, data, toGL(hint));
 	this->bytes = bytes;
 }
 
 void VBO::bufferSubData(size_t offset, size_t bytes, void* data) {
+	spdlog::debug("VBO: sub-buffered bytes [{}] ", bytes);
 	assert(bytes <= this->bytes);
 	glBufferSubData(toGL(type), offset, bytes, data);
 }
@@ -81,6 +85,7 @@ void VBO::bufferSubData(size_t offset, size_t bytes, void* data) {
 void VBO::dispose() {
 	if (this->vboID) {
 		glDeleteBuffers(1, &vboID);
+		spdlog::debug("VBO: dispoed with ID [{}]", vboID);
 		this->vboID = 0;
 	}
 }
