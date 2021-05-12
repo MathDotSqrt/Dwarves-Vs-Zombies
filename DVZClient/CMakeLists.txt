@@ -7,11 +7,13 @@ set(HEADER_FILES
 	"./include/client/graphics/BasicRenderer.hpp"
 	"./include/client/graphics/GLSLProgram.hpp"
 	"./include/client/graphics/Geometry.hpp"
+	"./include/client/graphics/GeometryBuilder.hpp"
+	"./include/client/graphics/Mesh.hpp"
+	"./include/client/graphics/MeshCache.hpp"
 	"./include/client/graphics/ShaderSet.hpp"
 	"./include/client/graphics/TEX.hpp"
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
-
 )
 
 set(SOURCE_FILES 
@@ -21,6 +23,7 @@ set(SOURCE_FILES
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"
+	"./src/graphics/GeometryBuilder.cpp"
 	"./src/graphics/GLSLProgram.cpp"
 	"./src/graphics/ShaderSet.cpp"
 	"./src/graphics/TEX.cpp"

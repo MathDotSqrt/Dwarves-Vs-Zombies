@@ -34,7 +34,7 @@ constexpr GLenum toGL(VBO::BufferHint type) {
 
 VBO::VBO(VBO::BufferType type) : vboID(0), type(type), bytes(0) {
 	glGenBuffers(1, &vboID);
-	spdlog::debug("VBO: generated with ID [{}]", vboID);
+	spdlog::debug("VBO[{}]: generated", vboID);
 	assert(vboID);
 }
 
@@ -71,13 +71,13 @@ void VBO::bufferOrphan() {
 }
 
 void VBO::bufferData(size_t bytes, void* data, BufferHint hint) {
-	spdlog::debug("VBO: buffered bytes [{}]", bytes);
+	spdlog::debug("VBO[{}]: buffered {} bytes", vboID, bytes);
 	glBufferData(toGL(type), bytes, data, toGL(hint));
 	this->bytes = bytes;
 }
 
 void VBO::bufferSubData(size_t offset, size_t bytes, void* data) {
-	spdlog::debug("VBO: sub-buffered bytes [{}] ", bytes);
+	spdlog::debug("VBO[{}]: sub-buffered {} bytes", vboID, bytes);
 	assert(bytes <= this->bytes);
 	glBufferSubData(toGL(type), offset, bytes, data);
 }
@@ -85,7 +85,7 @@ void VBO::bufferSubData(size_t offset, size_t bytes, void* data) {
 void VBO::dispose() {
 	if (this->vboID) {
 		glDeleteBuffers(1, &vboID);
-		spdlog::debug("VBO: dispoed with ID [{}]", vboID);
+		spdlog::debug("VBO[{}]: disposed", vboID);
 		this->vboID = 0;
 	}
 }

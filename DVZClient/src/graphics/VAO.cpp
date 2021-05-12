@@ -9,7 +9,7 @@ using namespace DVZ::Graphics;
 
 VAO::VAO() {
 	glGenVertexArrays(1, &vaoID);
-	spdlog::debug("VAO: generated with ID [{}]", vaoID);
+	spdlog::debug("VAO[{}]: generated", vaoID);
 }
 
 VAO::~VAO() {
@@ -50,7 +50,7 @@ void VAO::vertexAttribDivisor(u32 ptr, u32 divisor) {
 void VAO::dispose() {
 	if (vaoID) {
 		glDeleteVertexArrays(1, &vaoID);
-		spdlog::debug("VAO: disposed with ID [{}]", vaoID);
+		spdlog::debug("VAO[{}]: disposed", vaoID);
 
 		vaoID = 0;
 	}
