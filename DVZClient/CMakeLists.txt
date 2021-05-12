@@ -30,7 +30,23 @@ set(SOURCE_FILES
 
 add_executable(DVZClient ${HEADER_FILES} ${SOURCE_FILES})
 target_compile_features(DVZClient PUBLIC cxx_std_17)
-target_compile_definitions(DVZClient PRIVATE RES_PATH="${PROJECT_SOURCE_DIR}/DVZClient/res/")
+target_compile_definitions(DVZClient PRIVATE 
+	RES_PATH="${PROJECT_SOURCE_DIR}/DVZClient/res/"
+)
+
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+target_compile_definitions(DVZClient PRIVATE 
+	DVZ_CLIENT_DEBUG
+)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+target_compile_definitions(DVZClient PRIVATE 
+	DVZ_CLIENT_RELDEBINFO
+)
+else()
+target_compile_definitions(DVZClient PRIVATE 
+	DVZ_CLIENT_RELEASE
+)
+endif()
 
 find_package(glfw3 REQUIRED)
 find_package(glew REQUIRED)

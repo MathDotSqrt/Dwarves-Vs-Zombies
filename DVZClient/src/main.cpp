@@ -13,11 +13,21 @@
 #include "client/graphics/VBO.hpp"
 #include "glsl/preamble.glsl"
 
+void set_log_level() {
+#ifdef DVZ_CLIENT_DEBUG
+	spdlog::set_level(spdlog::level::debug);
+#elif DVZ_CLIENT_RELDEBINFO
+	spdlog::set_level(spdlog::level::info);
+#else
+	spdlog::set_level(spdlog::level::err);
+#endif // DVZ_CLIENT_DEBUG
+}
+
 int main() {
 	using namespace DVZ::Graphics;
 	using namespace entt;
 
-	spdlog::set_level(spdlog::level::debug);
+	set_log_level();
 	spdlog::info("Init");
 
 	DVZ::Window& window = DVZ::Window::createInstance(1280, 1024, "Level One Adventure");
@@ -76,5 +86,4 @@ int main() {
 	}
 
 	DVZ::Window::destroyInstance();
-	exit(EXIT_SUCCESS);
 }
