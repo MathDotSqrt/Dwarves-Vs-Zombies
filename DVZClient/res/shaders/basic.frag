@@ -4,6 +4,9 @@ in vec2 f_texcoord;
 
 out vec4 out_color;
 
+uniform sampler2D diffuse;
+
 void main(){
-	out_color = vec4(f_texcoord, 1, 1);
+	vec4 tex_color = texture(diffuse, f_texcoord);
+	out_color = tex_color;
 }

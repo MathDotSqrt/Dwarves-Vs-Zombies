@@ -12,6 +12,7 @@ set(HEADER_FILES
 	"./include/client/graphics/MeshCache.hpp"
 	"./include/client/graphics/ShaderSet.hpp"
 	"./include/client/graphics/TEX.hpp"
+	"./include/client/graphics/TEXCache.hpp"
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
 )

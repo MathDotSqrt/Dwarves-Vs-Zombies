@@ -4,6 +4,7 @@
 #include <utility>
 #include <assert.h>
 #include <GL/glew.h>
+#include <spdlog/spdlog.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -14,7 +15,10 @@ TEX::TEX(Builder& builder) :
 	texID(builder.texID),
 	textureTarget(builder.textureTarget),
 	width(builder.width),
-	height(builder.height) {}
+	height(builder.height) {
+
+	spdlog::debug("TEX[{}]: generated ({}, {})", texID, width, height);
+}
 
 TEX::TEX(TEX&& other) {
 	texID = other.texID;
@@ -59,6 +63,7 @@ void TEX::unbind() const {
 void TEX::dispose() {
 	if (texID) {
 		glDeleteTextures(1, &texID);
+		spdlog::debug("TEX[{}]: disposed ({}, {})", texID, width, height);
 		texID = 0;
 	}
 }

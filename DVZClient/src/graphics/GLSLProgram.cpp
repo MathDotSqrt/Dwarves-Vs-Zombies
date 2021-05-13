@@ -3,12 +3,12 @@
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <utility>
-
+#include <spdlog/spdlog.h>
 using namespace DVZ::Graphics;
 
 GLSLProgram::GLSLProgram(ProgramID program, VertexID vertex, FragmentID fragment)
 	: program(program), vertex(vertex), fragment(fragment) {
-
+	spdlog::debug("Program[{}] Vertex[{}] Fragment[{}]: generated", program, vertex, fragment);
 }
 
 GLSLProgram::GLSLProgram(GLSLProgram&& other)
@@ -134,6 +134,7 @@ void GLSLProgram::dispose() {
 		glDeleteShader(fragment);
 
 		glDeleteProgram(program);
+		spdlog::debug("Program[{}] Vertex[{}] Fragment[{}]: disposed", program, vertex, fragment);
 
 		program = 0;
 		vertex = 0;
