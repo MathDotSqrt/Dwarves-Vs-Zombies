@@ -10,11 +10,15 @@ set(HEADER_FILES
 	"./include/client/graphics/GeometryBuilder.hpp"
 	"./include/client/graphics/Mesh.hpp"
 	"./include/client/graphics/MeshCache.hpp"
+	"./include/client/graphics/Scene.hpp"
 	"./include/client/graphics/ShaderSet.hpp"
 	"./include/client/graphics/TEX.hpp"
 	"./include/client/graphics/TEXCache.hpp"
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
+
+	"./include/client/util/packedfreelist.hpp"
+
 )
 
 set(SOURCE_FILES 
@@ -26,6 +30,7 @@ set(SOURCE_FILES
 	"./src/graphics/BasicRenderer.cpp"
 	"./src/graphics/GeometryBuilder.cpp"
 	"./src/graphics/GLSLProgram.cpp"
+	"./src/graphics/Scene.cpp"
 	"./src/graphics/ShaderSet.cpp"
 	"./src/graphics/TEX.cpp"
 	"./src/graphics/VAO.cpp"

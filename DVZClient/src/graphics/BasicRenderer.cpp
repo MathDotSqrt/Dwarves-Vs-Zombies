@@ -13,7 +13,7 @@ using namespace DVZ::Graphics;
 BasicRenderer::BasicRenderer() {
 	using namespace entt;
 
-	cache.load<MeshLoader>("cube"_hs, gen_cube(1));
+	meshCache.load<MeshLoader>("cube"_hs, gen_cube(1));
 	texCache.load<TextureLoader>("uv"_hs, TEX::Builder().mipmapLinear(), "./res/textures/uv_grid.jpg");
 
 	auto shader = ss.load("basic"_hs, "basic.vert", "basic.frag");
@@ -28,11 +28,11 @@ void BasicRenderer::prerender() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void BasicRenderer::render() {
+void BasicRenderer::render(const Scene& scene) {
 	using namespace entt;
 	static float t = 0;
 	t -= .01f;
-	glm::vec3 pos{ 0, 0, t };
+	glm::vec3 pos{ 0, 0, glm::sin(t) - 1 };
 
 	glm::quat rot = glm::angleAxis(t, glm::normalize(glm::vec3(1, 1, 1)));
 
@@ -42,22 +42,27 @@ void BasicRenderer::render() {
 
 	prerender();
 
-	auto mesh = cache.handle("cube"_hs);
-	auto tex = texCache.handle("uv"_hs);
 	auto shader = ss.get("basic"_hs);
-
+	auto tex = texCache.handle("uv"_hs);
 	shader->start();
+	for (const auto& instance : scene.instances) {
+		auto mesh = meshCache.handle(instance.meshID);
 
-	shader->setUniformMat4("MP", projection * M);
-	shader->setUniform1i("diffuse", 0);
+		shader->setUniformMat4("MP", projection * M);
+		shader->setUniform1i("diffuse", 0);
 
-	tex->bindActiveTexture(0);
+		tex->bindActiveTexture(0);
 
-	mesh->vao.bind();
-	mesh->ebo.bind();
-	glDrawElements(GL_TRIANGLES, mesh->ebo.getNumBytes() / sizeof(u32), GL_UNSIGNED_INT, 0);
-	mesh->ebo.unbind();
-	mesh->vao.unbind();
+		mesh->vao.bind();
+		mesh->ebo.bind();
+		glDrawElements(GL_TRIANGLES, mesh->ebo.getNumBytes() / sizeof(u32), GL_UNSIGNED_INT, 0);
+		mesh->ebo.unbind();
+		mesh->vao.unbind();
+	}
+
+
+
+	
 
 	tex->unbind();
 

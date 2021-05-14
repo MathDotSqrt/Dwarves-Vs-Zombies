@@ -5,20 +5,22 @@
 #include "client/graphics/MeshCache.hpp"
 #include "client/graphics/TEXCache.hpp"
 #include "client/graphics/ShaderSet.hpp"
+#include "client/graphics/Scene.hpp"
 
 #include <glm/glm.hpp>
 
 namespace DVZ::Graphics {
 	class BasicRenderer {
 	public:
+		MeshCache meshCache;
+		TEXCache texCache;
+
 		BasicRenderer();
-		void render();
+		void render(const Scene& scene);
 
 	private:
 		void prerender();
 
-		MeshCache cache;
-		TEXCache texCache;
 		ShaderSet ss;
 		glm::mat4 projection;
 	};
