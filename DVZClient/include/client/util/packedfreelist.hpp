@@ -4,16 +4,9 @@
 #define DVZ_PACKED_FREE_LIST_HPP
 
 #include "core/common.hpp"
+#include "client/util/id.hpp"
 #include <vector>
 #include <assert.h>
-
-namespace DVZ {
-	struct ID {
-		u32 index;
-		u32 generation;
-	};
-	constexpr ID NullID = ID{ (u32)-1, (u32)-1 };
-}
 
 namespace DVZ::Util {
 	template<typename T>
@@ -119,6 +112,8 @@ namespace DVZ::Util {
 		}
 
 		bool has(DVZ::ID id) const {
+			if (id == DVZ::NullID)
+				return false;
 			return index_array[id.index].generation == id.generation;
 		}
 

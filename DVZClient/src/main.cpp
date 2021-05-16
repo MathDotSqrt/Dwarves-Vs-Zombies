@@ -32,7 +32,7 @@ int main() {
 
 	DVZ::Engine engine;
 	while (!window.shouldClose()) {
-		engine.update(1/60.0f);
+		engine.render();
 		window.update();
 	}
 	engine.signalStop();

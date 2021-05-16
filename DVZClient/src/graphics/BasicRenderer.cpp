@@ -28,17 +28,12 @@ void BasicRenderer::prerender() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void BasicRenderer::render(const Scene& scene) {
+void BasicRenderer::render(const InterpolatedScene& scene) {
 	using namespace entt;
 	static float t = 0;
 	t -= .01f;
-	glm::vec3 pos{ 0, 0, glm::sin(t) - 1 };
-
 	glm::quat rot = glm::angleAxis(t, glm::normalize(glm::vec3(1, 1, 1)));
 
-	glm::mat4 M = glm::identity<glm::mat4>();
-	M = glm::translate(M, pos);
-	M = M * glm::toMat4(rot);
 
 	prerender();
 
@@ -47,6 +42,9 @@ void BasicRenderer::render(const Scene& scene) {
 	shader->start();
 	for (const auto& instance : scene.instances) {
 		auto mesh = meshCache.handle(instance.meshID);
+		glm::mat4 M = glm::identity<glm::mat4>();
+		M = glm::translate(M, instance.pos);
+		M = M * glm::toMat4(rot);
 
 		shader->setUniformMat4("MP", projection * M);
 		shader->setUniform1i("diffuse", 0);

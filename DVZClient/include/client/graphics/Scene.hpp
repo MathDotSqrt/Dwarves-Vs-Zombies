@@ -5,16 +5,20 @@
 
 #include "client/graphics/Mesh.hpp"
 #include "client/util/packedfreelist.hpp"
+#include "client/util/freelist.hpp"
 
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <entt/core/hashed_string.hpp>
+#include <mutex>
 
 
 namespace DVZ::Graphics {
 
 	class BasicRenderer;
+	class SceneManager;
 
 	struct PerspectiveCamera {
 		float fov;
@@ -31,32 +35,46 @@ namespace DVZ::Graphics {
 
 	struct Instance {
 		entt::id_type meshID;
-		glm::mat4 transform = glm::identity<glm::mat4>();
+		glm::vec3 pos = glm::vec3{0};
+		glm::quat rot = glm::quat(1, 0, 0, 0);
+		glm::vec3 scale = glm::vec3(1);
 	};
 
 	class Scene {
 	public:
 		friend BasicRenderer;
+		friend SceneManager;
 
 		ID addInstance(entt::id_type meshID);
-		ID addInstance(entt::id_type meshID, const glm::mat4& transform);
 
-		Instance& getInstance(entt::id_type meshID);
-		const Instance& getInstance(entt::id_type meshID) const;
+		bool hasInstance(DVZ::ID instanceID) const;
+		Instance& getInstance(DVZ::ID meshID);
+		const Instance& getInstance(DVZ::ID meshID) const;
 	private:
-		DVZ::Util::PackedFreeList<Instance> instances;
+		DVZ::Util::freelist<Instance> instances;
+	};
+
+	class InterpolatedScene {
+	public:
+		std::vector<Instance> instances;
 	};
 
 	class SceneManager {
-		void swapScenes();
+	public:
+		SceneManager();
+
+		void bufferScene(const Scene& scene);
+		void computeInterpolate(float alpha);
+
+		const InterpolatedScene& getInterpolatedScene() const;
 	private:
+		std::mutex m;
 		Scene current;
 		Scene prev;
-	};
 
-	class SceneCache {
-		std::vector<Instance> instances;
+		InterpolatedScene interpolatedScene;
 	};
+	
 }
 
 #endif

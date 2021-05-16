@@ -1,5 +1,6 @@
 
 set(HEADER_FILES 
+	"./include/client/components.hpp"
 	"./include/client/engine.hpp"
 	"./include/client/window.hpp"
 
@@ -17,6 +18,8 @@ set(HEADER_FILES
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
 
+	"./include/client/util/freelist.hpp"
+	"./include/client/util/id.hpp"
 	"./include/client/util/packedfreelist.hpp"
 
 )
