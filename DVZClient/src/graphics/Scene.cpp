@@ -82,5 +82,6 @@ void SceneManager::bufferScene(const Scene& scene) {
 }
 
 const InterpolatedScene& SceneManager::getInterpolatedScene() const {
+
 	return interpolatedScene;
 }

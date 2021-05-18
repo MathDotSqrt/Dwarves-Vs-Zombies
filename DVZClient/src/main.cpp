@@ -30,12 +30,13 @@ int main() {
 		spdlog::error("GLEW FAILED");
 	}
 
-	DVZ::Engine engine;
-	while (!window.shouldClose()) {
-		engine.render();
-		window.update();
+	{
+		DVZ::Engine engine;
+		while (!window.shouldClose()) {
+			engine.render();
+			window.update();
+		}
 	}
-	engine.signalStop();
 
 	DVZ::Window::destroyInstance();
 }

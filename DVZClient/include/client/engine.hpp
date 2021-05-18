@@ -25,7 +25,7 @@ namespace DVZ{
 		void signalStop();
 
 	private:
-		duration dt{ 1 / 5.0f };
+		duration dt{ 1 / 50.0f };
 
 		std::atomic<bool> shouldStop = false;
 		std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;
