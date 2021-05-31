@@ -4,6 +4,8 @@ set(HEADER_FILES
 	"./include/client/engine.hpp"
 	"./include/client/window.hpp"
 
+	"./include/client/systems/System.hpp"
+
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
 	"./include/client/graphics/GLSLProgram.hpp"
