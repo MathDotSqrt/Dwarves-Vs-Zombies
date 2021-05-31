@@ -30,6 +30,10 @@ namespace DVZ {
 		entt::id_type mesh_id;
 		DVZ::ID instance_id = DVZ::NullID;
 	};
+
+	struct Player {
+		//Player Tag
+	};
 }
 
 #endif

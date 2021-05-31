@@ -2,6 +2,7 @@
 #include "client/graphics/GeometryBuilder.hpp"
 
 #include "client/window.hpp"
+#include "client/util/transform.hpp"
 
 #include <GL/glew.h>
 #include <glm/gtx/transform.hpp>
@@ -17,36 +18,36 @@ BasicRenderer::BasicRenderer() {
 	texCache.load<TextureLoader>("uv"_hs, TEX::Builder().mipmapLinear(), "./res/textures/uv_grid.jpg");
 
 	auto shader = ss.load("basic"_hs, "basic.vert", "basic.frag");
-
+		
 	const auto& window = DVZ::Window::getInstance();
-	projection = glm::perspectiveFov<float>(80, window.getWidth(), window.getHeight(), .1f, 100000.0f);
+	P = glm::perspectiveFov<float>(80, window.getWidth(), window.getHeight(), .1f, 100000.0f);
 
 	glEnable(GL_DEPTH_TEST);
 }
 
-void BasicRenderer::prerender() {
+void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	const auto& window = DVZ::Window::getInstance();
+	P = glm::perspectiveFov<float>(camera.fov, window.getWidth(), window.getHeight(), camera.near, camera.far);
+	V = glm::inverse(Util::to_transform(camera.pos, camera.rot));
 }
 
-void BasicRenderer::render(const InterpolatedScene& scene) {
+void BasicRenderer::render(const RenderScene& render_scene, const InterpolatedScene& scene) {
 	using namespace entt;
-	static float t = 0;
-	t -= .01f;
-	glm::quat rot = glm::angleAxis(t, glm::normalize(glm::vec3(1, 1, 1)));
 
 
-	prerender();
+	prerender(render_scene.main_camera);
+
 
 	auto shader = ss.get("basic"_hs);
 	auto tex = texCache.handle("uv"_hs);
 	shader->start();
 	for (const auto& instance : scene.instances) {
 		auto mesh = meshCache.handle(instance.meshID);
-		glm::mat4 M = glm::identity<glm::mat4>();
-		M = glm::translate(M, instance.pos);
-		M = M * glm::toMat4(rot);
+		glm::mat4 M = instance.transform;
 
-		shader->setUniformMat4("MP", projection * M);
+		shader->setUniformMat4("MP", P * V * M);
 		shader->setUniform1i("diffuse", 0);
 
 		tex->bindActiveTexture(0);

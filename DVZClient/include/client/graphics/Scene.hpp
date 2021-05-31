@@ -27,7 +27,9 @@ namespace DVZ::Graphics {
 		float near;
 		float far;
 
-		glm::mat4 transform = glm::identity<glm::mat4>();
+		glm::vec3 pos = glm::vec3(0);
+		glm::quat rot = glm::quat(1, 0, 0, 0);
+		glm::vec3 scale = glm::vec3(1);
 
 		PerspectiveCamera();
 		PerspectiveCamera(float fov, float width, float height, float near, float far);
@@ -38,6 +40,14 @@ namespace DVZ::Graphics {
 		glm::vec3 pos = glm::vec3{0};
 		glm::quat rot = glm::quat(1, 0, 0, 0);
 		glm::vec3 scale = glm::vec3(1);
+	};
+
+	struct InterpolatedInstance {
+		entt::id_type meshID;
+		glm::mat4 transform;
+
+		InterpolatedInstance(entt::id_type meshID, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
+		InterpolatedInstance(const Instance& instance);
 	};
 
 	class Scene {
@@ -54,9 +64,14 @@ namespace DVZ::Graphics {
 		DVZ::Util::freelist<Instance> instances;
 	};
 
+	class RenderScene {
+	public:
+		PerspectiveCamera main_camera;
+	};
+
 	class InterpolatedScene {
 	public:
-		std::vector<Instance> instances;
+		std::vector<InterpolatedInstance> instances;
 	};
 
 	class SceneManager {

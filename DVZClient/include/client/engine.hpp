@@ -12,6 +12,12 @@
 #include <entt/entt.hpp>
 
 namespace DVZ{
+	struct ClientPlayer {
+		glm::vec3 pos = glm::vec3(0, 0, 0);
+		glm::quat rot = glm::quat(1, 0, 0, 0);
+		glm::vec2 last_mouse_pos = glm::vec2(0);
+	};
+
 	class Engine {
 	public:
 		using duration = std::chrono::duration<float>;
@@ -25,6 +31,8 @@ namespace DVZ{
 		void signalStop();
 
 	private:
+		
+		ClientPlayer player;
 		duration dt{ 1 / 50.0f };
 
 		std::atomic<bool> shouldStop = false;
@@ -33,6 +41,7 @@ namespace DVZ{
 		entt::registry registry;
 		Graphics::Scene scene;
 		Graphics::SceneManager sceneManager;
+		Graphics::RenderScene renderScene;
 		Graphics::BasicRenderer renderer;
 		std::thread updateThread;
 	};

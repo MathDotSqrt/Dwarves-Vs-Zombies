@@ -21,6 +21,7 @@ set(HEADER_FILES
 	"./include/client/util/freelist.hpp"
 	"./include/client/util/id.hpp"
 	"./include/client/util/packedfreelist.hpp"
+	"./include/client/util/transform.hpp"
 
 )
 
@@ -38,6 +39,9 @@ set(SOURCE_FILES
 	"./src/graphics/TEX.cpp"
 	"./src/graphics/VAO.cpp"
 	"./src/graphics/VBO.cpp"
+
+	"./src/util/transform.cpp"
+
 )
 
 add_executable(DVZClient ${HEADER_FILES} ${SOURCE_FILES})

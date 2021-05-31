@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <client/components.hpp>
 #include <client/window.hpp>
+#include <client/util/transform.hpp>
 
 using namespace DVZ;
 
@@ -33,18 +34,19 @@ Engine::~Engine() {
 }
 
 void Engine::update(duration total_time) {
-	if (DVZ::Window::getInstance().isPressed('c')) {
+	{
 		auto view = registry.view<DVZ::Transformation, DVZ::Velocity>();
-		for (auto& e : view) {
+		for (const auto& e : view) {
 			auto& trans = view.get<DVZ::Transformation>(e);
 			const auto& vel = view.get<DVZ::Velocity>(e);
 
 			trans.pos += vel * dt.count();
+			trans.rot *= glm::angleAxis(.01f, glm::vec3(1, 0, 0));
 		}
 	}
 
 	auto view = registry.view<DVZ::Transformation, DVZ::Renderable>();
-	for (auto& e : view) {
+	for (const auto& e : view) {
 		const auto& trans = view.get<DVZ::Transformation>(e);
 		auto& render = view.get<DVZ::Renderable>(e);
 
@@ -87,12 +89,23 @@ void Engine::updateLoop() {
 }
 
 void Engine::render() {
+
+	const auto& window = DVZ::Window::getInstance();
+	glm::vec2 delta_mouse = window.getMousePos() - player.last_mouse_pos;
+	player.rot *= glm::angleAxis(delta_mouse.x * .005f, glm::vec3(0, 1, 0));
+	//player.rot *= glm::angleAxis(delta_mouse.y * .005f, glm::vec3(1, 0, 0));
+	player.last_mouse_pos = window.getMousePos();
+	renderScene.main_camera.pos = player.pos;
+	renderScene.main_camera.rot = player.rot;
+
+
 	std::chrono::time_point last = last_update.load();
 	std::chrono::time_point now = std::chrono::steady_clock::now();
 	duration delta = now - last;
 	float alpha = std::min(delta / dt, 1.0f);
 	sceneManager.computeInterpolate(alpha);
-	renderer.render(sceneManager.getInterpolatedScene());
+
+	renderer.render(renderScene, sceneManager.getInterpolatedScene());
 }
 
 void Engine::signalStop() {

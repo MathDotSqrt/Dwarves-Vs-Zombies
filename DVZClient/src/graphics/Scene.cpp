@@ -1,5 +1,6 @@
 #include "client/graphics/Scene.hpp"
 #include "client/window.hpp"
+#include "client/util/transform.hpp"
 
 #include <iterator>
 #include <spdlog/spdlog.h>
@@ -23,6 +24,16 @@ PerspectiveCamera::PerspectiveCamera(float fov, float width, float height, float
 	this->height = height;
 	this->near = near;
 	this->far = far;
+}
+
+InterpolatedInstance::InterpolatedInstance(entt::id_type meshID, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale) {
+	this->meshID = meshID;
+	this->transform = DVZ::Util::to_transform(pos, rot, scale);
+}
+
+InterpolatedInstance::InterpolatedInstance(const Instance& instance) 
+	: InterpolatedInstance(instance.meshID, instance.pos, instance.rot, instance.scale){
+
 }
 
 ID Scene::addInstance(entt::id_type meshID) {
@@ -50,6 +61,8 @@ SceneManager::SceneManager() {
 void SceneManager::computeInterpolate(float alpha) {
 	std::lock_guard<std::mutex> g{m};
 	interpolatedScene.instances.clear();
+
+
 	
 	for (u32 i = 0; i < prev.instances.size(); i++) {
 		bool has_prev = prev.instances.has(i);
@@ -64,9 +77,13 @@ void SceneManager::computeInterpolate(float alpha) {
 				const Instance& prev_instance = prev.instances[i];
 				const Instance& current_instance = current.instances[i];
 
-				Instance interpolate{ current_instance.meshID };
-				interpolate.pos = glm::mix(prev_instance.pos, current_instance.pos, alpha);
-				interpolatedScene.instances.push_back(interpolate);
+				glm::vec3 pos = glm::mix(prev_instance.pos, current_instance.pos, alpha);
+				glm::quat rot = glm::slerp(prev_instance.rot, current_instance.rot, alpha);
+				glm::vec3 scale = glm::mix(prev_instance.scale, current_instance.scale, alpha);
+				interpolatedScene.instances.emplace_back(current_instance.meshID, pos, rot, scale);
+			}
+			else {
+				interpolatedScene.instances.push_back(current.instances[i]);
 			}
 		}
 		else if (has_current) {
