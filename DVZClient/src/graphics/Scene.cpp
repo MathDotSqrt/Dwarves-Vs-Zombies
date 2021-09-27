@@ -54,6 +54,14 @@ const Instance& Scene::getInstance(DVZ::ID instanceID) const {
 	return instances[instanceID];
 }
 
+Graphics::PerspectiveCamera& Scene::getPlayerCamera() {
+	return playerCamera;
+}
+
+const Graphics::PerspectiveCamera& Scene::getPlayerCamera() const {
+	return playerCamera;
+}
+
 SceneManager::SceneManager() {
 
 }
@@ -89,6 +97,22 @@ void SceneManager::computeInterpolate(float alpha) {
 		else if (has_current) {
 			interpolatedScene.instances.push_back(current.instances[i]);
 		}
+	}
+
+	{
+		const PerspectiveCamera& prev_camera = prev.getPlayerCamera();
+		const PerspectiveCamera& current_camera = current.getPlayerCamera();
+		float fov = glm::mix(prev_camera.fov, current_camera.fov, alpha);
+		glm::vec3 pos = glm::mix(prev_camera.pos, current_camera.pos, alpha);
+		glm::quat rot = glm::slerp(prev_camera.rot, current_camera.rot, alpha);
+		glm::vec3 scale = glm::mix(prev_camera.scale, current_camera.scale, alpha);
+
+		interpolatedScene.playerCamera.fov = fov;
+		interpolatedScene.playerCamera.pos = pos;
+		interpolatedScene.playerCamera.rot = rot;
+		interpolatedScene.playerCamera.scale = scale;
+		interpolatedScene.playerCamera.near = current_camera.near;
+		interpolatedScene.playerCamera.far = current_camera.far;
 	}
 }
 

@@ -16,7 +16,7 @@ namespace DVZ::Graphics {
 		TEXCache texCache;
 
 		BasicRenderer();
-		void render(const RenderScene& render_scene, const InterpolatedScene& scene);
+		void render(const InterpolatedScene& scene);
 
 	private:
 		void prerender(const PerspectiveCamera& camera);

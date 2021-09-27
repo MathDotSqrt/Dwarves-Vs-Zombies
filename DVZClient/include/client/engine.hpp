@@ -53,7 +53,6 @@ namespace DVZ{
 		entt::registry registry;
 		Graphics::Scene scene;
 		Graphics::SceneManager sceneManager;
-		Graphics::RenderScene renderScene;
 		Graphics::BasicRenderer renderer;
 		std::thread updateThread;
 

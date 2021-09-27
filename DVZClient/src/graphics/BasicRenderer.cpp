@@ -34,12 +34,10 @@ void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	V = glm::inverse(Util::to_transform(camera.pos, camera.rot));
 }
 
-void BasicRenderer::render(const RenderScene& render_scene, const InterpolatedScene& scene) {
+void BasicRenderer::render(const InterpolatedScene& scene) {
 	using namespace entt;
 
-
-	prerender(render_scene.main_camera);
-
+	prerender(scene.playerCamera);
 
 	auto shader = ss.get("basic"_hs);
 	auto tex = texCache.handle("uv"_hs);
@@ -48,7 +46,7 @@ void BasicRenderer::render(const RenderScene& render_scene, const InterpolatedSc
 		auto mesh = meshCache.handle(instance.meshID);
 		glm::mat4 M = instance.transform;
 
-		shader->setUniformMat4("MP", P * V * M);
+		shader->setUniformMat4("MVP", P * V * M);
 		shader->setUniform1i("diffuse", 0);
 
 		tex->bindActiveTexture(0);

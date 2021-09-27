@@ -82,8 +82,6 @@ void Engine::render() {
 	player.rot *= glm::angleAxis(delta_mouse.x * .005f, glm::vec3(0, 1, 0));
 	//player.rot *= glm::angleAxis(delta_mouse.y * .005f, glm::vec3(1, 0, 0));
 	player.last_mouse_pos = window.getMousePos();
-	renderScene.main_camera.pos = player.pos;
-	renderScene.main_camera.rot = player.rot;
 
 
 	std::chrono::time_point last = last_update.load();
@@ -92,7 +90,7 @@ void Engine::render() {
 	float alpha = std::min(delta / dt, 1.0f);
 	sceneManager.computeInterpolate(alpha);
 
-	renderer.render(renderScene, sceneManager.getInterpolatedScene());
+	renderer.render(sceneManager.getInterpolatedScene());
 }
 
 void Engine::signalStop() {

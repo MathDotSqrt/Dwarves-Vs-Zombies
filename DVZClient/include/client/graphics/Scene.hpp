@@ -60,17 +60,17 @@ namespace DVZ::Graphics {
 		bool hasInstance(DVZ::ID instanceID) const;
 		Instance& getInstance(DVZ::ID meshID);
 		const Instance& getInstance(DVZ::ID meshID) const;
-	private:
-		DVZ::Util::freelist<Instance> instances;
-	};
 
-	class RenderScene {
-	public:
-		PerspectiveCamera main_camera;
+		PerspectiveCamera& getPlayerCamera();
+		const PerspectiveCamera& getPlayerCamera() const;
+	private:
+		PerspectiveCamera playerCamera;
+		DVZ::Util::freelist<Instance> instances;
 	};
 
 	class InterpolatedScene {
 	public:
+		PerspectiveCamera playerCamera;
 		std::vector<InterpolatedInstance> instances;
 	};
 
