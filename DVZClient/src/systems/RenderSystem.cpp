@@ -3,6 +3,7 @@
 #include "client/engine.hpp"
 #include "client/components.hpp"
 #include <spdlog/spdlog.h>
+#include "client/graphics/Scene.hpp"
 
 using namespace DVZ::Systems;
 

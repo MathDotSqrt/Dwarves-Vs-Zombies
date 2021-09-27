@@ -1,11 +1,12 @@
 
 set(HEADER_FILES 
 	"./include/core/common.hpp"
-	"./include/core/test.hpp"
+	"./include/core/voxel/block.hpp"
+	"./include/core/voxel/chunk.hpp"
 )
 
 set(SOURCE_FILES 
-	"./src/test.cpp"
+	"./src/voxel/chunk.cpp"
 )
 
 add_library(DVZCore ${HEADER_FILES} ${SOURCE_FILES})

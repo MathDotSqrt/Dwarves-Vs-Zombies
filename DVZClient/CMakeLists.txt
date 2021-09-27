@@ -28,6 +28,8 @@ set(HEADER_FILES
 	"./include/client/util/packedfreelist.hpp"
 	"./include/client/util/transform.hpp"
 
+	"./include/client/voxel/clientchunkmanager.hpp"
+
 )
 
 set(SOURCE_FILES 
@@ -50,6 +52,8 @@ set(SOURCE_FILES
 	"./src/graphics/VBO.cpp"
 
 	"./src/util/transform.cpp"
+
+	"./src/voxel/clientchunkmanager.cpp"
 
 )
 

@@ -2,6 +2,8 @@
 #include "client/components.hpp"
 #include "client/window.hpp"
 
+#include "client/graphics/scene.hpp"
+#include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
 
 #include "client/systems/InputSystem.hpp"
@@ -15,7 +17,11 @@
 
 using namespace DVZ;
 
-Engine::Engine() : updateThread(&Engine::updateLoop, this){
+Engine::Engine() : 
+	scene(std::make_unique<Graphics::Scene>()), 
+	sceneManager(std::make_unique<Graphics::SceneManager>()),
+	renderer(std::make_unique<Graphics::BasicRenderer>()),
+	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
 	entt::entity player = registry.create();
@@ -81,7 +87,7 @@ void Engine::updateLoop() {
 		while (accum >= dt) {
 			//last_update = std::chrono::steady_clock::now();
 			update(t);
-			sceneManager.bufferScene(getScene());
+			sceneManager->bufferScene(getScene());
 			t += dt;
 			accum -= dt;
 			this->alpha = accum / dt;
@@ -98,9 +104,8 @@ void Engine::render() {
 	//duration delta = now - last;
 	//float alpha = std::min(delta / dt, 1.0f);
 	//spdlog::debug("{}", alpha.load());
-	sceneManager.computeInterpolate(alpha.load());
-
-	renderer.render(sceneManager.getInterpolatedScene());
+	sceneManager->computeInterpolate(alpha.load());
+	renderer->render(sceneManager->getInterpolatedScene());
 }
 
 void Engine::signalStop() {
@@ -112,5 +117,5 @@ entt::registry& Engine::getRegistry() {
 }
 
 Graphics::Scene& Engine::getScene() {
-	return scene;
+	return *scene;
 }

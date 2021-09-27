@@ -4,8 +4,6 @@
 #define DVZ_ENGINE_HPP
 
 #include "client/systems/System.hpp"
-#include "client/graphics/BasicRenderer.hpp"
-#include "client/graphics/Scene.hpp"
 #include <chrono>
 #include <atomic>
 #include <thread>
@@ -15,11 +13,12 @@
 #include <entt/entt.hpp>
 
 namespace DVZ{
-	struct ClientPlayer {
-		glm::vec3 pos = glm::vec3(0, 0, 0);
-		glm::quat rot = glm::quat(1, 0, 0, 0);
-		glm::vec2 last_mouse_pos = glm::vec2(0);
-	};
+
+	namespace Graphics {
+		class Scene;
+		class SceneManager;
+		class BasicRenderer;
+	}
 
 	class Engine {
 	public:
@@ -45,7 +44,6 @@ namespace DVZ{
 		entt::registry& getRegistry();
 		Graphics::Scene& getScene();
 	private:
-		ClientPlayer player;
 		duration dt{ 1 / TPS };
 
 		std::atomic<bool> shouldStop = false;
@@ -53,9 +51,9 @@ namespace DVZ{
 		std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;
 
 		entt::registry registry;
-		Graphics::Scene scene;
-		Graphics::SceneManager sceneManager;
-		Graphics::BasicRenderer renderer;
+		std::unique_ptr<Graphics::Scene> scene;
+		std::unique_ptr<Graphics::SceneManager> sceneManager;
+		std::unique_ptr<Graphics::BasicRenderer> renderer;
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
