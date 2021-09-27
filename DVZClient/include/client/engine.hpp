@@ -25,12 +25,15 @@ namespace DVZ{
 	public:
 		using duration = std::chrono::duration<float>;
 
+		constexpr static float TPS = 60.0f;
+
 		Engine();
 		~Engine();
 
 		template<typename SYS>
 		void addSystem() {
 			systems.emplace_back(std::make_unique<SYS>());
+			systems.back()->init(*this);
 		}
 
 		void update(duration total_time);
@@ -38,10 +41,11 @@ namespace DVZ{
 		void render();
 		void signalStop();
 
+		entt::registry& getRegistry();
+		Graphics::Scene& getScene();
 	private:
-		
 		ClientPlayer player;
-		duration dt{ 1 / 50.0f };
+		duration dt{ 1 / TPS };
 
 		std::atomic<bool> shouldStop = false;
 		std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;

@@ -1,18 +1,14 @@
 #pragma once
-
-#ifndef DVZ_RENDER_SYSTEM_HPP
-#define DVZ_RENDER_SYSTEM_HPP
+#ifndef DVZ_MOVEMENT_SYSTEM_HPP
+#define DVZ_MOVEMENT_SYSTEM_HPP
 
 #include "System.hpp"
 
 namespace DVZ::Systems {
-	class RenderSystem : public System {
-	public:
-		RenderSystem();
-
+	class MovementSystem : public System {
 		void init(Engine& engine) override;
 		void gameTick(Engine& engine) override;
 	};
 }
 
-#endif
+#endif 

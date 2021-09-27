@@ -3,7 +3,10 @@
 #include "client/window.hpp"
 
 #include "client/graphics/GeometryBuilder.hpp"
+
+#include "client/systems/MovementSystem.hpp"
 #include "client/systems/RenderSystem.hpp"
+
 #include "client/util/transform.hpp"
 
 #include <chrono>
@@ -14,6 +17,7 @@ using namespace DVZ;
 Engine::Engine() : updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
+	this->addSystem<Systems::MovementSystem>();
 	this->addSystem<Systems::RenderSystem>();
 
 	entt::entity test = registry.create();
@@ -39,30 +43,8 @@ Engine::~Engine() {
 }
 
 void Engine::update(duration total_time) {
-	{
-		auto view = registry.view<DVZ::Transformation, DVZ::Velocity>();
-		for (const auto& e : view) {
-			auto& trans = view.get<DVZ::Transformation>(e);
-			const auto& vel = view.get<DVZ::Velocity>(e);
-
-			trans.pos += vel * dt.count();
-			trans.rot *= glm::angleAxis(.01f, glm::vec3(1, 0, 0));
-		}
-	}
-
-	auto view = registry.view<DVZ::Transformation, DVZ::Renderable>();
-	for (const auto& e : view) {
-		const auto& trans = view.get<DVZ::Transformation>(e);
-		auto& render = view.get<DVZ::Renderable>(e);
-
-		if (!scene.hasInstance(render.instance_id)) {
-			render.instance_id = scene.addInstance(render.mesh_id);
-		}
-
-		Graphics::Instance& instance = scene.getInstance(render.instance_id);
-		instance.pos = trans.pos;
-		instance.rot = trans.rot;
-		instance.scale = trans.scale;
+	for (auto& system : systems) {
+		system->gameTick(*this);
 	}
 }
 
@@ -115,4 +97,12 @@ void Engine::render() {
 
 void Engine::signalStop() {
 	shouldStop = true;
+}
+
+entt::registry& Engine::getRegistry() {
+	return registry;
+}
+
+Graphics::Scene& Engine::getScene() {
+	return scene;
 }

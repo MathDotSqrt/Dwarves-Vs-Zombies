@@ -21,6 +21,7 @@ BasicRenderer::BasicRenderer() {
 		
 	const auto& window = DVZ::Window::getInstance();
 	P = glm::perspectiveFov<float>(80, window.getWidth(), window.getHeight(), .1f, 100000.0f);
+	V = glm::identity<glm::mat4>();
 
 	glEnable(GL_DEPTH_TEST);
 }
