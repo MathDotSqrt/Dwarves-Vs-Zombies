@@ -5,6 +5,7 @@ set(HEADER_FILES
 	"./include/client/window.hpp"
 
 	"./include/client/systems/System.hpp"
+	"./include/client/systems/RenderSystem.hpp"
 
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
@@ -31,6 +32,8 @@ set(SOURCE_FILES
 	"./src/engine.cpp"
 	"./src/main.cpp"
 	"./src/window.cpp"
+
+	"./src/systems/RenderSystem.cpp"
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"

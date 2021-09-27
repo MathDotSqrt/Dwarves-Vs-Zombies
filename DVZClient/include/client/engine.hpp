@@ -3,12 +3,15 @@
 #ifndef DVZ_ENGINE_HPP
 #define DVZ_ENGINE_HPP
 
+#include "client/systems/System.hpp"
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/Scene.hpp"
 #include <chrono>
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <vector>
+#include <memory>
 #include <entt/entt.hpp>
 
 namespace DVZ{
@@ -24,6 +27,11 @@ namespace DVZ{
 
 		Engine();
 		~Engine();
+
+		template<typename SYS>
+		void addSystem() {
+			systems.emplace_back(std::make_unique<SYS>());
+		}
 
 		void update(duration total_time);
 		void updateLoop();
@@ -44,6 +52,8 @@ namespace DVZ{
 		Graphics::RenderScene renderScene;
 		Graphics::BasicRenderer renderer;
 		std::thread updateThread;
+
+		std::vector<std::unique_ptr<Systems::System>> systems;
 	};
 }
 

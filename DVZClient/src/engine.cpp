@@ -1,15 +1,20 @@
 #include "client/engine.hpp"
+#include "client/components.hpp"
+#include "client/window.hpp"
+
 #include "client/graphics/GeometryBuilder.hpp"
+#include "client/systems/RenderSystem.hpp"
+#include "client/util/transform.hpp"
+
 #include <chrono>
 #include <spdlog/spdlog.h>
-#include <client/components.hpp>
-#include <client/window.hpp>
-#include <client/util/transform.hpp>
 
 using namespace DVZ;
 
 Engine::Engine() : updateThread(&Engine::updateLoop, this){
 	using namespace entt;
+
+	this->addSystem<Systems::RenderSystem>();
 
 	entt::entity test = registry.create();
 	registry.emplace<DVZ::Transformation>(test);
