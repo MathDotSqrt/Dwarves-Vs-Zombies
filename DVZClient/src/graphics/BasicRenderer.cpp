@@ -8,6 +8,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <spdlog/spdlog.h>
 
 using namespace DVZ::Graphics;
 
@@ -31,7 +32,8 @@ void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	
 	const auto& window = DVZ::Window::getInstance();
 	P = glm::perspectiveFov<float>(camera.fov, window.getWidth(), window.getHeight(), camera.near, camera.far);
-	V = glm::inverse(Util::to_transform(camera.pos, camera.rot));
+
+	V = glm::inverse(Util::to_transform(-camera.pos, camera.rot));
 }
 
 void BasicRenderer::render(const InterpolatedScene& scene) {
@@ -41,6 +43,7 @@ void BasicRenderer::render(const InterpolatedScene& scene) {
 
 	auto shader = ss.get("basic"_hs);
 	auto tex = texCache.handle("uv"_hs);
+
 	shader->start();
 	for (const auto& instance : scene.instances) {
 		auto mesh = meshCache.handle(instance.meshID);

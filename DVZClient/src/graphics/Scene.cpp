@@ -69,7 +69,7 @@ SceneManager::SceneManager() {
 void SceneManager::computeInterpolate(float alpha) {
 	std::lock_guard<std::mutex> g{m};
 	interpolatedScene.instances.clear();
-
+	//spdlog::debug("{}", alpha);
 
 	
 	for (u32 i = 0; i < prev.instances.size(); i++) {

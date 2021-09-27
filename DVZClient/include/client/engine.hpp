@@ -37,6 +37,7 @@ namespace DVZ{
 		}
 
 		void update(duration total_time);
+		void initUpdateLoop();
 		void updateLoop();
 		void render();
 		void signalStop();
@@ -48,6 +49,7 @@ namespace DVZ{
 		duration dt{ 1 / TPS };
 
 		std::atomic<bool> shouldStop = false;
+		std::atomic<float> alpha = 0;
 		std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;
 
 		entt::registry registry;
