@@ -20,6 +20,10 @@ namespace DVZ{
 		class BasicRenderer;
 	}
 
+	namespace Voxel {
+		class ClientChunkManager;
+	}
+
 	class Engine {
 	public:
 		using duration = std::chrono::duration<float>;
@@ -41,8 +45,11 @@ namespace DVZ{
 		void render();
 		void signalStop();
 
+		entt::entity getPlayer();
+
 		entt::registry& getRegistry();
 		Graphics::Scene& getScene();
+		Voxel::ClientChunkManager& getChunkManager();
 	private:
 		duration dt{ 1 / TPS };
 
@@ -54,6 +61,8 @@ namespace DVZ{
 		std::unique_ptr<Graphics::Scene> scene;
 		std::unique_ptr<Graphics::SceneManager> sceneManager;
 		std::unique_ptr<Graphics::BasicRenderer> renderer;
+
+		std::unique_ptr<Voxel::ClientChunkManager> chunkManager;
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;

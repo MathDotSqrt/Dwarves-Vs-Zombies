@@ -9,6 +9,9 @@
 #include "client/systems/InputSystem.hpp"
 #include "client/systems/MovementSystem.hpp"
 #include "client/systems/RenderSystem.hpp"
+#include "client/systems/VoxelSystem.hpp"
+
+#include "client/voxel/ClientChunkManager.hpp"
 
 #include "client/util/transform.hpp"
 
@@ -21,6 +24,7 @@ Engine::Engine() :
 	scene(std::make_unique<Graphics::Scene>()), 
 	sceneManager(std::make_unique<Graphics::SceneManager>()),
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
+	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
@@ -64,6 +68,7 @@ void Engine::update(duration total_time) {
 void Engine::initUpdateLoop() {
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::MovementSystem>();
+	this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::RenderSystem>();
 }
 
@@ -112,10 +117,18 @@ void Engine::signalStop() {
 	shouldStop = true;
 }
 
+entt::entity Engine::getPlayer() {
+	return *registry.view<Player>().begin();
+}
+
 entt::registry& Engine::getRegistry() {
 	return registry;
 }
 
 Graphics::Scene& Engine::getScene() {
 	return *scene;
+}
+
+Voxel::ClientChunkManager& Engine::getChunkManager() {
+	return *chunkManager;
 }

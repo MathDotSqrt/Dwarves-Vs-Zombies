@@ -8,6 +8,7 @@ set(HEADER_FILES
 	"./include/client/systems/InputSystem.hpp"
 	"./include/client/systems/MovementSystem.hpp"
 	"./include/client/systems/RenderSystem.hpp"
+	"./include/client/systems/VoxelSystem.hpp"
 
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
@@ -28,7 +29,7 @@ set(HEADER_FILES
 	"./include/client/util/packedfreelist.hpp"
 	"./include/client/util/transform.hpp"
 
-	"./include/client/voxel/clientchunkmanager.hpp"
+	"./include/client/voxel/ClientChunkManager.hpp"
 
 )
 
@@ -40,6 +41,7 @@ set(SOURCE_FILES
 	"./src/systems/InputSystem.cpp"
 	"./src/systems/MovementSystem.cpp"
 	"./src/systems/RenderSystem.cpp"
+	"./src/systems/VoxelSystem.cpp"
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"
@@ -53,7 +55,7 @@ set(SOURCE_FILES
 
 	"./src/util/transform.cpp"
 
-	"./src/voxel/clientchunkmanager.cpp"
+	"./src/voxel/ClientChunkManager.cpp"
 
 )
 

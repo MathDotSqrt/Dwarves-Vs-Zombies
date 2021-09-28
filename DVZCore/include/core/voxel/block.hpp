@@ -5,6 +5,8 @@
 #include "core/common.hpp"
 
 namespace DVZ::Voxel {
+	constexpr float BLOCK_WIDTH = 1.0f;
+
 	struct Block {
 		
 	};
