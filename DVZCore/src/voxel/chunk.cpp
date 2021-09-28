@@ -38,12 +38,20 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 	this->cy = cy;
 	this->cz = cz;
 
-	for (BlockIndex y = 0; y < CHUNK_Y; y++) {
+	BlockIndex y = 0;
+	while(true) {
 		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 			for (BlockIndex x = 0; x < CHUNK_X; x++) {
 				data->setBlock(x, y, z, BlockType::AIR);
 			}
 		}
+
+		//scuff
+		if (y == (CHUNK_Y - 1)) {
+			break;
+		}
+
+		y += 1;
 	}
 }
 

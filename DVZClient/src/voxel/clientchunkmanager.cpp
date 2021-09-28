@@ -4,6 +4,17 @@
 
 using namespace DVZ::Voxel;
 
+ClientChunkManager::ClientChunkManager() {
+	playerChunkCoords = glm::vec3{0};
+
+	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
+		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
+			chunks.emplace_back(cx, 0, cz);
+		}
+	}
+
+}
+
 void ClientChunkManager::updatePlayerPosition(const glm::vec3& playerCoords) {
 	ChunkCoords newChunkCoords = Voxel::toChunkCoords(playerCoords);
 	hasChanged = newChunkCoords != playerChunkCoords;
