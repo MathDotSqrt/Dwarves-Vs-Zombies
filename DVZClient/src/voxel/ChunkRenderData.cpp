@@ -25,9 +25,39 @@ ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : 
 		master_ebo = std::make_unique<Graphics::VBO>(Graphics::VBO::BufferType::ELEMENT_ARRAY_BUFFER);
 		expandMasterEBO(6000);
 	}
+
+	vao.bind();
+	vbo.bind();
+	vao.addVertexAttribPtr<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib>();
+	vbo.unbind();
+	master_ebo->bind();
+	vao.unbind();
+	master_ebo->unbind();
 }
 
-void ChunkRenderData::expandMasterEBO(EBOIndexType newQuadSize) {
+ChunkRenderData::ChunkRenderData(const ChunkCoords& coords) : ChunkRenderData(coords.x, coords.y, coords.z) {
+	
+}
+
+void ChunkRenderData::bufferGeometry(const ChunkVertexVector& v) {
+	assert(v.size() % 4 == 0);
+
+	size_t numQuads = v.size() / 4;
+	size_t maxQuadSize = ChunkRenderData::quads.size();
+	if (numQuads > maxQuadSize) {
+		numQuads = 2 * numQuads;
+		expandMasterEBO(numQuads);
+	}
+
+	vbo.bind();
+	vbo.bufferData(v);
+	vbo.unbind();
+
+	//6 indices per quad
+	this->indexCount = numQuads * 6;
+}
+
+void ChunkRenderData::expandMasterEBO(size_t newQuadSize) {
 	spdlog::info("Master Chunk EBO Resized: [{}] Quads", newQuadSize);
 
 	quads.reserve(newQuadSize);

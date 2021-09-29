@@ -26,6 +26,7 @@ Engine::Engine() :
 	sceneManager(std::make_unique<Graphics::SceneManager>()),
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
+	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
@@ -115,6 +116,7 @@ void Engine::render() {
 	//float alpha = std::min(delta / dt, 1.0f);
 	//spdlog::debug("{}", alpha.load());
 	sceneManager->computeInterpolate(alpha.load());
+	chunkRenderDataManager->meshChunks();
 	renderer->render(sceneManager->getInterpolatedScene());
 }
 

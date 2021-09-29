@@ -13,7 +13,7 @@
 namespace DVZ::Voxel {
 	
 	constexpr int CHUNK_SHIFT_X = 4;
-	constexpr int CHUNK_SHIFT_Y = 8;
+	constexpr int CHUNK_SHIFT_Y = 7;
 	constexpr int CHUNK_SHIFT_Z = 4;
 
 	constexpr int CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
@@ -48,7 +48,8 @@ namespace DVZ::Voxel {
 	
 	class Chunk {
 	public:
-		Chunk(ChunkIndex x, ChunkIndex y, ChunkIndex z);
+		Chunk(const ChunkCoords& coords);
+		Chunk(ChunkIndex x=0, ChunkIndex y=0, ChunkIndex z=0);
 
 		BlockType getBlock(const BlockCoords& coords) const;
 		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;

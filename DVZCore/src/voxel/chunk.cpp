@@ -41,6 +41,10 @@ int ChunkData::toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
 	return index;
 }
 
+Chunk::Chunk(const ChunkCoords& coords) : Chunk(coords.x, coords.y, coords.z) {
+	
+}
+
 Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_unique<ChunkData>()){
 	coords = ChunkCoords{cx, cy, cz};
 

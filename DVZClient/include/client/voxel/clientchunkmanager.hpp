@@ -5,9 +5,19 @@
 #include "core/voxel/chunk.hpp"
 #include "client/util/util.hpp"
 #include <vector>
-
+#include <unordered_map>
 
 namespace DVZ::Voxel {
+	struct ChunkNeighbors {
+		const Chunk* center = nullptr;
+		const Chunk* nx = nullptr;
+		const Chunk* px = nullptr;
+		const Chunk* nz = nullptr;
+		const Chunk* pz = nullptr;
+		const Chunk* ny = nullptr;
+		const Chunk* py = nullptr;
+	};
+
 	class ClientChunkManager {
 	public:
 		constexpr static const ChunkIndex RENDER_RADIUS = 3;
@@ -24,13 +34,23 @@ namespace DVZ::Voxel {
 
 		void updatePlayerPosition(const glm::vec3& pos);
 
+		const Chunk* getChunk(const ChunkCoords& coords) const;
+		const Chunk* getChunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) const;
+		ChunkNeighbors getChunkNeighbors(const ChunkCoords& coords) const;
+
 		const ChunkCoords& getPlayerChunkCoords() const;
-		const std::vector<Chunk>& getChunks() const;
+		//const std::vector<Chunk>& getChunks() const;
 	private:
+		void queueChunksToDelete();
+		void queueChunksToGenerate();
+
 		ChunkCoords playerChunkCoords;
 		bool hasChanged = true;
 
-		std::vector<Chunk> chunks;
+		std::unordered_map<ChunkCoords, Chunk> chunks;
+		std::vector<Chunk> chunksPool;
+
+
 	};
 }
 

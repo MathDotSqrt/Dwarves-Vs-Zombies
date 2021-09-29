@@ -12,13 +12,18 @@
 
 namespace DVZ::Voxel {
 
+	class ChunkNeighbors;
 	class ClientChunkManager;
+
 
 	class ChunkMesher {
 	public:
 		ChunkMesher();
 
-		void loadChunkData();
+		//TODO: implement chunk neighbors
+		void loadChunkData(const ChunkNeighbors& neighbors);
+		const ChunkVertexVector& meshChunk();
+		const ChunkCoords& getCoords() const;
 	private:
 		constexpr static size_t PADDED_CHUNK_X = CHUNK_X + 2;
 		constexpr static size_t PADDED_CHUNK_Y = CHUNK_Y + 2;
@@ -27,13 +32,29 @@ namespace DVZ::Voxel {
 
 		using BlockStorage = std::array<BlockType, PADDED_VOLUME>;
 
+		struct BlockFaceCullTags {
+			bool nx : 1;
+			bool px : 1;
+			bool ny : 1;
+			bool py : 1;
+			bool nz : 1;
+			bool pz : 1;
+		};
+
+		ChunkCoords coords;
+
+		void appendCubeGeometry(const BlockCoords& coords, BlockFaceCullTags tags);
+		BlockType& getPaddedBlock(int bx, int by, int bz);
+
 		std::unique_ptr<BlockStorage> blocks;
+		ChunkVertexVector geometry;
 	};
 
 	class ChunkRenderDataManager {
 	public:
-
+		
 		void bufferDirtyChunks(const ClientChunkManager& chunkManager);
+		void meshChunks();
 
 	private:
 		std::mutex queue_mutex;
