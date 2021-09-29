@@ -36,8 +36,8 @@ namespace DVZ::Voxel {
 		BlockType getBlock(const BlockCoords& coords) const;
 		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
 
-		void setBlock(const BlockCoords& coords, BlockType block);
-		void setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
+		bool setBlock(const BlockCoords& coords, BlockType block);
+		bool setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
 	private:
 		int toIndex(const BlockCoords& coords) const;
 		int toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
@@ -49,10 +49,18 @@ namespace DVZ::Voxel {
 	class Chunk {
 	public:
 		Chunk(ChunkIndex x, ChunkIndex y, ChunkIndex z);
+
+		BlockType getBlock(const BlockCoords& coords) const;
+		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
+
+		void setBlock(const BlockCoords& coords, BlockType block);
+		void setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
+
+		const ChunkCoords& getChunkCoords() const;
+		int getUpdateCount() const;
 	private:
-		ChunkIndex cx;
-		ChunkIndex cy;
-		ChunkIndex cz;
+		ChunkCoords coords;
+		int updateCount = 0;
 
 		std::unique_ptr<ChunkData> data;
 	};

@@ -12,12 +12,20 @@ BlockType ChunkData::getBlock(const BlockCoords& coords) const {
 	return block_data[toIndex(coords)];
 }
 
-void ChunkData::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
-	block_data[toIndex(bx, by, bz)] = block;
+bool ChunkData::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
+	auto index = toIndex(bx, by, bz);
+	BlockType prev = block_data[index];
+	block_data[index] = block;
+
+	return block != prev;
 }
 
-void ChunkData::setBlock(const BlockCoords& coords, BlockType block) {
-	block_data[toIndex(coords)] = block;
+bool ChunkData::setBlock(const BlockCoords& coords, BlockType block) {
+	auto index = toIndex(coords);
+	BlockType prev = block_data[index];
+	block_data[index] = block;
+
+	return block != prev;
 }
 
 int ChunkData::toIndex(const BlockCoords& coords) const {
@@ -34,15 +42,16 @@ int ChunkData::toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
 }
 
 Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_unique<ChunkData>()){
-	this->cx = cx;
-	this->cy = cy;
-	this->cz = cz;
+	coords = ChunkCoords{cx, cy, cz};
 
 	BlockIndex y = 0;
 	while(true) {
 		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 			for (BlockIndex x = 0; x < CHUNK_X; x++) {
-				data->setBlock(x, y, z, BlockType::AIR);
+				if (y < 10)
+					data->setBlock(x, y, z, BlockType::GRASS);
+				else
+					data->setBlock(x, y, z, BlockType::AIR);
 			}
 		}
 
@@ -53,6 +62,38 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 
 		y += 1;
 	}
+
+	updateCount += 1;
+}
+
+BlockType Chunk::getBlock(const BlockCoords& coords) const {
+	return data->getBlock(coords);
+}
+
+BlockType Chunk::getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
+	return data->getBlock(bx, by, bz);
+}
+
+void Chunk::setBlock(const BlockCoords& coords, BlockType block) {
+	bool isupdate = data->setBlock(coords, block);
+	if (isupdate) {
+		updateCount += 1;
+	}
+}
+
+void Chunk::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
+	bool isupdate = data->setBlock(bx, by, bz, block);
+	if (isupdate) {
+		updateCount += 1;
+	}
+}
+
+const ChunkCoords& Chunk::getChunkCoords() const {
+	return coords;
+}
+
+int Chunk::getUpdateCount() const {
+	return updateCount;
 }
 
 BlockIndex DVZ::Voxel::toBlockXIndex(WorldIndex index) {

@@ -12,6 +12,7 @@
 #include "client/systems/VoxelSystem.hpp"
 
 #include "client/voxel/ClientChunkManager.hpp"
+#include "client/voxel/ChunkRenderDataManager.hpp"
 
 #include "client/util/transform.hpp"
 
@@ -51,6 +52,7 @@ Engine::Engine() :
 	registry.emplace<Transformation>(test3, glm::vec3(0, 0, 0));
 	//registry.emplace<Velocity>(test3, glm::vec3(1, 0, -1));
 	//registry.emplace<Renderable>(test3, "cube"_hs);
+
 }
 
 Engine::~Engine() {
@@ -92,9 +94,13 @@ void Engine::updateLoop() {
 		while (accum >= dt) {
 			//last_update = std::chrono::steady_clock::now();
 			update(t);
-			sceneManager->bufferScene(getScene());
+
+			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
+			sceneManager->bufferScene(*scene);
 			t += dt;
 			accum -= dt;
+
+			//This is a bug, it is possible for alpha to be larger than 1
 			this->alpha = accum / dt;
 		}
 
@@ -103,7 +109,6 @@ void Engine::updateLoop() {
 }
 
 void Engine::render() {
-
 	//std::chrono::time_point last = last_update.load();
 	//std::chrono::time_point now = std::chrono::steady_clock::now();
 	//duration delta = now - last;
@@ -131,4 +136,8 @@ Graphics::Scene& Engine::getScene() {
 
 Voxel::ClientChunkManager& Engine::getChunkManager() {
 	return *chunkManager;
+}
+
+Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
+	return *chunkRenderDataManager;
 }

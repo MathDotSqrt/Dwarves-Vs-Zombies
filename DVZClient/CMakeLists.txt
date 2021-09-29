@@ -28,7 +28,10 @@ set(HEADER_FILES
 	"./include/client/util/id.hpp"
 	"./include/client/util/packedfreelist.hpp"
 	"./include/client/util/transform.hpp"
+	"./include/client/util/util.hpp"
 
+	"./include/client/voxel/ChunkRenderData.hpp"
+	"./include/client/voxel/ChunkRenderDataManager.hpp"
 	"./include/client/voxel/ClientChunkManager.hpp"
 
 )
@@ -55,6 +58,8 @@ set(SOURCE_FILES
 
 	"./src/util/transform.cpp"
 
+	"./src/voxel/ChunkRenderData.cpp"
+	"./src/voxel/ChunkRenderDataManager.cpp"
 	"./src/voxel/ClientChunkManager.cpp"
 
 )

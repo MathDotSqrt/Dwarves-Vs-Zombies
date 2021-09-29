@@ -22,6 +22,7 @@ namespace DVZ{
 
 	namespace Voxel {
 		class ClientChunkManager;
+		class ChunkRenderDataManager;
 	}
 
 	class Engine {
@@ -51,6 +52,9 @@ namespace DVZ{
 		Graphics::Scene& getScene();
 		Voxel::ClientChunkManager& getChunkManager();
 	private:
+		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
+
+
 		duration dt{ 1 / TPS };
 
 		std::atomic<bool> shouldStop = false;
@@ -63,6 +67,7 @@ namespace DVZ{
 		std::unique_ptr<Graphics::BasicRenderer> renderer;
 
 		std::unique_ptr<Voxel::ClientChunkManager> chunkManager;
+		std::unique_ptr<Voxel::ChunkRenderDataManager> chunkRenderDataManager;
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;

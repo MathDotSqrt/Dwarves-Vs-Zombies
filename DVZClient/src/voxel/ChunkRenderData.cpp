@@ -1,0 +1,51 @@
+#include "client/voxel/ChunkRenderData.hpp"
+
+
+#include <numeric>
+#include <spdlog/spdlog.h>
+
+using namespace DVZ::Voxel;
+
+ChunkRenderData::QuadIndices::QuadIndices(EBOIndexType startIndex) {
+	indices[0] = startIndex + 0;
+	indices[1] = startIndex + 1;
+	indices[2] = startIndex + 2;
+	indices[3] = startIndex + 0;
+	indices[4] = startIndex + 2;
+	indices[5] = startIndex + 3;
+}
+
+ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : vbo(Graphics::VBO::BufferType::ARRAY_BUFFER) {
+	this->cx = cx;
+	this->cy = cy;
+	this->cz = cz;
+	this->indexCount = 0;
+
+	if (master_ebo == nullptr) {
+		master_ebo = std::make_unique<Graphics::VBO>(Graphics::VBO::BufferType::ELEMENT_ARRAY_BUFFER);
+		expandMasterEBO(6000);
+	}
+}
+
+void ChunkRenderData::expandMasterEBO(EBOIndexType newQuadSize) {
+	spdlog::info("Master Chunk EBO Resized: [{}] Quads", newQuadSize);
+
+	quads.reserve(newQuadSize);
+	for (size_t i = quads.size(); i < newQuadSize; i++) {
+		//Assert to prevent overflow
+		assert((i * 4) <= (std::numeric_limits<EBOIndexType>::max() - 3));
+
+		//There are 4 vertices for each quad
+		//Emplace back is faster, no extra copy (I think lol)
+		//calls constructor for QuadIndices(i * 4);
+		EBOIndexType startIndex = (EBOIndexType)(i * 4);
+		quads.emplace_back(startIndex);
+	}
+
+	master_ebo->bind();
+	master_ebo->bufferData(quads);
+	master_ebo->unbind();
+}
+
+std::unique_ptr<DVZ::Graphics::VBO> ChunkRenderData::master_ebo = nullptr;
+std::vector<ChunkRenderData::QuadIndices> ChunkRenderData::quads;

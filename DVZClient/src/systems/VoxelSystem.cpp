@@ -9,6 +9,7 @@
 using namespace DVZ::Systems;
 
 void VoxelSystem::init(Engine& engine) {
+
 	spdlog::info("Initalized [VoxelSystem]");
 }
 

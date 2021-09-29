@@ -25,3 +25,10 @@ void ClientChunkManager::updatePlayerPosition(const glm::vec3& playerCoords) {
 	}
 }
 
+const ChunkCoords& ClientChunkManager::getPlayerChunkCoords() const {
+	return playerChunkCoords;
+}
+
+const std::vector<Chunk>& ClientChunkManager::getChunks() const {
+	return chunks;
+}
