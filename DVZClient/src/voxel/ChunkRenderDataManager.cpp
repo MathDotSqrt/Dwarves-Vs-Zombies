@@ -1,7 +1,7 @@
 #include "client/voxel/ChunkRenderDataManager.hpp"
 
 #include "client/voxel/ClientChunkManager.hpp"
-
+#include "client/util/util.hpp"
 
 #include <spdlog/spdlog.h>
 #include <algorithm>
@@ -38,6 +38,22 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bx = 0; bx < CHUNK_X; bx++) {
 				getPaddedBlock(bx, by, -1) = n.pz->getBlock(bx, by, CHUNK_Z - 1);
+			}
+		}
+	}
+
+	if (n.nx) {
+		for (int by = 0; by < CHUNK_Y; by++) {
+			for (int bz = 0; bz < CHUNK_Z; bz++) {
+				getPaddedBlock(-1, by, bz) = n.nx->getBlock(CHUNK_X - 1, by, bz);
+			}
+		}
+	}
+
+	if (n.px) {
+		for (int by = 0; by < CHUNK_Y; by++) {
+			for (int bz = 0; bz < CHUNK_Z; bz++) {
+				getPaddedBlock(CHUNK_X, by, bz) = n.px->getBlock(0, by, bz);
 			}
 		}
 	}
@@ -157,14 +173,19 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 	std::lock_guard<std::mutex> g{queue_mutex};
 
 	ChunkCoords center = manager.getPlayerChunkCoords();
-	const Chunk* chunk = manager.getChunk(center);
 
-	if (chunk && chunkMeshUpdateCountMap[center] != chunk->getUpdateCount()) {
-		ChunkNeighbors neighbors = manager.getChunkNeighbors(center);
-		queuedChunks.emplace_back();
-		queuedChunks.back().loadChunkData(neighbors);
-		chunkMeshUpdateCountMap[center] = chunk->getUpdateCount();
-	}
+	ChunkCoords render_radius{ ClientChunkManager::RENDER_RADIUS - 1, 0, ClientChunkManager::RENDER_RADIUS - 1 };
+	Util::iterate_volume(center - render_radius, center + render_radius, [&](const ChunkCoords& coord) {
+		const Chunk* chunk = manager.getChunk(coord);
+		if (chunk && chunkMeshUpdateCountMap[coord] != chunk->getUpdateCount()) {
+			ChunkNeighbors neighbors = manager.getChunkNeighbors(coord);
+			queuedChunks.emplace_back();
+			queuedChunks.back().loadChunkData(neighbors);
+			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
+		}
+	});
+
+	
 
 }
 

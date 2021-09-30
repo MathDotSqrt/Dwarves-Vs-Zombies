@@ -56,7 +56,7 @@ void Chunk::init(const ChunkCoords& coords) {
 	while (true) {
 		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 			for (BlockIndex x = 0; x < CHUNK_X; x++) {
-				if (y < (x + z + 3))
+				if (y < (x/5 + z/7 + 3))
 					data->setBlock(x, y, z, BlockType::GRASS);
 				else
 					data->setBlock(x, y, z, BlockType::AIR);

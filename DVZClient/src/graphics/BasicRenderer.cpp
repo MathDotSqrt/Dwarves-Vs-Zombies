@@ -35,6 +35,8 @@ BasicRenderer::BasicRenderer() {
 
 void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_CCW);
 	
 	const auto& window = DVZ::Window::getInstance();
 	P = glm::perspectiveFov<float>(camera.fov, window.getWidth(), window.getHeight(), camera.near, camera.far);
