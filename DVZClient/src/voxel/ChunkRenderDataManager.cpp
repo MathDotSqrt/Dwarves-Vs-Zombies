@@ -66,58 +66,60 @@ void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, BlockFaceCullTags
 	BlockCoords p6{ coord.x, coord.y + 1, coord.z };
 	BlockCoords p7{ coord.x + 1, coord.y + 1, coord.z };
 
+	glm::vec4 color{ .2, .7, .3, 1 };
+
 	//Front
 	if (!tags.pz) {
 		glm::i8vec4 n{ 0, 0, 1, 0 };
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color);
 	}
 
 	//Back
 	if (!tags.nz) {
 		glm::i8vec4 n{ 0, 0, -1, 0 };
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color);
 	}
 
 	//Left
 	if (!tags.nx) {
 		glm::i8vec4 n{ -1, 0, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color);
 	}
 
 	//Right
 	if (!tags.px) {
 		glm::i8vec4 n{ 1, 0, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color);
 	}
 
 	//Top
 	if (!tags.py) {
 		glm::i8vec4 n{ 0, 1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color);
 	}
 
 	//Bottom
 	if (!tags.ny) {
 		glm::i8vec4 n{ 0, -1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color);
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color);
 	}
 }
 

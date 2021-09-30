@@ -52,7 +52,7 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 	while(true) {
 		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 			for (BlockIndex x = 0; x < CHUNK_X; x++) {
-				if (y < 10 && (x + z + y) % 3 == 1)
+				if (y < (x + z + 3))
 					data->setBlock(x, y, z, BlockType::GRASS);
 				else
 					data->setBlock(x, y, z, BlockType::AIR);
