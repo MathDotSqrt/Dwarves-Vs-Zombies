@@ -52,7 +52,8 @@ namespace DVZ {
 	};
 
 	struct Input {
-		glm::vec2 last_cursor_pos = glm::vec2{0,0};
+		glm::vec2 current_cursor_pos = glm::vec2{ 0 };
+		glm::vec2 last_cursor_pos = glm::vec2{ 0 };
 	};
 
 	struct Camera {

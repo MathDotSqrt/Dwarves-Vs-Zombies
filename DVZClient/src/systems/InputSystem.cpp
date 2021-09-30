@@ -48,18 +48,9 @@ void InputSystem::gameTick(Engine& engine) {
 		}
 	}
 
-	auto camera_view = registry.view<Input, Transformation, Camera>();
-	camera_view.each([&](Input& input, Transformation& transform, Camera& camera) {
-		glm::vec2 delta = pos - input.last_cursor_pos;
-		glm::quat q_yaw = glm::angleAxis(-delta.x / 110, glm::vec3(0, 1, 0));
-		glm::quat q_pitch = glm::angleAxis(-delta.y / 140, glm::vec3(1, 0, 0));
-
-		glm::quat new_rot = (q_yaw * transform.rot) * q_pitch;
-		transform.rot = new_rot;
-	});
-
 	auto input_view = registry.view<Input>();
 	input_view.each([pos](Input& input) {
-		input.last_cursor_pos = pos;
+		input.last_cursor_pos = input.current_cursor_pos;
+		input.current_cursor_pos = pos;
 	});
 }
