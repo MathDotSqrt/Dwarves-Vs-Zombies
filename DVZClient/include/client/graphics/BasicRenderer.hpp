@@ -9,6 +9,10 @@
 
 #include <glm/glm.hpp>
 
+namespace DVZ::Voxel {
+	class ChunkRenderDataManager;
+}
+
 namespace DVZ::Graphics {
 	class BasicRenderer {
 	public:
@@ -16,7 +20,7 @@ namespace DVZ::Graphics {
 		TEXCache texCache;
 
 		BasicRenderer();
-		void render(const InterpolatedScene& scene);
+		void render(const InterpolatedScene& scene, const Voxel::ChunkRenderDataManager& );
 
 	private:
 		void prerender(const PerspectiveCamera& camera);
@@ -24,6 +28,7 @@ namespace DVZ::Graphics {
 		ShaderSet ss;
 		glm::mat4 P;
 		glm::mat4 V;
+		glm::mat4 VP;
 	};
 }
 

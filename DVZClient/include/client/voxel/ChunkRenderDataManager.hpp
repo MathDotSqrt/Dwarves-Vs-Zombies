@@ -55,7 +55,7 @@ namespace DVZ::Voxel {
 		
 		void bufferDirtyChunks(const ClientChunkManager& chunkManager);
 		void meshChunks();
-
+		const std::vector<ChunkRenderData>& getRenderableChunks() const;
 	private:
 		std::mutex queue_mutex;
 		std::vector<ChunkMesher> queuedChunks;

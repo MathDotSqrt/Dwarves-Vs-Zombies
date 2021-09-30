@@ -16,9 +16,7 @@ ChunkRenderData::QuadIndices::QuadIndices(EBOIndexType startIndex) {
 }
 
 ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : vbo(Graphics::VBO::BufferType::ARRAY_BUFFER) {
-	this->cx = cx;
-	this->cy = cy;
-	this->cz = cz;
+	coords = ChunkCoords{ cx, cy, cz };
 	this->indexCount = 0;
 
 	if (master_ebo == nullptr) {
@@ -55,6 +53,18 @@ void ChunkRenderData::bufferGeometry(const ChunkVertexVector& v) {
 
 	//6 indices per quad
 	this->indexCount = numQuads * 6;
+}
+
+const ChunkCoords& ChunkRenderData::getCoords() const {
+	return coords;
+}
+
+const DVZ::Graphics::VAO& ChunkRenderData::getVAO() const {
+	return vao;
+}
+
+const DVZ::Graphics::VBO& ChunkRenderData::getEBO() const {
+	return *ChunkRenderData::master_ebo;
 }
 
 void ChunkRenderData::expandMasterEBO(size_t newQuadSize) {

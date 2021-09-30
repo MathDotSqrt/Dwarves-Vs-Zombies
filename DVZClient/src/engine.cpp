@@ -41,7 +41,7 @@ Engine::Engine() :
 
 	entt::entity test = registry.create();
 	registry.emplace<Transformation>(test);
-	//registry.emplace<Velocity>(test, glm::vec3(0, 0, -2));
+	registry.emplace<Velocity>(test, glm::vec3(.0, .1, 0));
 	registry.emplace<Renderable>(test, "cube"_hs);
 
 	entt::entity test2 = registry.create();
@@ -117,7 +117,7 @@ void Engine::render() {
 	//spdlog::debug("{}", alpha.load());
 	sceneManager->computeInterpolate(alpha.load());
 	chunkRenderDataManager->meshChunks();
-	renderer->render(sceneManager->getInterpolatedScene());
+	renderer->render(sceneManager->getInterpolatedScene(), *chunkRenderDataManager);
 }
 
 void Engine::signalStop() {

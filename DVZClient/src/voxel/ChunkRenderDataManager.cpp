@@ -68,56 +68,56 @@ void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, BlockFaceCullTags
 
 	//Front
 	if (!tags.pz) {
-		glm::i8vec3 n{ 0, 0, 1 };
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ 0, 0, 1, 0 };
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
 	}
 
 	//Back
 	if (!tags.nz) {
-		glm::i8vec3 n{ 0, 0, -1 };
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ 0, 0, -1, 0 };
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
 	}
 
 	//Left
 	if (!tags.nx) {
-		glm::i8vec3 n{ -1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ -1, 0, 0, 0 };
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
 	}
 
 	//Right
 	if (!tags.px) {
-		glm::i8vec3 n{ 1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ 1, 0, 0, 0 };
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
 	}
 
 	//Top
 	if (!tags.py) {
-		glm::i8vec3 n{ 0, 1, 0 };
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ 0, 1, 0, 0 };
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, glm::vec4(1));
 	}
 
 	//Bottom
 	if (!tags.ny) {
-		glm::i8vec3 n{ 0, -1, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec3(1));
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec3(1));
+		glm::i8vec4 n{ 0, -1, 0, 0 };
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, glm::vec4(1));
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, glm::vec4(1));
 	}
 }
 
@@ -162,4 +162,8 @@ void ChunkRenderDataManager::meshChunks() {
 		spdlog::debug("Generated Mesh: [{}]", geometry.size());
 		queuedChunks.pop_back();
 	}
+}
+
+const std::vector<ChunkRenderData>& ChunkRenderDataManager::getRenderableChunks() const {
+	return renderableChunks;
 }

@@ -27,10 +27,10 @@ void InputSystem::gameTick(Engine& engine) {
 		movement.fly = 0;
 
 		if (window.isPressed('w')) {
-			movement.forward -= 1;
+			movement.forward += 1;
 		}
 		if (window.isPressed('s')) {
-			movement.forward += 1;
+			movement.forward -= 1;
 		}
 
 		if (window.isPressed('d')) {
@@ -51,8 +51,8 @@ void InputSystem::gameTick(Engine& engine) {
 	auto camera_view = registry.view<Input, Transformation, Camera>();
 	camera_view.each([&](Input& input, Transformation& transform, Camera& camera) {
 		glm::vec2 delta = pos - input.last_cursor_pos;
-		glm::quat q_yaw = glm::angleAxis(delta.x / 110, glm::vec3(0, 1, 0));
-		glm::quat q_pitch = glm::angleAxis(delta.y / 140, glm::vec3(1, 0, 0));
+		glm::quat q_yaw = glm::angleAxis(-delta.x / 110, glm::vec3(0, 1, 0));
+		glm::quat q_pitch = glm::angleAxis(-delta.y / 140, glm::vec3(1, 0, 0));
 
 		glm::quat new_rot = (q_yaw * transform.rot) * q_pitch;
 		transform.rot = new_rot;

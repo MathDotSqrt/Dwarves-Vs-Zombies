@@ -1,8 +1,12 @@
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
 
-#include "client/window.hpp"
 #include "client/util/transform.hpp"
+
+#include "client/voxel/ChunkRenderDataManager.hpp"
+
+#include "client/window.hpp"
+
 
 #include <GL/glew.h>
 #include <glm/gtx/transform.hpp>
@@ -19,10 +23,12 @@ BasicRenderer::BasicRenderer() {
 	texCache.load<TextureLoader>("uv"_hs, TEX::Builder().mipmapLinear(), "./res/textures/uv_grid.jpg");
 
 	auto shader = ss.load("basic"_hs, "basic.vert", "basic.frag");
+	auto chunk_shader = ss.load("chunk"_hs, "chunk_shader.vert", "chunk_shader.frag");
 		
 	const auto& window = DVZ::Window::getInstance();
 	P = glm::perspectiveFov<float>(80, window.getWidth(), window.getHeight(), .1f, 100000.0f);
 	V = glm::identity<glm::mat4>();
+	VP = P * V;
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -33,10 +39,13 @@ void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	const auto& window = DVZ::Window::getInstance();
 	P = glm::perspectiveFov<float>(camera.fov, window.getWidth(), window.getHeight(), camera.near, camera.far);
 
-	V = glm::inverse(Util::to_transform(-camera.pos, camera.rot));
+
+	V = glm::lookAt(camera.pos, camera.rot * glm::vec3(0, 0, -1) + camera.pos, glm::vec3(0, -1, 0));
+
+	VP = P * V;
 }
 
-void BasicRenderer::render(const InterpolatedScene& scene) {
+void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRenderDataManager& chunkManager) {
 	using namespace entt;
 
 	prerender(scene.playerCamera);
@@ -49,7 +58,7 @@ void BasicRenderer::render(const InterpolatedScene& scene) {
 		auto mesh = meshCache.handle(instance.meshID);
 		glm::mat4 M = instance.transform;
 
-		shader->setUniformMat4("MVP", P * V * M);
+		shader->setUniformMat4("MVP", VP * M);
 		shader->setUniform1i("diffuse", 0);
 
 		tex->bindActiveTexture(0);
@@ -60,13 +69,28 @@ void BasicRenderer::render(const InterpolatedScene& scene) {
 		mesh->ebo.unbind();
 		mesh->vao.unbind();
 	}
-
-
-
 	
 
 	tex->unbind();
 
 
 	shader->end();
+
+	auto chunk_shader = ss.get("chunk"_hs);
+	chunk_shader->start();
+	for (const Voxel::ChunkRenderData& chunk : chunkManager.getRenderableChunks()) {
+		const Voxel::ChunkCoords& coords = chunk.getCoords();
+		const Graphics::VAO& vao = chunk.getVAO();
+		const Graphics::VBO& ebo = chunk.getEBO();
+
+		chunk_shader->setUniform3f("u_pos", glm::vec3(coords));
+		chunk_shader->setUniformMat4("VP", VP);
+		vao.bind();
+		ebo.bind();
+		glDrawElements(GL_TRIANGLES, ebo.getNumBytes() / sizeof(Voxel::ChunkRenderData::EBOIndexType), GL_UNSIGNED_INT, 0);
+		ebo.unbind();
+		vao.unbind();
+		
+	}
+	chunk_shader->end();
 }

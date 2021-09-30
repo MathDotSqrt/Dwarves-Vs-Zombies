@@ -14,8 +14,8 @@
 
 namespace DVZ::Voxel {
 	using BlockPositionAttrib = Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec<4, BlockIndex>>;
-	using BlockNormalAttrib = Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::i8vec3>;
-	using BlockColorAttrib = Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>;
+	using BlockNormalAttrib = Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::i8vec4>;
+	using BlockColorAttrib = Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec4>;
 	using BlockVertex = Graphics::Geometry<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib>::GeometryVertex;
 
 
@@ -31,9 +31,9 @@ namespace DVZ::Voxel {
 		//
 		void bufferGeometry(const ChunkVertexVector& v);
 
-		ChunkIndex getCX() const;
-		ChunkIndex getCY() const;
-		ChunkIndex getCZ() const;
+		const ChunkCoords& getCoords() const;
+		const Graphics::VAO& getVAO() const;
+		const Graphics::VBO& getEBO() const;
 
 	private:
 
@@ -47,9 +47,7 @@ namespace DVZ::Voxel {
 
 		void expandMasterEBO(size_t newQuadSize);
 
-		ChunkIndex cx;
-		ChunkIndex cy;
-		ChunkIndex cz;
+		ChunkCoords coords;
 		Graphics::VAO vao;
 		Graphics::VBO vbo;
 
