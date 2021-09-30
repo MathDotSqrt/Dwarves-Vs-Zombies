@@ -22,8 +22,8 @@ void ClientChunkManager::updatePlayerPosition(const glm::vec3& playerCoords) {
 	if (hasChanged) {
 		playerChunkCoords = newChunkCoords;
 		spdlog::debug("Player Chunk Coord <{}, {}, {}>", playerChunkCoords.x, playerChunkCoords.y, playerChunkCoords.z);
-		queueChunksToDelete();
 		queueChunksToGenerate();
+		queueChunksToDelete();
 	}
 }
 
@@ -46,11 +46,14 @@ void ClientChunkManager::queueChunksToDelete() {
 void ClientChunkManager::queueChunksToGenerate() {
 	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
 		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
-			ChunkCoords coords{ cx, 0, cz };
+			ChunkCoords coords = playerChunkCoords + ChunkCoords{ cx, 0, cz };
 			auto iter = chunks.find(coords);
 			if (iter == chunks.end()) {
+				spdlog::debug("Generated Chunk <{}, {}, {}>", coords.x, coords.y, coords.z);
 				if (chunksPool.size() > 0) {
+					chunksPool.back().init(coords);
 					chunks.emplace(coords, std::move(chunksPool.back()));
+					chunksPool.pop_back();
 				}
 				else {
 					chunks.emplace(coords, coords);

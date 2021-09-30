@@ -51,6 +51,8 @@ namespace DVZ::Voxel {
 		Chunk(const ChunkCoords& coords);
 		Chunk(ChunkIndex x=0, ChunkIndex y=0, ChunkIndex z=0);
 
+		void init(const ChunkCoords& coords);
+
 		BlockType getBlock(const BlockCoords& coords) const;
 		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
 

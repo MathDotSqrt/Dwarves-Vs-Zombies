@@ -46,10 +46,14 @@ Chunk::Chunk(const ChunkCoords& coords) : Chunk(coords.x, coords.y, coords.z) {
 }
 
 Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_unique<ChunkData>()){
-	coords = ChunkCoords{cx, cy, cz};
+	init(ChunkCoords{ cx, cy, cz });
+}
+
+void Chunk::init(const ChunkCoords& coords) {
+	this->coords = coords;
 
 	BlockIndex y = 0;
-	while(true) {
+	while (true) {
 		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 			for (BlockIndex x = 0; x < CHUNK_X; x++) {
 				if (y < (x + z + 3))
@@ -67,7 +71,8 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 		y += 1;
 	}
 
-	updateCount += 1;
+	updateCount = 1;
+
 }
 
 BlockType Chunk::getBlock(const BlockCoords& coords) const {
