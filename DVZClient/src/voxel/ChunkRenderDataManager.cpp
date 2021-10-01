@@ -4,6 +4,7 @@
 #include "client/util/util.hpp"
 
 #include <spdlog/spdlog.h>
+#include <taskflow/taskflow.hpp>
 #include <algorithm>
 
 using namespace DVZ::Voxel;
@@ -67,9 +68,12 @@ void ChunkRenderDataManager::cullFarChunks() {
 	//queuedChunks.erase(iter, queuedChunks.end());
 
 	//Removing all ChunkRenderData if out of render distance
-	auto iterRender = std::remove_if(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
-		return chunkDistance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
+	auto iterRender = std::partition(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
+		return chunkDistance(chunk.getCoords()) <= (ClientChunkManager::RENDER_RADIUS - 1);
 	});
+
+
+
 	std::for_each(iterRender, renderableChunks.end(), [&](const ChunkRenderData& data) {
 		chunkMeshUpdateCountMap.erase(data.getCoords());
 	});
@@ -93,18 +97,8 @@ void ChunkRenderDataManager::launchMesherThreads() {
 }
 
 void ChunkRenderDataManager::bufferMeshedChunks() {
-	auto iter = std::remove_if(futureChunkGeometries.begin(), futureChunkGeometries.end(), [count=4](const std::future<ChunkMesher>& future) mutable {
-		spdlog::debug(count);
-		if (count <= 0) {
-			spdlog::debug(false);
-			return false;
-		}
-		else {
-			spdlog::debug(future.valid());
-
-			count -= 1;
-			return future.valid();
-		}
+	auto iter = std::partition(futureChunkGeometries.begin(), futureChunkGeometries.end(), [](const std::future<ChunkMesher>& future) {
+		return !future.valid() || future.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
 	});
 
 	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<ChunkMesher>& future) {
