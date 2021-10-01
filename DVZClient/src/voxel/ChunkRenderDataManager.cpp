@@ -165,6 +165,10 @@ BlockType& ChunkMesher::getPaddedBlock(int bx, int by, int bz) {
 	return (*blocks)[index];
 }
 
+void ChunkMesher::setCoords(const ChunkCoords& newCoords) {
+	coords = newCoords;
+}
+
 const ChunkCoords& ChunkMesher::getCoords() const {
 	return coords;
 }
@@ -172,14 +176,27 @@ const ChunkCoords& ChunkMesher::getCoords() const {
 void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager) {
 	std::lock_guard<std::mutex> g{queue_mutex};
 
-	ChunkCoords center = manager.getPlayerChunkCoords();
+	playerCoords = manager.getPlayerChunkCoords();
 
 	ChunkCoords render_radius{ ClientChunkManager::RENDER_RADIUS - 1, 0, ClientChunkManager::RENDER_RADIUS - 1 };
-	Util::iterate_volume(center - render_radius, center + render_radius, [&](const ChunkCoords& coord) {
+	Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
+		if (queuedChunks.size() >= MAX_CHUNK_MESH_QUEUE) {
+			return;
+		}
+
 		const Chunk* chunk = manager.getChunk(coord);
 		if (chunk && chunkMeshUpdateCountMap[coord] != chunk->getUpdateCount()) {
 			ChunkNeighbors neighbors = manager.getChunkNeighbors(coord);
-			queuedChunks.emplace_back();
+
+			if (mesherPool.size() > 0) {
+				auto& newMesher = mesherPool.back();
+				queuedChunks.emplace_back(std::move(newMesher));
+				mesherPool.pop_back();
+			}
+			else {
+				spdlog::info("GENERATED MESHER");
+				queuedChunks.emplace_back();
+			}
 			queuedChunks.back().loadChunkData(neighbors);
 			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 		}
@@ -192,14 +209,31 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 void ChunkRenderDataManager::meshChunks() {
 	std::lock_guard<std::mutex> g{ queue_mutex };
 
+	const auto chunk_distance = [&](const ChunkCoords& coord) {
+		ChunkCoords delta = glm::abs(coord - playerCoords);
+		return glm::max(delta.x, delta.z);
+	};
+
+	auto iter = std::remove_if(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& chunk) {
+		return chunk_distance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
+	});
+	std::move(iter, queuedChunks.end(), std::back_inserter(mesherPool));
+	queuedChunks.erase(iter, queuedChunks.end());
+
+	auto iterRender = std::remove_if(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
+		return chunk_distance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
+	});
+	renderableChunks.erase(iterRender, renderableChunks.end());
+
 	if (queuedChunks.size() > 0) {
-		renderableChunks.emplace_back(queuedChunks.back().getCoords());
-		const auto& geometry = queuedChunks.back().meshChunk();
+		ChunkMesher& mesher = queuedChunks.back();
+		renderableChunks.emplace_back(mesher.getCoords());
+		const auto& geometry = mesher.meshChunk();
 		renderableChunks.back().bufferGeometry(geometry);
-		
-		
-		spdlog::debug("Generated Mesh: [{}]", geometry.size());
+
+		mesherPool.emplace_back(std::move(mesher));
 		queuedChunks.pop_back();
+		spdlog::debug("Generated Mesh: [{}]", geometry.size());
 	}
 }
 
