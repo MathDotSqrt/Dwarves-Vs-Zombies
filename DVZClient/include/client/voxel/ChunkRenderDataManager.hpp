@@ -10,6 +10,7 @@
 #include <array>
 #include <memory>
 #include <queue>
+#include <future>
 #include <unordered_map>
 
 namespace DVZ::Voxel {
@@ -20,11 +21,19 @@ namespace DVZ::Voxel {
 	class ChunkRenderDataManager {
 	public:
 		void bufferDirtyChunks(const ClientChunkManager& chunkManager);
-		void meshChunks();
+
+		void update();
+
 		const std::vector<ChunkRenderData>& getRenderableChunks() const;
 	private:
 		constexpr static size_t MAX_CHUNK_MESH_QUEUE = 16;
+		constexpr static size_t MAX_THREADS = 8;
 
+		void cullFarChunks();
+		void meshChunks();
+		void launchMesherThreads();
+		void bufferMeshedChunks();
+		ChunkMesher meshChunkAsync(ChunkMesher &&);
 		int chunkDistance(const ChunkCoords& coords) const;
 
 		ChunkCoords playerCoords{0};
@@ -35,6 +44,7 @@ namespace DVZ::Voxel {
 
 		std::vector<ChunkRenderData> renderableChunks;
 		std::unordered_map<ChunkCoords, int> chunkMeshUpdateCountMap;
+		std::vector<std::future<ChunkMesher>> futureChunkGeometries;
 	};
 }
 

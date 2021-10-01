@@ -172,3 +172,7 @@ void ChunkMesher::setCoords(const ChunkCoords& newCoords) {
 const ChunkCoords& ChunkMesher::getCoords() const {
 	return coords;
 }
+
+const ChunkVertexVector& ChunkMesher::getGeometry() const {
+	return geometry;
+}

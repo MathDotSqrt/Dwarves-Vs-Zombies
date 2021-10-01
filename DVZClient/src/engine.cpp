@@ -116,7 +116,7 @@ void Engine::render() {
 	//float alpha = std::min(delta / dt, 1.0f);
 	//spdlog::debug("{}", alpha.load());
 	sceneManager->computeInterpolate(alpha.load());
-	chunkRenderDataManager->meshChunks();
+	chunkRenderDataManager->update();
 	renderer->render(sceneManager->getInterpolatedScene(), *chunkRenderDataManager);
 }
 

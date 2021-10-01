@@ -18,16 +18,15 @@ namespace DVZ::Voxel {
 		void setCoords(const ChunkCoords& newCoords);
 		const ChunkCoords& getCoords() const;
 
+		const ChunkVertexVector& getGeometry() const;
+
+	private:
 		constexpr static size_t PADDED_CHUNK_X = CHUNK_X + 2;
 		constexpr static size_t PADDED_CHUNK_Y = CHUNK_Y + 2;
 		constexpr static size_t PADDED_CHUNK_Z = CHUNK_Z + 2;
 		constexpr static size_t PADDED_VOLUME = PADDED_CHUNK_X * PADDED_CHUNK_Y * PADDED_CHUNK_Z;
 
 		using BlockStorage = std::array<BlockType, PADDED_VOLUME>;
-		std::unique_ptr<BlockStorage> blocks;
-
-	private:
-		
 
 		struct BlockFaceCullTags {
 			bool nx : 1;
@@ -43,6 +42,7 @@ namespace DVZ::Voxel {
 		void appendCubeGeometry(const BlockCoords& coords, BlockFaceCullTags tags);
 		BlockType& getPaddedBlock(int bx, int by, int bz);
 
+		std::unique_ptr<BlockStorage> blocks;
 		ChunkVertexVector geometry;
 	};
 }

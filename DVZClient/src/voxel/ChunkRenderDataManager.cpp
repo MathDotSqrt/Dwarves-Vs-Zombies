@@ -35,28 +35,29 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 
 			if (mesherPool.size() > 0) {
 				auto& newMesher = mesherPool.back();
-				assert(newMesher.blocks);
 				queuedChunks.emplace_back(std::move(newMesher));
-				assert(queuedChunks.back().blocks);
 
 				mesherPool.pop_back();
 			}
 			else {
 				queuedChunks.emplace_back();
-				assert(queuedChunks.back().blocks);
 
 			}
 			assert(queuedChunks.size() > 0);
-			assert(queuedChunks.back().blocks);
 			queuedChunks.back().loadChunkData(neighbors);
 			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 		}
 	}
 }
 
-void ChunkRenderDataManager::meshChunks() {
+void ChunkRenderDataManager::update() {
 	std::lock_guard<std::mutex> g{ queue_mutex };
 
+	cullFarChunks();
+	meshChunks();
+}
+
+void ChunkRenderDataManager::cullFarChunks() {
 	//Removing all queued chunks if out of render distance
 	//auto iter = std::remove_if(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& chunk) {
 	//	assert(chunk.blocks);
@@ -65,26 +66,61 @@ void ChunkRenderDataManager::meshChunks() {
 	//std::move(iter, queuedChunks.end(), std::back_inserter(mesherPool));
 	//queuedChunks.erase(iter, queuedChunks.end());
 
-	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& left, const ChunkMesher& right) {
-		return chunkDistance(left.getCoords()) > chunkDistance(right.getCoords());
-	});
-
 	//Removing all ChunkRenderData if out of render distance
 	auto iterRender = std::remove_if(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
 		return chunkDistance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
 	});
+	std::for_each(iterRender, renderableChunks.end(), [&](const ChunkRenderData& data) {
+		chunkMeshUpdateCountMap.erase(data.getCoords());
+	});
 	renderableChunks.erase(iterRender, renderableChunks.end());
+}
 
-	if (queuedChunks.size() > 0) {
-		ChunkMesher& mesher = queuedChunks.back();
-		renderableChunks.emplace_back(mesher.getCoords());
-		const auto& geometry = mesher.meshChunk();
-		renderableChunks.back().bufferGeometry(geometry);
+void ChunkRenderDataManager::meshChunks() {
+	launchMesherThreads();
+	bufferMeshedChunks();
+}
 
-		mesherPool.emplace_back(std::move(mesher));
+void ChunkRenderDataManager::launchMesherThreads() {
+	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& left, const ChunkMesher& right) {
+		return chunkDistance(left.getCoords()) > chunkDistance(right.getCoords());
+	});
+
+	while (queuedChunks.size() > 0 && futureChunkGeometries.size() < MAX_THREADS) {
+		futureChunkGeometries.emplace_back(std::async(std::launch::async, &ChunkRenderDataManager::meshChunkAsync, this, std::move(queuedChunks.back())));
 		queuedChunks.pop_back();
-		spdlog::debug("Generated Mesh: [{}]", geometry.size());
 	}
+}
+
+void ChunkRenderDataManager::bufferMeshedChunks() {
+	auto iter = std::remove_if(futureChunkGeometries.begin(), futureChunkGeometries.end(), [count=4](const std::future<ChunkMesher>& future) mutable {
+		spdlog::debug(count);
+		if (count <= 0) {
+			spdlog::debug(false);
+			return false;
+		}
+		else {
+			spdlog::debug(future.valid());
+
+			count -= 1;
+			return future.valid();
+		}
+	});
+
+	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<ChunkMesher>& future) {
+		assert(future.valid());
+		ChunkMesher mesher = future.get();
+		renderableChunks.emplace_back(mesher.getCoords());
+		renderableChunks.back().bufferGeometry(mesher.getGeometry());
+		mesherPool.emplace_back(std::move(mesher));
+	});
+
+	futureChunkGeometries.erase(iter, futureChunkGeometries.end());
+}
+
+ChunkMesher ChunkRenderDataManager::meshChunkAsync(ChunkMesher&& mesher) {
+	mesher.meshChunk();
+	return std::move(mesher);
 }
 
 int ChunkRenderDataManager::chunkDistance(const ChunkCoords& coords) const {
