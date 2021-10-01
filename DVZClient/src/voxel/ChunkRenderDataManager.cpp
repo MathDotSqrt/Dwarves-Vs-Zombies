@@ -12,6 +12,7 @@ ChunkMesher::ChunkMesher() : blocks(std::make_unique<ChunkMesher::BlockStorage>(
 }
 
 void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
+
 	std::fill(blocks->begin(), blocks->end(), BlockType::AIR);
 	assert(n.center);
 	if (n.center) {
@@ -174,15 +175,29 @@ const ChunkCoords& ChunkMesher::getCoords() const {
 }
 
 void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager) {
+	thread_local std::vector<ChunkCoords> coords;
 	std::lock_guard<std::mutex> g{queue_mutex};
 
 	playerCoords = manager.getPlayerChunkCoords();
 
 	ChunkCoords render_radius{ ClientChunkManager::RENDER_RADIUS - 1, 0, ClientChunkManager::RENDER_RADIUS - 1 };
+
+	coords.clear();
 	Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
-		if (queuedChunks.size() >= MAX_CHUNK_MESH_QUEUE) {
-			return;
-		}
+		coords.push_back(coord);
+	});
+
+	const auto chunk_distance = [&](const ChunkCoords& coord) {
+		ChunkCoords delta = glm::abs(coord - playerCoords);
+		return glm::max(delta.x, delta.z);
+	};
+	std::sort(coords.begin(), coords.end(), [&](const ChunkCoords& left, const ChunkCoords& right) {
+		return chunk_distance(left) > chunk_distance(right);
+	});
+
+	while (queuedChunks.size() < MAX_CHUNK_MESH_QUEUE && coords.size() > 0) {
+		ChunkCoords coord = coords.back();
+		coords.pop_back();
 
 		const Chunk* chunk = manager.getChunk(coord);
 		if (chunk && chunkMeshUpdateCountMap[coord] != chunk->getUpdateCount()) {
@@ -194,12 +209,19 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 				mesherPool.pop_back();
 			}
 			else {
-				spdlog::info("GENERATED MESHER");
 				queuedChunks.emplace_back();
 			}
 			queuedChunks.back().loadChunkData(neighbors);
 			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 		}
+	}
+
+	Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
+		if (queuedChunks.size() >= MAX_CHUNK_MESH_QUEUE) {
+			return;
+		}
+
+		
 	});
 
 	
@@ -214,12 +236,18 @@ void ChunkRenderDataManager::meshChunks() {
 		return glm::max(delta.x, delta.z);
 	};
 
+	//Removing all queued chunks if out of render distance
 	auto iter = std::remove_if(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& chunk) {
 		return chunk_distance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
 	});
 	std::move(iter, queuedChunks.end(), std::back_inserter(mesherPool));
 	queuedChunks.erase(iter, queuedChunks.end());
 
+	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& left, const ChunkMesher& right) {
+		return chunk_distance(left.getCoords()) > chunk_distance(right.getCoords());
+	});
+
+	//Removing all ChunkRenderData if out of render distance
 	auto iterRender = std::remove_if(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
 		return chunk_distance(chunk.getCoords()) > (ClientChunkManager::RENDER_RADIUS - 1);
 	});
