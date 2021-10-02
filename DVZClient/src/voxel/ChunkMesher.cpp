@@ -26,18 +26,18 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 		}
 	}
 
-	if (n.nz) {
+	if (n.pz) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bx = 0; bx < CHUNK_X; bx++) {
-				getPaddedBlock(bx, by, CHUNK_Z) = n.nz->getBlock(bx, by, 0);
+				getPaddedBlock(bx, by, CHUNK_Z) = n.pz->getBlock(bx, by, 0);
 			}
 		}
 	}
 
-	if (n.pz) {
+	if (n.nz) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bx = 0; bx < CHUNK_X; bx++) {
-				getPaddedBlock(bx, by, -1) = n.pz->getBlock(bx, by, CHUNK_Z - 1);
+				getPaddedBlock(bx, by, -1) = n.nz->getBlock(bx, by, CHUNK_Z - 1);
 			}
 		}
 	}

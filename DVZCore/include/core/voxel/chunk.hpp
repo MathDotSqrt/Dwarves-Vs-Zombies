@@ -78,6 +78,7 @@ namespace DVZ::Voxel {
 	ChunkCoords toChunkCoords(const WorldCoords& coords);
 	ChunkCoords toChunkCoords(const glm::vec3& coords);
 	WorldCoords toWorldCoords(const glm::vec3& coords);
+	WorldCoords toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords);
 
 }
 

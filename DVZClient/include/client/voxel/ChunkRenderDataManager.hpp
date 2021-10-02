@@ -27,7 +27,7 @@ namespace DVZ::Voxel {
 		const std::vector<ChunkRenderData>& getRenderableChunks() const;
 	private:
 		constexpr static size_t MAX_CHUNK_MESH_QUEUE = 16;
-		constexpr static size_t MAX_THREADS = 8;
+		constexpr static size_t MAX_THREADS = 1;
 
 		void cullFarChunks();
 		void meshChunks();

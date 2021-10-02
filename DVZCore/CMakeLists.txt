@@ -1,6 +1,7 @@
 
 set(HEADER_FILES 
 	"./include/core/common.hpp"
+	
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
 )

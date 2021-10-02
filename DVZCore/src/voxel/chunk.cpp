@@ -1,5 +1,7 @@
 #include "core/voxel/chunk.hpp"
 
+#include <glm/gtc/noise.hpp>
+
 #include <assert.h>
 
 using namespace DVZ::Voxel;
@@ -52,26 +54,25 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 void Chunk::init(const ChunkCoords& coords) {
 	this->coords = coords;
 
-	BlockIndex y = 0;
-	while (true) {
-		for (BlockIndex z = 0; z < CHUNK_Z; z++) {
-			for (BlockIndex x = 0; x < CHUNK_X; x++) {
-				if (y < (x / 5 + z / 7 + 3))
-					if ((x + y) % 3 == 0)
-						data->setBlock(x, y, z, BlockType::GRASS);
-					else
-						data->setBlock(x, y, z, BlockType::DIRT);
-				else
-					data->setBlock(x, y, z, BlockType::AIR);
+	for (BlockIndex z = 0; z < CHUNK_Z; z++) {
+		for (BlockIndex x = 0; x < CHUNK_X; x++) {
+			WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
+			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
+			float height = (glm::perlin(sample) + 1) * .5;
+			height = glm::clamp(height, 0.0f, 1.0f);
+			//height = glm::pow(height, 2);
+
+			int worldHeight = glm::clamp((int)(height * 10), 0, CHUNK_Y);
+
+			for (BlockIndex y = 0; y < worldHeight - 1; y++) {
+				data->setBlock(x, y, z, BlockType::GRASS);
 			}
-		}
 
-		//scuff
-		if (y == (CHUNK_Y - 1)) {
-			break;
-		}
+			for (BlockIndex y = worldHeight; y < CHUNK_Y; y++) {
+				data->setBlock(x, y, z, BlockType::AIR);
+			}
 
-		y += 1;
+		}
 	}
 
 	updateCount = 1;
@@ -146,4 +147,8 @@ ChunkCoords DVZ::Voxel::toChunkCoords(const glm::vec3& coords) {
 
 WorldCoords DVZ::Voxel::toWorldCoords(const glm::vec3& coords) {
 	return WorldCoords{ glm::floor(coords / BLOCK_WIDTH) };
+}
+
+WorldCoords DVZ::Voxel::toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords) {
+	return WorldCoords{chunkCoords.x * CHUNK_X + blockCoords.x, chunkCoords.y * CHUNK_Y + blockCoords.y, chunkCoords.z * CHUNK_Z + blockCoords.z };
 }
