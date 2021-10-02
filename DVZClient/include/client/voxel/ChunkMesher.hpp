@@ -39,7 +39,7 @@ namespace DVZ::Voxel {
 
 		ChunkCoords coords;
 
-		void appendCubeGeometry(const BlockCoords& coords, BlockFaceCullTags tags);
+		void appendCubeGeometry(const BlockCoords& coords, const BlockData& block, BlockFaceCullTags tags);
 		BlockType& getPaddedBlock(int bx, int by, int bz);
 
 		std::unique_ptr<BlockStorage> blocks;

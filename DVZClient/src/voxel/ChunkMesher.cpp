@@ -70,6 +70,8 @@ const ChunkVertexVector& ChunkMesher::meshChunk() {
 					continue;
 				}
 
+				const BlockData& blockData = getBlockData(block);
+
 				BlockFaceCullTags tags;
 				tags.nx = getPaddedBlock(bx - 1, by, bz) != BlockType::AIR;
 				tags.px = getPaddedBlock(bx + 1, by, bz) != BlockType::AIR;
@@ -79,7 +81,7 @@ const ChunkVertexVector& ChunkMesher::meshChunk() {
 				tags.pz = getPaddedBlock(bx, by, bz + 1) != BlockType::AIR;
 
 				BlockCoords coord(bx, by, bz);
-				appendCubeGeometry(coord, tags);
+				appendCubeGeometry(coord, blockData, tags);
 			}
 		}
 	}
@@ -87,7 +89,7 @@ const ChunkVertexVector& ChunkMesher::meshChunk() {
 	return geometry;
 }
 
-void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, BlockFaceCullTags tags) {
+void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, const BlockData& data, BlockFaceCullTags tags) {
 	BlockCoords p0{ coord.x, coord.y, coord.z + 1 };
 	BlockCoords p1{ coord.x + 1, coord.y, coord.z + 1 };
 	BlockCoords p2{ coord.x + 1, coord.y + 1, coord.z + 1 };
@@ -98,7 +100,7 @@ void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, BlockFaceCullTags
 	BlockCoords p6{ coord.x, coord.y + 1, coord.z };
 	BlockCoords p7{ coord.x + 1, coord.y + 1, coord.z };
 
-	glm::vec4 color{ .2, .7, .3, 1 };
+	glm::vec4 color{ data.color, 1 };
 
 	//Front
 	if (!tags.pz) {

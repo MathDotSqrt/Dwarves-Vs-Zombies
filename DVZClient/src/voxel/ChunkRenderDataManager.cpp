@@ -57,6 +57,13 @@ void ChunkRenderDataManager::update() {
 	meshChunks();
 }
 
+void ChunkRenderDataManager::clearRenderData() {
+	std::lock_guard<std::mutex> g{ queue_mutex };
+	queuedChunks.clear();
+	renderableChunks.clear();
+	chunkMeshUpdateCountMap.clear();
+}
+
 void ChunkRenderDataManager::cullFarChunks() {
 	//Removing all queued chunks if out of render distance
 	//auto iter = std::remove_if(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& chunk) {
