@@ -110,8 +110,11 @@ void ChunkRenderDataManager::bufferMeshedChunks() {
 	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<ChunkMesher>& future) {
 		assert(future.valid());
 		ChunkMesher mesher = future.get();
-		renderableChunks.emplace_back(mesher.getCoords());
-		renderableChunks.back().bufferGeometry(mesher.getGeometry());
+
+		if (mesher.getGeometry().size() > 0) {
+			renderableChunks.emplace_back(mesher.getCoords());
+			renderableChunks.back().bufferGeometry(mesher.getGeometry());
+		}
 		mesherPool.emplace_back(std::move(mesher));
 	});
 

@@ -60,7 +60,7 @@ void Chunk::init(const ChunkCoords& coords) {
 			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
 			float height = (glm::perlin(sample) + 1) * .5;
 			height = glm::clamp(height, 0.0f, 1.0f);
-			//height = glm::pow(height, 2);
+			height = glm::pow(height, 2);
 
 			int worldHeight = glm::clamp((int)(height * 10), 0, CHUNK_Y);
 

@@ -71,6 +71,7 @@ void VBO::bufferOrphan() {
 }
 
 void VBO::bufferData(size_t bytes, void* data, BufferHint hint) {
+	assert(bytes != 0);
 	spdlog::debug("VBO[{}]: buffered {} bytes", vboID, bytes);
 	glBufferData(toGL(type), bytes, data, toGL(hint));
 	this->bytes = bytes;
