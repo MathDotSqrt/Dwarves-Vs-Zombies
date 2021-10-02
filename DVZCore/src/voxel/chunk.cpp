@@ -58,20 +58,26 @@ void Chunk::init(const ChunkCoords& coords) {
 		for (BlockIndex x = 0; x < CHUNK_X; x++) {
 			WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
 			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
-			float height = (glm::perlin(sample) + 1) * .5;
-			height = glm::clamp(height, 0.0f, 1.0f);
+			float height = (glm::simplex(sample) + 1) * .5;
+			
 			height = glm::pow(height, 2);
 
-			int worldHeight = glm::clamp((int)(height * 10), 0, CHUNK_Y);
+			int worldHeight = glm::clamp((int)(height * CHUNK_Y), 3, CHUNK_Y);
 
-			for (BlockIndex y = 0; y < worldHeight - 1; y++) {
-				data->setBlock(x, y, z, BlockType::GRASS);
+			for (BlockIndex y = 0; y < CHUNK_Y; y++) {
+				if (y < 3) {
+					data->setBlock(x, y, z, BlockType::SAND);
+				}
+				else if (y < (worldHeight - 1)) {
+					data->setBlock(x, y, z, BlockType::DIRT);
+				}
+				else if (y == (worldHeight - 1)) {
+					data->setBlock(x, y, z, BlockType::GRASS);
+				}
+				else {
+					data->setBlock(x, y, z, BlockType::AIR);
+				}
 			}
-
-			for (BlockIndex y = worldHeight; y < CHUNK_Y; y++) {
-				data->setBlock(x, y, z, BlockType::AIR);
-			}
-
 		}
 	}
 

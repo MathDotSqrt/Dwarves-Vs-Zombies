@@ -14,6 +14,7 @@ namespace DVZ::Voxel {
 		AIR = 0,
 		GRASS,
 		DIRT,
+		SAND,
 		NUM_BLOCKS
 	};
 
@@ -54,6 +55,12 @@ namespace DVZ::Voxel {
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
 			glm::vec3(.7, .3, 0)
+		},
+		BlockData{
+			BlockType::SAND,
+			MeshType::MESH_TYPE_CUBE,
+			OccludeType::OCCLUDE_TYPE_ALL,
+			glm::vec3(.99, .9, .7)
 		}
 	};
 
