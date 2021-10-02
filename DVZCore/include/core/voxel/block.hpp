@@ -10,6 +10,9 @@
 namespace DVZ::Voxel {
 	constexpr float BLOCK_WIDTH = 1.0f;
 
+	using BlockTextureAtlasIndex = u8;
+	using BlockTextureAtlasCoords = glm::vec<2, BlockTextureAtlasIndex>;
+
 	enum class BlockType : u8 {
 		AIR = 0,
 		GRASS,
