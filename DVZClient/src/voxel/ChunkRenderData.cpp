@@ -23,10 +23,9 @@ ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : 
 		master_ebo = std::make_unique<Graphics::VBO>(Graphics::VBO::BufferType::ELEMENT_ARRAY_BUFFER);
 		expandMasterEBO(6000);
 	}
-
 	vao.bind();
 	vbo.bind();
-	vao.addVertexAttribPtr<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib>();
+	vao.addVertexAttribPtr<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib, BlockTextureCoordAttrib>();
 	vbo.unbind();
 	master_ebo->bind();
 	vao.unbind();

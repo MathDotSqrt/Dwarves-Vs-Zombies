@@ -38,6 +38,7 @@ namespace DVZ::Voxel {
 		MeshType meshType;
 		OccludeType occludeType;
 		glm::vec3 color;
+		BlockTextureAtlasCoords textureCoords;
 	};
 
 	const std::array<BlockData, static_cast<u8>(BlockType::NUM_BLOCKS)> blockDataArray = {
@@ -45,25 +46,29 @@ namespace DVZ::Voxel {
 			BlockType::AIR,
 			MeshType::MESH_TYPE_NONE,
 			OccludeType::OCCLUDE_TYPE_NONE,
-			glm::vec3(0)
+			glm::vec3(0),
+			BlockTextureAtlasCoords{0, 0}
 		},
 		BlockData{
 			BlockType::GRASS,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
-			glm::vec3(.1, .7, .2)
+			glm::vec3(.1, .7, .2),
+			BlockTextureAtlasCoords{0, 0}
 		},
 		BlockData{
 			BlockType::DIRT,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
-			glm::vec3(.7, .3, 0)
+			glm::vec3(.7, .3, 0),
+			BlockTextureAtlasCoords{3, 0}
 		},
 		BlockData{
 			BlockType::SAND,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
-			glm::vec3(.99, .9, .7)
+			glm::vec3(.99, .9, .7),
+			BlockTextureAtlasCoords{0, 11}
 		}
 	};
 
