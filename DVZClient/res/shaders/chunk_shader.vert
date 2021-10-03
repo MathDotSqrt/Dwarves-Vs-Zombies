@@ -4,7 +4,7 @@
 layout(location = POSITION_ATTRIB_LOCATION) in vec4 vert_pos;
 layout(location = NORMAL_ATTRIB_LOCATION) 	in vec4 vert_norm;
 layout(location = COLOR_ATTRIB_LOCATION) 	in vec4 vert_col;
-layout(location = TEXCOORD_ATTRIB_LOCATION) in vec3 vert_uv;
+layout(location = TEXCOORD_ATTRIB_LOCATION) in vec4 vert_uv;
 
 out vec3 frag_normal;
 out vec3 frag_color;
@@ -22,7 +22,7 @@ void main(){
 
     frag_normal = vert_norm.xyz;
     frag_color = vert_col.rgb;
-    frag_uv = vert_uv;
+    frag_uv = vert_uv.xyz;
 
     gl_Position = VP * M * vec4(vert_pos.xyz, 1);
 }
