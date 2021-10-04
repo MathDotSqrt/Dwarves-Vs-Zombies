@@ -10,8 +10,19 @@
 namespace DVZ::Voxel {
 	constexpr float BLOCK_WIDTH = 1.0f;
 
-	using BlockTextureAtlasIndex = u8;
-	using BlockTextureAtlasCoords = glm::vec<2, BlockTextureAtlasIndex>;
+	using TexIndex = u8;
+	struct BlockTexIndices {
+		BlockTexIndices(TexIndex all);
+		BlockTexIndices(TexIndex top, TexIndex side, TexIndex bottom);
+		BlockTexIndices(TexIndex px, TexIndex nx, TexIndex py, TexIndex ny, TexIndex pz, TexIndex nz);
+
+		TexIndex px;
+		TexIndex nx;
+		TexIndex py;
+		TexIndex ny;
+		TexIndex pz;
+		TexIndex nz;
+	};
 
 	enum class BlockType : u8 {
 		AIR = 0,
@@ -38,7 +49,10 @@ namespace DVZ::Voxel {
 		MeshType meshType;
 		OccludeType occludeType;
 		glm::vec3 color;
-		BlockTextureAtlasCoords textureCoords;
+		BlockTexIndices textureCoords;
+
+	private:
+		
 	};
 
 	const std::array<BlockData, static_cast<u8>(BlockType::NUM_BLOCKS)> blockDataArray = {
@@ -47,28 +61,28 @@ namespace DVZ::Voxel {
 			MeshType::MESH_TYPE_NONE,
 			OccludeType::OCCLUDE_TYPE_NONE,
 			glm::vec3(0),
-			BlockTextureAtlasCoords{0, 0}
+			BlockTexIndices{14}
 		},
 		BlockData{
 			BlockType::GRASS,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
 			glm::vec3(.1, .7, .2),
-			BlockTextureAtlasCoords{0, 0}
+			BlockTexIndices{0, 3, 2}
 		},
 		BlockData{
 			BlockType::DIRT,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
 			glm::vec3(.7, .3, 0),
-			BlockTextureAtlasCoords{3, 0}
+			BlockTexIndices{2}
 		},
 		BlockData{
 			BlockType::SAND,
 			MeshType::MESH_TYPE_CUBE,
 			OccludeType::OCCLUDE_TYPE_ALL,
 			glm::vec3(.99, .9, .7),
-			BlockTextureAtlasCoords{0, 11}
+			BlockTexIndices{176}
 		}
 	};
 

@@ -7,6 +7,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES 
+	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"
 )
 

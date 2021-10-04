@@ -21,7 +21,7 @@ BasicRenderer::BasicRenderer() {
 
 	meshCache.load<MeshLoader>("cube"_hs, gen_cube(1));
 	texCache.load<TextureLoader>("uv"_hs, TEX::Builder().mipmapLinear(), "./res/textures/uv_grid.jpg");
-	texCache.load<TextureLoader>("terrain"_hs, TEX::Builder().rgba().buildTextureAtlas("./res/textures/terrain.png", 16, 16));
+	texCache.load<TextureLoader>("terrain"_hs, TEX::Builder().mipmapLinear().rgba().buildTextureAtlas("./res/textures/terrain.png", 16, 16));
 
 	auto shader = ss.load("basic"_hs, "basic.vert", "basic.frag");
 	auto chunk_shader = ss.load("chunk"_hs, "chunk_shader.vert", "chunk_shader.frag");

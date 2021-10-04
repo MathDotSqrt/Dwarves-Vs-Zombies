@@ -12,6 +12,6 @@ void main(){
 
     vec3 dir = -vec3(.1, -.5, .4);
 
-    vec4 tex_color = texture(u_tex_atlas, vec3(frag_uv.xy, 0));
+    vec4 tex_color = texture(u_tex_atlas, frag_uv);
     final_color =  tex_color * max(dot(dir, frag_normal), .3);
 }

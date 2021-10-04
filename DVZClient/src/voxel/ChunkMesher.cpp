@@ -101,64 +101,72 @@ void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, const BlockData& 
 	BlockCoords p7{ coord.x + 1, coord.y + 1, coord.z };
 
 	glm::vec4 color{ data.color, 1 };
-	glm::u8vec4 uv0(0, 1, 0, 1);
-	glm::u8vec4 uv1(1, 1, 0, 1);
-	glm::u8vec4 uv2(1, 0, 0, 1);
-	glm::u8vec4 uv3(0, 0, 0, 1);
+	glm::u8vec2 uv0(0, 1);
+	glm::u8vec2 uv1(1, 1);
+	glm::u8vec2 uv2(1, 0);
+	glm::u8vec2 uv3(0, 0);
 	
 
 	//Front
 	if (!tags.pz) {
 		glm::i8vec4 n{ 0, 0, 1, 0 };
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.pz;
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 
 	//Back
 	if (!tags.nz) {
 		glm::i8vec4 n{ 0, 0, -1, 0 };
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.nz;
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 
 	//Left
 	if (!tags.nx) {
 		glm::i8vec4 n{ -1, 0, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.nx;
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 
 	//Right
 	if (!tags.px) {
 		glm::i8vec4 n{ 1, 0, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.px;
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 
 	//Top
 	if (!tags.py) {
 		glm::i8vec4 n{ 0, 1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.py;
+
+
+		geometry.emplace_back(glm::u8vec4(p3, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p2, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p7, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p6, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 
 	//Bottom
 	if (!tags.ny) {
 		glm::i8vec4 n{ 0, -1, 0, 0 };
-		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, uv0);
-		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, uv1);
-		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, uv2);
-		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, uv3);
+		auto texIndex = data.textureCoords.ny;
+		geometry.emplace_back(glm::u8vec4(p1, 0), n, color, glm::vec4(uv0, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p0, 0), n, color, glm::vec4(uv1, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p5, 0), n, color, glm::vec4(uv2, texIndex, 0));
+		geometry.emplace_back(glm::u8vec4(p4, 0), n, color, glm::vec4(uv3, texIndex, 0));
 	}
 }
 
