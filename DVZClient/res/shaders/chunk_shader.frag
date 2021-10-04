@@ -6,7 +6,6 @@ in vec3 frag_uv;
 
 out vec4 final_color;
 
-//uniform sampler2D u_diffuse;
 uniform sampler2DArray u_tex_atlas;
 
 void main(){

@@ -101,10 +101,11 @@ void ChunkMesher::appendCubeGeometry(const BlockCoords& coord, const BlockData& 
 	BlockCoords p7{ coord.x + 1, coord.y + 1, coord.z };
 
 	glm::vec4 color{ data.color, 1 };
-	glm::u8vec4 uv0(0, 0, 0, 1);
-	glm::u8vec4 uv1(1, 0, 0, 1);
-	glm::u8vec4 uv2(0, 1, 0, 1);
-	glm::u8vec4 uv3(1, 1, 0, 1);
+	glm::u8vec4 uv0(0, 1, 0, 1);
+	glm::u8vec4 uv1(1, 1, 0, 1);
+	glm::u8vec4 uv2(1, 0, 0, 1);
+	glm::u8vec4 uv3(0, 0, 0, 1);
+	
 
 	//Front
 	if (!tags.pz) {
