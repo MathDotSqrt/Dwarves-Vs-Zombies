@@ -21,6 +21,7 @@ BasicRenderer::BasicRenderer() {
 
 	meshCache.load<MeshLoader>("cube"_hs, gen_cube(1));
 	texCache.load<TextureLoader>("uv"_hs, TEX::Builder().mipmapLinear(), "./res/textures/uv_grid.jpg");
+	texCache.load<TextureLoader>("terrain"_hs, TEX::Builder().rgba().buildTextureAtlas("./res/textures/terrain.png", 16, 16));
 
 	auto shader = ss.load("basic"_hs, "basic.vert", "basic.frag");
 	auto chunk_shader = ss.load("chunk"_hs, "chunk_shader.vert", "chunk_shader.frag");
@@ -78,6 +79,8 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 
 	shader->end();
 
+	auto terrain = texCache.handle("terrain"_hs);
+	terrain->bindActiveTexture(0);
 	auto chunk_shader = ss.get("chunk"_hs);
 	chunk_shader->start();
 	for (const Voxel::ChunkRenderData& chunk : chunkManager.getRenderableChunks()) {
@@ -87,6 +90,7 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 
 		glm::vec3 chunk_world_pos = glm::vec3(coords) * Voxel::BLOCK_WIDTH * glm::vec3(Voxel::CHUNK_X, Voxel::CHUNK_Y, Voxel::CHUNK_Z);
 
+		chunk_shader->setUniform1i("u_tex_atlas", 0);
 		chunk_shader->setUniform3f("u_pos", chunk_world_pos);
 		chunk_shader->setUniformMat4("VP", VP);
 		vao.bind();
@@ -97,4 +101,6 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 		
 	}
 	chunk_shader->end();
+	terrain->unbind();
+
 }

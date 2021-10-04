@@ -20,7 +20,7 @@ TEX::TEX(Builder& builder) :
 	spdlog::debug("TEX[{}]: generated ({}, {})", texID, width, height);
 }
 
-TEX::TEX(TEX&& other) {
+TEX::TEX(TEX&& other) noexcept {
 	texID = other.texID;
 	textureTarget = other.textureTarget;
 	width = other.width;
@@ -33,7 +33,7 @@ TEX::~TEX() {
 	dispose();
 }
 
-TEX& TEX::operator=(TEX&& other) {
+TEX& TEX::operator=(TEX&& other) noexcept {
 	if (this != &other) {
 		dispose();
 		std::swap(textureTarget, other.textureTarget);
@@ -96,19 +96,19 @@ TEX::Builder& TEX::Builder::a() {
 TEX::Builder& TEX::Builder::r() {
 	components = GL_RED;
 	//storage = GL_R16F;
-	storage = GL_RED;
+	storage = GL_R8;
 	return *this;
 }
 
 TEX::Builder& TEX::Builder::rgb() {
 	components = GL_RGB;
-	storage = GL_RGB;
+	storage = GL_RGB8;
 	return *this;
 }
 
 TEX::Builder& TEX::Builder::rgba() {
 	components = GL_RGBA;
-	storage = GL_RGBA;
+	storage = GL_RGBA8;
 	return *this;
 }
 
@@ -288,6 +288,93 @@ TEX TEX::Builder::buildTexture(int width, int height) {
 	glBindTexture(textureTarget, 0);
 
 	return TEX(*this);
+}
+
+TEX TEX::Builder::buildTextureAtlas(const std::string& filename, int rows, int cols) {
+	int channels = components == GL_RGB ? 3 : 4;
+
+	int img_channels = channels;
+	unsigned char* image = stbi_load(filename.c_str(), &width, &height, &img_channels, channels);
+	
+	if (image == nullptr) {
+		spdlog::error("Could not load image [{}]", filename);
+		exit(-1);
+	}
+	
+	size_t size = (size_t)width * (size_t)height * (size_t)channels * sizeof(unsigned char);
+	unsigned char* imageArray = (unsigned char*)malloc(size);
+	if (imageArray == nullptr) {
+		spdlog::error("Image Malloc Failed [{}]", filename);
+		exit(-1);
+	}
+	
+	assert(imageArray);
+
+
+	int sprite_width = width / cols;
+	int sprite_height = height / rows;
+	int imageArrayIndex = 0;
+	for (int spriteIndex = 0; spriteIndex < rows * cols; spriteIndex++) {
+		int r = spriteIndex / cols;
+		int c = spriteIndex % cols;
+		for (int spritePixel = 0; spritePixel < sprite_width * sprite_height; spritePixel++) {
+			int u = spritePixel % sprite_width;
+			int v = spritePixel / sprite_width;
+
+
+			int offset = (c * sprite_width + r * sprite_width * sprite_height * cols);
+			int index = (offset + (u + v * width)) * channels;
+
+			for (int i = 0; i < channels; i++) {
+				imageArray[imageArrayIndex] = image[index + i];
+				imageArrayIndex++;
+			}
+		}
+	}
+
+	stbi_image_free(image);
+
+	int num_sprites = rows * cols;
+	int mipmapLevelCount = useMipMap ? 4 : 1;		//mipmap is bounded by [1, log2(max(width, height)) + 1]
+
+	textureTarget = GL_TEXTURE_2D_ARRAY;
+	glGenTextures(1, &texID);
+	glBindTexture(textureTarget, texID);
+	glTexStorage3D(textureTarget, mipmapLevelCount, GL_RGBA8, sprite_width, sprite_height, num_sprites);
+	glTexSubImage3D(textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, components, dataType, imageArray);
+
+	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, wrapS);
+	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, wrapT);
+	//glTexParameterfv(textureTarget, GL_TEXTURE_BORDER_COLOR, color);
+
+
+
+	GLenum f;
+
+	if (useMipMap) {
+		glGenerateMipmap(textureTarget);
+		unsigned char bit1 = mipmap == GL_LINEAR;
+		unsigned char bit2 = filter == GL_LINEAR;
+		switch ((bit2 << 1) | bit1) {
+		case 0x0: f = GL_NEAREST_MIPMAP_NEAREST; break;
+		case 0x1: f = GL_LINEAR_MIPMAP_NEAREST; break;
+		case 0x2: f = GL_NEAREST_MIPMAP_LINEAR; break;
+		case 0x3: f = GL_LINEAR_MIPMAP_LINEAR; break;
+		}
+	}
+	else {
+		f = filter;
+	}
+
+	glTexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, f);
+	glTexParameteri(textureTarget, GL_TEXTURE_MAG_FILTER, filter);
+
+	glBindTexture(textureTarget, 0);
+
+	free(imageArray);
+
+	return TEX(*this);
+
 }
 
 TEX TEX::Builder::buildTexture3D(const std::vector<float>& buffer) {

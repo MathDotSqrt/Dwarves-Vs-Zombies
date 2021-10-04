@@ -20,8 +20,11 @@ namespace DVZ::Voxel {
 
 	class ClientChunkManager {
 	public:
+#ifdef DVZ_CLIENT_DEBUG
+		constexpr static const ChunkIndex RENDER_RADIUS = 5;
+#else
 		constexpr static const ChunkIndex RENDER_RADIUS = 30;
-
+#endif
 		ClientChunkManager();
 
 

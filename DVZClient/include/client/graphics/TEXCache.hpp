@@ -17,6 +17,10 @@ namespace DVZ::Graphics {
 		std::shared_ptr<TEX> load(TEX::Builder settings, std::string filename) const {
 			return std::make_shared<TEX>(settings.buildTexture(filename));
 		}
+
+		std::shared_ptr<TEX> load(TEX&& tex) const {
+			return std::make_shared<TEX>(std::move(tex));
+		}
 	};
 
 	using TEXCache = entt::resource_cache<TEX>;

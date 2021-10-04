@@ -10,12 +10,12 @@
 namespace DVZ::Graphics {
 	class TEX {
 	public:
-		TEX(TEX&&);
+		TEX(TEX&&) noexcept;
 		~TEX();
 		TEX(const TEX&) = delete;
 
 		TEX& operator=(const TEX&) = delete;
-		TEX& operator=(TEX&& other);
+		TEX& operator=(TEX&& other) noexcept;
 
 		void bind() const;
 		void bindActiveTexture(int unit) const;
@@ -72,6 +72,7 @@ namespace DVZ::Graphics {
 
 			TEX buildTexture(std::string filename);
 			TEX buildTexture(int width, int height);
+			TEX buildTextureAtlas(const std::string& filename, int rows, int cols);
 			TEX buildTexture3D(const std::vector<float>& buffer);
 		};
 

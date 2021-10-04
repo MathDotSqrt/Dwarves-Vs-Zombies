@@ -6,12 +6,13 @@ in vec3 frag_uv;
 
 out vec4 final_color;
 
-uniform sampler2DArray tex_atlas;
+//uniform sampler2D u_diffuse;
+uniform sampler2DArray u_tex_atlas;
 
 void main(){
 
     vec3 dir = -vec3(.1, -.5, .4);
 
-    vec4 tex_color = texture(tex_atlas, frag_uv);
-    final_color = tex_color + vec4(frag_color, 1) * max(dot(dir, frag_normal), .3);
+    vec4 tex_color = texture(u_tex_atlas, vec3(frag_uv.xy, 0));
+    final_color =  tex_color * max(dot(dir, frag_normal), .3);
 }
