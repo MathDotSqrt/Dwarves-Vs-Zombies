@@ -1,8 +1,10 @@
 #include "client/systems/VoxelSystem.hpp"
 
 #include "client/engine.hpp"
-#include "client/components.hpp"
+#include "client/ClientComponents.hpp"
 #include "client/voxel/ClientChunkManager.hpp"
+
+#include "core/CoreComponents.hpp"
 
 #include <spdlog/spdlog.h>
 

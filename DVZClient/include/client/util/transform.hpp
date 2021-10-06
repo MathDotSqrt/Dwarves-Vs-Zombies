@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
-#include <client/components.hpp>
+#include <client/ClientComponents.hpp>
 
 namespace DVZ::Util {
 	glm::quat remove_pitch(const glm::quat& q);

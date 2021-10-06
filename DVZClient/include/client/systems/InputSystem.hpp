@@ -2,7 +2,7 @@
 #ifndef DVZ_INPUT_SYSTEM_HPP
 #define DVZ_INPUT_SYSTEM_HPP
 
-#include "System.hpp"
+#include "client/systems/System.hpp"
 
 namespace DVZ::Systems {
 	class InputSystem : public System {

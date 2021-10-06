@@ -1,5 +1,5 @@
 #include "client/engine.hpp"
-#include "client/components.hpp"
+#include "client/ClientComponents.hpp"
 #include "client/window.hpp"
 
 #include "client/graphics/scene.hpp"
@@ -15,6 +15,8 @@
 #include "client/voxel/ChunkRenderDataManager.hpp"
 
 #include "client/util/transform.hpp"
+
+#include "core/CoreComponents.hpp"
 
 #include <chrono>
 #include <spdlog/spdlog.h>

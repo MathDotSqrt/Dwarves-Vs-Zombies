@@ -2,7 +2,8 @@
 
 #include "client/window.hpp"
 #include "client/engine.hpp"
-#include "client/components.hpp"
+#include "client/ClientComponents.hpp"
+#include "core/CoreComponents.hpp"
 
 #include <spdlog/spdlog.h>
 

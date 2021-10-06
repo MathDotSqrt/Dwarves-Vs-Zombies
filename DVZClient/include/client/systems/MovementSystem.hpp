@@ -2,7 +2,7 @@
 #ifndef DVZ_MOVEMENT_SYSTEM_HPP
 #define DVZ_MOVEMENT_SYSTEM_HPP
 
-#include "System.hpp"
+#include "client/systems/System.hpp"
 
 namespace DVZ::Systems {
 	class MovementSystem : public System {

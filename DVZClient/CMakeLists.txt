@@ -1,6 +1,6 @@
 
 set(HEADER_FILES 
-	"./include/client/components.hpp"
+	"./include/client/ClientComponents.hpp"
 	"./include/client/engine.hpp"
 	"./include/client/window.hpp"
 

@@ -1,14 +1,18 @@
 
 set(HEADER_FILES 
 	"./include/core/common.hpp"
-	
+	"./include/core/CoreComponents.hpp"
+
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
+	"./include/core/voxel/VoxelCollision.hpp"
 )
 
 set(SOURCE_FILES 
+
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"
+	"./src/voxel/VoxelCollision.cpp"
 )
 
 add_library(DVZCore ${HEADER_FILES} ${SOURCE_FILES})

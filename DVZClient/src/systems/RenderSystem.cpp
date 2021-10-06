@@ -1,9 +1,11 @@
 #include "client/systems/RenderSystem.hpp"
 
 #include "client/engine.hpp"
-#include "client/components.hpp"
+#include "client/ClientComponents.hpp"
 #include <spdlog/spdlog.h>
 #include "client/graphics/Scene.hpp"
+
+#include "core/CoreComponents.hpp"
 
 using namespace DVZ::Systems;
 
