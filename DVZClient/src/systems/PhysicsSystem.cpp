@@ -30,10 +30,7 @@ void PhysicsSystem::gameTick(Engine& engine) {
 		worldspace_aabb.max += trans.pos;
 
 		auto broadphase = Voxel::broadphase(worldspace_aabb, vel, getBlockFunc);
-		if (broadphase.size() > 0)
-			spdlog::debug("broads in atlanta");
 		glm::vec3 new_vel = Voxel::sample_terrain_collision(trans.pos, vel, collider.collider, broadphase);
-
 
 		vel = new_vel;
 		//vel.y = 0;

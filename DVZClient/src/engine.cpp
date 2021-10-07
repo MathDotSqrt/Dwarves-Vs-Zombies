@@ -34,14 +34,14 @@ Engine::Engine() :
 	using namespace entt;
 
 	entt::entity player = registry.create();
-	registry.emplace<Transformation>(player, glm::vec3(.5, 1.6, .5));
+	registry.emplace<Transformation>(player, glm::vec3(0, 20, -10));
 	registry.emplace<Velocity>(player);
 	registry.emplace<MovementState>(player);
 	registry.emplace<Camera>(player, DVZ::Util::create_default_camera());
 	registry.emplace<Player>(player);
 	registry.emplace<Input>(player);
 	registry.emplace<Direction>(player);
-	registry.emplace<VoxelCollider>(player, Collision::AABB{glm::vec3(-.5), glm::vec3(.5) });
+	registry.emplace<VoxelCollider>(player, Collision::AABB{glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 
 	entt::entity test = registry.create();
 	registry.emplace<Transformation>(test, glm::vec3(), glm::quat(1, 0, 0, 0), glm::vec3(.1f));
