@@ -76,6 +76,16 @@ const Chunk* ClientChunkManager::getChunk(ChunkIndex cx, ChunkIndex cy, ChunkInd
 	return getChunk(ChunkCoords{cx, cy, cz});
 }
 
+Chunk* ClientChunkManager::getChunk(const ChunkCoords& coords) {
+	auto iter = chunks.find(coords);
+	if (iter != chunks.end()) {
+		return &(iter->second);
+	}
+	else {
+		return nullptr;
+	}
+}
+
 ChunkNeighbors ClientChunkManager::getChunkNeighbors(const ChunkCoords& coords) const {
 	constexpr ChunkCoords X{ 1, 0, 0 };
 	constexpr ChunkCoords Y{ 0, 1, 0 };
@@ -95,4 +105,25 @@ ChunkNeighbors ClientChunkManager::getChunkNeighbors(const ChunkCoords& coords) 
 
 const ChunkCoords& ClientChunkManager::getPlayerChunkCoords() const {
 	return playerChunkCoords;
+}
+
+BlockType ClientChunkManager::getBlock(const WorldCoords& coords) const {
+	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+	const Chunk* chunk = getChunk(chunk_coords);
+	if (chunk == nullptr) {
+		return BlockType::AIR;
+	}
+	
+	return chunk->getBlock(Voxel::toBlockCoords(coords));
+}
+
+bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
+	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+	Chunk* chunk = getChunk(chunk_coords);
+	if (chunk == nullptr) {
+		return false;
+	}
+
+	chunk->setBlock(Voxel::toBlockCoords(coords), block);
+	return true;
 }

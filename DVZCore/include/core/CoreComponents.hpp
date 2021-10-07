@@ -2,6 +2,8 @@
 #ifndef DVZ_CORE_COMPONENTS_HPP
 #define DVZ_CORE_COMPONENTS_HPP
 
+#include "core/collision/AABB.hpp"
+
 #include <glm/glm.hpp>
 
 namespace DVZ {
@@ -39,6 +41,10 @@ namespace DVZ {
 
 	struct Player {
 		//Player Tag
+	};
+
+	struct VoxelCollider {
+		Collision::AABB collider;
 	};
 }
 

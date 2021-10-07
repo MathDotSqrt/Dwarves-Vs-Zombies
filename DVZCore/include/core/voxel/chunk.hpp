@@ -75,6 +75,7 @@ namespace DVZ::Voxel {
 	ChunkIndex toChunkYIndex(WorldIndex index);
 	ChunkIndex toChunkZIndex(WorldIndex index);
 
+	BlockCoords toBlockCoords(const WorldCoords& coords);
 	ChunkCoords toChunkCoords(const WorldCoords& coords);
 	ChunkCoords toChunkCoords(const glm::vec3& coords);
 	WorldCoords toWorldCoords(const glm::vec3& coords);

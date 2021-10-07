@@ -54,32 +54,42 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_uniqu
 void Chunk::init(const ChunkCoords& coords) {
 	this->coords = coords;
 
+	//for (BlockIndex z = 0; z < CHUNK_Z; z++) {
+	//	for (BlockIndex x = 0; x < CHUNK_X; x++) {
+	//		WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
+	//		glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
+	//		float height = (glm::simplex(sample) + 1) * .5;
+	//		
+	//		height = glm::pow(height, 2);
+
+	//		int worldHeight = glm::clamp((int)(height * CHUNK_Y), 3, CHUNK_Y);
+
+	//		for (BlockIndex y = 0; y < CHUNK_Y; y++) {
+	//			if (y < 3) {
+	//				data->setBlock(x, y, z, BlockType::SAND);
+	//			}
+	//			else if (y < (worldHeight - 1)) {
+	//				data->setBlock(x, y, z, BlockType::DIRT);
+	//			}
+	//			else if (y == (worldHeight - 1)) {
+	//				data->setBlock(x, y, z, BlockType::GRASS);
+	//			}
+	//			else {
+	//				data->setBlock(x, y, z, BlockType::AIR);
+	//			}
+	//		}
+	//	}
+	//}
+
 	for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 		for (BlockIndex x = 0; x < CHUNK_X; x++) {
-			WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
-			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
-			float height = (glm::simplex(sample) + 1) * .5;
-			
-			height = glm::pow(height, 2);
-
-			int worldHeight = glm::clamp((int)(height * CHUNK_Y), 3, CHUNK_Y);
-
 			for (BlockIndex y = 0; y < CHUNK_Y; y++) {
-				if (y < 3) {
-					data->setBlock(x, y, z, BlockType::SAND);
-				}
-				else if (y < (worldHeight - 1)) {
-					data->setBlock(x, y, z, BlockType::DIRT);
-				}
-				else if (y == (worldHeight - 1)) {
-					data->setBlock(x, y, z, BlockType::GRASS);
-				}
-				else {
-					data->setBlock(x, y, z, BlockType::AIR);
-				}
+				data->setBlock(x, y, z, BlockType::AIR);
 			}
 		}
 	}
+
+	data->setBlock(0, 0, 0, BlockType::GRASS);
 
 	updateCount = 1;
 
@@ -143,6 +153,10 @@ ChunkIndex DVZ::Voxel::toChunkZIndex(WorldIndex index) {
 	return index >> CHUNK_SHIFT_Z;
 }
 
+BlockCoords DVZ::Voxel::toBlockCoords(const WorldCoords& coords) {
+	return BlockCoords{ toBlockXIndex(coords.x), toBlockXIndex(coords.y), toBlockXIndex(coords.z) };
+}
+
 ChunkCoords DVZ::Voxel::toChunkCoords(const WorldCoords& coords) {
 	return ChunkCoords{ toChunkXIndex(coords.x), toChunkYIndex(coords.y), toChunkZIndex(coords.z) };
 }
@@ -152,7 +166,7 @@ ChunkCoords DVZ::Voxel::toChunkCoords(const glm::vec3& coords) {
 }
 
 WorldCoords DVZ::Voxel::toWorldCoords(const glm::vec3& coords) {
-	return WorldCoords{ glm::floor(coords / BLOCK_WIDTH) };
+	return WorldCoords{ glm::floor(coords) };
 }
 
 WorldCoords DVZ::Voxel::toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords) {

@@ -7,6 +7,7 @@ set(HEADER_FILES
 	"./include/client/systems/System.hpp"
 	"./include/client/systems/InputSystem.hpp"
 	"./include/client/systems/MovementSystem.hpp"
+	"./include/client/systems/PhysicsSystem.hpp"
 	"./include/client/systems/RenderSystem.hpp"
 	"./include/client/systems/VoxelSystem.hpp"
 
@@ -45,6 +46,7 @@ set(SOURCE_FILES
 
 	"./src/systems/InputSystem.cpp"
 	"./src/systems/MovementSystem.cpp"
+	"./src/systems/PhysicsSystem.cpp"
 	"./src/systems/RenderSystem.cpp"
 	"./src/systems/VoxelSystem.cpp"
 

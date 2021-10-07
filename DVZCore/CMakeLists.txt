@@ -3,12 +3,15 @@ set(HEADER_FILES
 	"./include/core/common.hpp"
 	"./include/core/CoreComponents.hpp"
 
+	"./include/core/collision/AABB.hpp"
+
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"
 )
 
 set(SOURCE_FILES 
+	"./src/collision/AABB.cpp"
 
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"

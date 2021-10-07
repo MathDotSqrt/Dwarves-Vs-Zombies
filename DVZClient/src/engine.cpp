@@ -10,6 +10,7 @@
 #include "client/systems/MovementSystem.hpp"
 #include "client/systems/RenderSystem.hpp"
 #include "client/systems/VoxelSystem.hpp"
+#include "client/systems/PhysicsSystem.hpp"
 
 #include "client/voxel/ClientChunkManager.hpp"
 #include "client/voxel/ChunkRenderDataManager.hpp"
@@ -33,29 +34,24 @@ Engine::Engine() :
 	using namespace entt;
 
 	entt::entity player = registry.create();
-	registry.emplace<Transformation>(player);
+	registry.emplace<Transformation>(player, glm::vec3(.5, 1.6, .5));
 	registry.emplace<Velocity>(player);
 	registry.emplace<MovementState>(player);
 	registry.emplace<Camera>(player, DVZ::Util::create_default_camera());
 	registry.emplace<Player>(player);
 	registry.emplace<Input>(player);
 	registry.emplace<Direction>(player);
+	registry.emplace<VoxelCollider>(player, Collision::AABB{glm::vec3(-.5), glm::vec3(.5) });
 
 	entt::entity test = registry.create();
-	registry.emplace<Transformation>(test);
-	registry.emplace<Velocity>(test, glm::vec3(.0, .1, 0));
+	registry.emplace<Transformation>(test, glm::vec3(), glm::quat(1, 0, 0, 0), glm::vec3(.1f));
+	registry.emplace<Velocity>(test, glm::vec3(.0, 0, 0));
 	registry.emplace<Renderable>(test, "cube"_hs);
 
 	entt::entity test2 = registry.create();
-	registry.emplace<Transformation>(test2, glm::vec3(1, 0, -10));
-	//registry.emplace<Velocity>(test2, glm::vec3(0, 0, 2));
-	//registry.emplace<Renderable>(test2, "cube"_hs);
-
-	entt::entity test3 = registry.create();
-	registry.emplace<Transformation>(test3, glm::vec3(0, 0, 0));
-	//registry.emplace<Velocity>(test3, glm::vec3(1, 0, -1));
-	//registry.emplace<Renderable>(test3, "cube"_hs);
-
+	registry.emplace<Transformation>(test2, glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), glm::vec3(.1f));
+	registry.emplace<Velocity>(test2, glm::vec3(.0, 0, 0));
+	registry.emplace<Renderable>(test2, "cube"_hs);
 }
 
 Engine::~Engine() {
@@ -65,6 +61,18 @@ Engine::~Engine() {
 }
 
 void Engine::update(duration total_time) {
+
+	auto& window = Window::getInstance();
+	if (window.isPressed('1')) {
+		spdlog::set_level(spdlog::level::debug);
+	}
+	if (window.isPressed('2')) {
+		spdlog::set_level(spdlog::level::info);
+	}
+	if (window.isPressed('3')) {
+		spdlog::set_level(spdlog::level::err);
+	}
+
 	for (auto& system : systems) {
 		system->gameTick(*this);
 	}
@@ -73,6 +81,8 @@ void Engine::update(duration total_time) {
 void Engine::initUpdateLoop() {
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::MovementSystem>();
+	this->addSystem<Systems::PhysicsSystem>();
+
 	this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::RenderSystem>();
 }

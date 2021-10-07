@@ -39,9 +39,15 @@ namespace DVZ::Voxel {
 
 		const Chunk* getChunk(const ChunkCoords& coords) const;
 		const Chunk* getChunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) const;
+
+		Chunk* getChunk(const ChunkCoords& coords);
+
 		ChunkNeighbors getChunkNeighbors(const ChunkCoords& coords) const;
 
 		const ChunkCoords& getPlayerChunkCoords() const;
+
+		BlockType getBlock(const WorldCoords& coords) const;
+		bool setBlock(const WorldCoords& coords, BlockType block);
 		//const std::vector<Chunk>& getChunks() const;
 	private:
 		void queueChunksToDelete();

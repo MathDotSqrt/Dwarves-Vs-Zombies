@@ -47,15 +47,6 @@ void MovementSystem::gameTick(Engine& engine) {
 		glm::vec3 strafe_vel = state.strafe * (move_dir * dir.right);
 		glm::vec3 fly_vel = state.fly * dir.up;
 
-		vel =  20.0f * (forward_vel + strafe_vel + fly_vel);
+		vel =  .1123f * (forward_vel + strafe_vel + fly_vel);
 	});
-
-
-	auto view = registry.view<DVZ::Transformation, DVZ::Velocity>();
-	for (const auto& e : view) {
-		auto& trans = view.get<DVZ::Transformation>(e);
-		const auto& vel = view.get<DVZ::Velocity>(e);
-
-		trans.pos = trans.pos + vel * (1.0f / engine.TPS);
-	}
 }
