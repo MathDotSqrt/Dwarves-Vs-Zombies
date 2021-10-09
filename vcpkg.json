@@ -8,6 +8,7 @@
 		"glew",
 		"entt",
 		"spdlog",
-		"stb"
+		"stb",
+		"gamenetworkingsockets"
 	]
 }

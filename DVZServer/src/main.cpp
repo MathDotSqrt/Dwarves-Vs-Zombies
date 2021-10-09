@@ -1,7 +1,44 @@
 #include <iostream>
 
-#include "core/test.hpp"
+#include <spdlog/spdlog.h>
+
+#include <string>
+#include <iostream>
+#include <chrono>
+#include <thread>
+
+std::atomic<bool> should_run = true;
+
+void server_loop() {
+	auto last_time = std::chrono::steady_clock::now();
+	while (should_run.load()) {
+		auto current_time = std::chrono::steady_clock::now();
+		auto delta = current_time - last_time;
+		if (delta > std::chrono::seconds(1)) {
+			last_time = current_time;
+		}
+	
+	}
+}
 
 int main() {
-	std::cout << DVZ::add(30, 40) << "\n";
+	spdlog::info("Launching server...");
+
+	std::thread t{server_loop};
+
+	while (true) {
+		std::string line;
+		std::getline(std::cin, line);
+		if (line.size() == 0) {
+			break;
+		}
+		else {
+			spdlog::info("Command: {}", line);
+		}
+	}
+
+	spdlog::info("Shutting down...");
+	should_run = false;
+	t.join();
+	spdlog::info("Done.");
 }

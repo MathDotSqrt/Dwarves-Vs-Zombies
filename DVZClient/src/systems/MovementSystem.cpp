@@ -47,6 +47,6 @@ void MovementSystem::gameTick(Engine& engine) {
 		glm::vec3 strafe_vel = state.strafe * (move_dir * dir.right);
 		glm::vec3 fly_vel = state.fly * dir.up;
 
-		vel =  .1123f * (forward_vel + strafe_vel + fly_vel);
+		vel =  .4f * (forward_vel + strafe_vel + fly_vel);
 	});
 }

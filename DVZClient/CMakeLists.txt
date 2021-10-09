@@ -92,8 +92,7 @@ endif()
 
 find_package(glfw3 REQUIRED)
 find_package(glew REQUIRED)
-find_package(EnTT CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
+
 find_path(STB_INCLUDE_DIRS "stb.h" REQUIRED)
 
 target_include_directories(DVZClient PRIVATE 
@@ -106,8 +105,6 @@ target_link_libraries(DVZClient PRIVATE
 	DVZCore 
 	glfw
 	GLEW::glew
-	EnTT::EnTT
-	spdlog::spdlog spdlog::spdlog_header_only
 )
 
 # Create symlink

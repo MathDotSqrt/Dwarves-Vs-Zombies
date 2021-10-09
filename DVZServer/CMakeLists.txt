@@ -6,4 +6,4 @@ set(SOURCE_FILES
 add_executable(DVZServer ${SOURCE_FILES})
 
 target_include_directories(DVZServer PRIVATE "./include")
-target_link_libraries(DVZServer LINK_PUBLIC DVZCore)
+target_link_libraries(DVZServer PRIVATE DVZCore)
