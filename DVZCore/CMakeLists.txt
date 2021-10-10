@@ -24,10 +24,14 @@ target_compile_features(DVZCore PUBLIC cxx_std_17)
 find_package(glm REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
+find_package(GameNetworkingSockets CONFIG REQUIRED)
 
 target_include_directories(DVZCore PUBLIC "./include") 
 target_link_libraries(DVZCore PUBLIC 
 	glm::glm
 	EnTT::EnTT
 	spdlog::spdlog spdlog::spdlog_header_only
+	GameNetworkingSockets::shared
 )
