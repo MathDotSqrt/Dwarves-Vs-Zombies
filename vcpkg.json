@@ -3,9 +3,15 @@
 	"version-string": "0.0.1",
 	"description": "C++ Multiplayer Voxel Game",
 	"dependencies": [
+		{
+			"name": "glfw3",
+			"platform": "windows | osx"
+		},
+		{
+			"name": "glew",
+			"platform": "windows | osx"
+		},
 		"glm",
-		"glfw3",
-		"glew",
 		"entt",
 		"spdlog",
 		"stb",
