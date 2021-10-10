@@ -46,8 +46,8 @@ namespace DVZ::Graphics {
 	template<u32 LOC, typename T, bool NORMALIZE = false>
 	class Attrib {
 	public:
-		typename typedef T Type;
-		typename typedef Detail::AttribInfo<T>::ScalarType ScalarType;
+		typedef T Type;
+		typedef typename Detail::AttribInfo<T>::ScalarType ScalarType;
 		constexpr static u8 NumComponents = Detail::AttribInfo<T>::NumComponents;
 		constexpr static u32 Location = LOC;
 		constexpr static bool Normalize = NORMALIZE;

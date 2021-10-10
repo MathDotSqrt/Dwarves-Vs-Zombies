@@ -19,8 +19,8 @@ namespace DVZ::Graphics {
 			Vertex() {};
 
 			Vertex(
-				typename const V::Type& first,
-				typename const REST::Type &...rest)
+				const typename V::Type& first,
+				const typename REST::Type &...rest)
 				: first(first), rest(rest...) {}
 
 			typename V::Type first;
@@ -30,7 +30,7 @@ namespace DVZ::Graphics {
 		template<typename V>
 		struct alignas(4) Vertex<V> {
 			Vertex() {}
-			Vertex(typename const V::Type& last) : last(last) {}
+			Vertex(const typename V::Type& last) : last(last) {}
 
 			typename V::Type last;
 		};
@@ -38,7 +38,7 @@ namespace DVZ::Graphics {
 	public:
 		typedef Vertex<T...> GeometryVertex;
 
-		inline void pushVertex(typename const T::Type &...vertexData) {
+		inline void pushVertex(const typename T::Type &...vertexData) {
 			verticies.push_back(GeometryVertex(vertexData...));
 		}
 

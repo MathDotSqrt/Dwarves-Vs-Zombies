@@ -1,5 +1,6 @@
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
+#include "client/graphics/Attrib.hpp"
 
 #include "client/util/transform.hpp"
 
@@ -13,6 +14,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <spdlog/spdlog.h>
+
+#undef near
+#undef far
 
 using namespace DVZ::Graphics;
 

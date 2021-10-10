@@ -1,17 +1,30 @@
 #include "server/net/ServerSocket.hpp"
 
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/isteamnetworkingutils.h>
 #include <spdlog/spdlog.h>
 
 using namespace DVZ::Net;
 
 ServerSocket* ServerSocket::callbackInstance = nullptr;
 
+void DebugOutput(ESteamNetworkingSocketsDebugOutputType eType, const char* pszMsg)
+{
+	SteamNetworkingMicroseconds time = SteamNetworkingUtils()->GetLocalTimestamp();
+	spdlog::error(pszMsg);
+	if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug)
+	{
+		//spdlog::error("Steam networking bug: {}", pszMsg);
+	}
+}
+
 ServerSocket::ServerSocket(u16 port) {
 	
 	SteamDatagramErrMsg errMsg;
 	if (!GameNetworkingSockets_Init(nullptr, errMsg))
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
+
+	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, DebugOutput);
 
 	socketsInterface = SteamNetworkingSockets();
 	SteamNetworkingIPAddr serverLocalAddr;
@@ -39,6 +52,8 @@ ServerSocket::~ServerSocket() {
 }
 
 void ServerSocket::pollIncomingMessages() {
+	pollConnectionStateChanges();
+
 	while (true) {
 		ISteamNetworkingMessage* message = nullptr;
 		int num_messages = socketsInterface->ReceiveMessagesOnPollGroup(pollGroup, &message, 1);
@@ -61,6 +76,8 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 		break;
 	case k_ESteamNetworkingConnectionState_ClosedByPeer:
 	case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+		spdlog::info("Connection closed?");
+
 		if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected){
 			//Something bad probably happened here
 		}
@@ -68,13 +85,13 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 		break;
 	case k_ESteamNetworkingConnectionState_Connecting:
 		spdlog::info("New client connecting...");
-		if (socketsInterface->AcceptConnection(info->m_hConn) != k_EVoiceResultOK) {
+		if (socketsInterface->AcceptConnection(info->m_hConn) != k_EResultOK) {
 			socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
 			spdlog::info("Cannot accept connection!");
+			break;
 		}
 
-		if (!socketsInterface->SetConnectionPollGroup(info->m_hConn, pollGroup))
-		{
+		if (!socketsInterface->SetConnectionPollGroup(info->m_hConn, pollGroup)) {
 			socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
 			spdlog::error("Failed to set poll group");
 			break;

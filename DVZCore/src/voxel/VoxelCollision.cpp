@@ -42,7 +42,7 @@ float line_to_plane(
 	const glm::vec3& normal
 ) {
 	const float n_dot_u = glm::dot(u, normal);
-
+	
 	if (n_dot_u == 0) return std::numeric_limits<float>::infinity();
 
 	return glm::dot(normal, v - p) / n_dot_u;
@@ -183,9 +183,6 @@ calc_nearest_swept_aabb(
 		const float collision_time = swept_aabb(vel_delta, moving_aabb, block_aabb, normal);
 
 		if (i == 0 || std::get<0>(collision) > collision_time) {
-			if (glm::length(normal) > .01f)
-				swept_aabb(vel_delta, moving_aabb, block_aabb, glm::vec3());
-
 			index = i;
 			std::get<0>(collision) = collision_time;
 			std::get<1>(collision) = normal;

@@ -11,7 +11,7 @@ void set_log_level() {
 #elif DVZ_CLIENT_RELDEBINFO
 	spdlog::set_level(spdlog::level::info);
 #else
-	spdlog::set_level(spdlog::level::err);
+	spdlog::set_level(spdlog::level::info);
 #endif // DVZ_CLIENT_DEBUG
 }
 

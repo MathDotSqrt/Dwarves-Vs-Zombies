@@ -2,6 +2,8 @@
 #include "client/ClientComponents.hpp"
 #include "client/window.hpp"
 
+#include "client/net/ClientSocket.hpp"
+
 #include "client/graphics/scene.hpp"
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
@@ -30,6 +32,7 @@ Engine::Engine() :
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
 	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
+	netclient(std::make_unique<Net::ClientSocket>("127.0.0.1:50150")),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
@@ -61,7 +64,7 @@ Engine::~Engine() {
 }
 
 void Engine::update(duration total_time) {
-
+	netclient->pollIncommingMessages();
 	auto& window = Window::getInstance();
 	if (window.isPressed('1')) {
 		spdlog::set_level(spdlog::level::debug);

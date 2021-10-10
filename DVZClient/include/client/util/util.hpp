@@ -9,7 +9,7 @@
 namespace DVZ::Util {
 
 	template<typename T, typename FUNC>
-	void iterate_volume(const glm::vec<3, T>& min, const glm::vec<3, T>& max, FUNC& func ) {
+	void iterate_volume(const glm::vec<3, T>& min, const glm::vec<3, T>& max, FUNC&& func ) {
 		assert(min.x <= max.x);
 		assert(min.y <= max.y);
 		assert(min.z <= max.z);

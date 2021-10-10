@@ -37,7 +37,6 @@ Geometry<Position2DAttrib, TexcoordAttrib> DVZ::Graphics::gen_quad2D(float width
 //this is really bad code. pls dont look at it
 Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(float width) {
 	Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> geometry;
-
 	float h = width / 2;
 
 	auto gen_face = [&geometry, h](int component, int first, int second, int sign) {

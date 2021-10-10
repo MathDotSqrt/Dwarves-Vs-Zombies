@@ -73,7 +73,7 @@ namespace DVZ::Util {
 			u32 element_index = index_array[id.index].index;
 
 			const auto back_element = packed_array.back();
-			const auto back_index = back_packed_array.begin();
+			const auto back_index = back_packed_array.front();		//.begin() TODO This may be a bug idk
 
 			index_array[back_index].index = element_index;
 

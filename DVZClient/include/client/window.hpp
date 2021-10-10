@@ -11,10 +11,10 @@ struct GLFWwindow;
 namespace DVZ {
 
 	//free functions for glfw's c style callbacks
-	void key_callback(GLFWwindow*, int, int, int, int);
-	void internal_focus_callback(GLFWwindow*, int);
-	void internal_mouse_callback(GLFWwindow*, int, int, int);
-	void internal_scroll_callback(GLFWwindow*, double, double);
+	static void key_callback(GLFWwindow*, int, int, int, int);
+	static void internal_focus_callback(GLFWwindow*, int);
+	static void internal_mouse_callback(GLFWwindow*, int, int, int);
+	static void internal_scroll_callback(GLFWwindow*, double, double);
 
 	class Window {
 	public:

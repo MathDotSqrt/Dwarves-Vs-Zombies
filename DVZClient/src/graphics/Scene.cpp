@@ -7,6 +7,8 @@
 using namespace DVZ;
 using namespace DVZ::Graphics;
 
+#undef near
+#undef far
 
 PerspectiveCamera::PerspectiveCamera() {
 	this->fov = 80;

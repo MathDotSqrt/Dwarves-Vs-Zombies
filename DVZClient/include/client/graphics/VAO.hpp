@@ -3,6 +3,7 @@
 #ifndef DVZ_VAO_HPP
 #define DVZ_VAO_HPP
 
+#include "client/graphics/Attrib.hpp"
 #include "core/common.hpp"
 
 namespace DVZ::Graphics {
@@ -48,7 +49,7 @@ namespace DVZ::Graphics {
 
 		template<typename ATTRIB, typename ...U>
 		void setInterleavedAttribPointers(size_t stride, size_t offset, u32 divisor) {
-			addVertexAttribPtr(ATTRIB::Location, ATTRIB::NumComponents, getGLType<ATTRIB::ScalarType>(), ATTRIB::Normalize, stride, offset);
+			addVertexAttribPtr(ATTRIB::Location, ATTRIB::NumComponents, getGLType<typename ATTRIB::ScalarType>(), ATTRIB::Normalize, stride, offset);
 			vertexAttribDivisor(ATTRIB::Location, divisor);
 			if constexpr (sizeof...(U) > 0) {
 				setInterleavedAttribPointers<U...>(stride, offset + ATTRIB::size(), divisor);

@@ -23,7 +23,7 @@ namespace DVZ {
 		}
 
 		operator const glm::vec3& () const {
-			return static_cast<glm::vec3>(*this);
+			return static_cast<const glm::vec3&>(*this);
 		}
 	};
 

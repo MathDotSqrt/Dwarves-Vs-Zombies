@@ -7,6 +7,9 @@
 
 #include "core/CoreComponents.hpp"
 
+#undef near
+#undef far
+
 using namespace DVZ::Systems;
 
 RenderSystem::RenderSystem() {

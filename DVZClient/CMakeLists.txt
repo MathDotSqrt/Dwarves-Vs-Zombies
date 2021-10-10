@@ -4,12 +4,7 @@ set(HEADER_FILES
 	"./include/client/engine.hpp"
 	"./include/client/window.hpp"
 
-	"./include/client/systems/System.hpp"
-	"./include/client/systems/InputSystem.hpp"
-	"./include/client/systems/MovementSystem.hpp"
-	"./include/client/systems/PhysicsSystem.hpp"
-	"./include/client/systems/RenderSystem.hpp"
-	"./include/client/systems/VoxelSystem.hpp"
+	"./include/client/net/ClientSocket.hpp"
 
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
@@ -24,6 +19,13 @@ set(HEADER_FILES
 	"./include/client/graphics/TEXCache.hpp"
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
+
+	"./include/client/systems/System.hpp"
+	"./include/client/systems/InputSystem.hpp"
+	"./include/client/systems/MovementSystem.hpp"
+	"./include/client/systems/PhysicsSystem.hpp"
+	"./include/client/systems/RenderSystem.hpp"
+	"./include/client/systems/VoxelSystem.hpp"
 
 	"./include/client/util/freelist.hpp"
 	"./include/client/util/id.hpp"
@@ -44,11 +46,7 @@ set(SOURCE_FILES
 	"./src/main.cpp"
 	"./src/window.cpp"
 
-	"./src/systems/InputSystem.cpp"
-	"./src/systems/MovementSystem.cpp"
-	"./src/systems/PhysicsSystem.cpp"
-	"./src/systems/RenderSystem.cpp"
-	"./src/systems/VoxelSystem.cpp"
+	"./src/net/ClientSocket.cpp"
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"
@@ -59,6 +57,12 @@ set(SOURCE_FILES
 	"./src/graphics/TEX.cpp"
 	"./src/graphics/VAO.cpp"
 	"./src/graphics/VBO.cpp"
+
+	"./src/systems/InputSystem.cpp"
+	"./src/systems/MovementSystem.cpp"
+	"./src/systems/PhysicsSystem.cpp"
+	"./src/systems/RenderSystem.cpp"
+	"./src/systems/VoxelSystem.cpp"
 
 	"./src/util/transform.cpp"
 
