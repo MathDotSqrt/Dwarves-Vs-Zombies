@@ -14,6 +14,8 @@
 #include <entt/core/hashed_string.hpp>
 #include <mutex>
 
+#undef near
+#undef far
 
 namespace DVZ::Graphics {
 
