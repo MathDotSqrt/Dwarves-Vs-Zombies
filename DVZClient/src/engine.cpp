@@ -13,6 +13,7 @@
 #include "client/systems/RenderSystem.hpp"
 #include "client/systems/VoxelSystem.hpp"
 #include "client/systems/PhysicsSystem.hpp"
+#include "client/systems/NetworkSystem.hpp"
 
 #include "client/voxel/ClientChunkManager.hpp"
 #include "client/voxel/ChunkRenderDataManager.hpp"
@@ -32,7 +33,6 @@ Engine::Engine() :
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
 	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
-	netclient(std::make_unique<Net::ClientSocket>("54.85.202.121:50150")),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 
@@ -64,7 +64,6 @@ Engine::~Engine() {
 }
 
 void Engine::update(duration total_time) {
-	netclient->pollIncommingMessages();
 	auto& window = Window::getInstance();
 	if (window.isPressed('1')) {
 		spdlog::set_level(spdlog::level::debug);
@@ -88,6 +87,7 @@ void Engine::initUpdateLoop() {
 
 	this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::RenderSystem>();
+	this->addSystem<Systems::NetworkSystem>();
 }
 
 void Engine::updateLoop() {

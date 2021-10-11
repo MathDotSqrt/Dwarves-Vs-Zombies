@@ -12,25 +12,38 @@ ClientSocket* ClientSocket::callbackInstance = nullptr;
 void DebugOutput(ESteamNetworkingSocketsDebugOutputType eType, const char* pszMsg)
 {
 	SteamNetworkingMicroseconds time = SteamNetworkingUtils()->GetLocalTimestamp();
-	spdlog::error(pszMsg);
+	spdlog::info(pszMsg);
 	if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug)
 	{
 		//spdlog::error("Steam networking bug: {}", pszMsg);
 	}
 }
 
-ClientSocket::ClientSocket(std::string_view ip) {
+ClientSocket::ClientSocket(){
 	SteamDatagramErrMsg errMsg;
-	if (!GameNetworkingSockets_Init(nullptr, errMsg))
+	if (!GameNetworkingSockets_Init(nullptr, errMsg)) {
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
+	}
 
 	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, DebugOutput);
 
 	socketInterface = SteamNetworkingSockets();
+}
 
+ClientSocket::ClientSocket(const std::string& ip) : ClientSocket(){
+	connectToServer(ip);
+}
+
+ClientSocket::~ClientSocket() {
+	if (isValid() && connection != 0) {
+		socketInterface->CloseConnection(connection, 0, nullptr, true);
+	}
+}
+
+bool ClientSocket::connectToServer(const std::string& ip) {
 	SteamNetworkingIPAddr serverAddr;
 	serverAddr.Clear();
-	bool is_valid_ip = serverAddr.ParseString(std::string{ip}.c_str());
+	bool is_valid_ip = serverAddr.ParseString(std::string{ ip }.c_str());
 
 	if (is_valid_ip) {
 		SteamNetworkingConfigValue_t opt;
@@ -39,33 +52,47 @@ ClientSocket::ClientSocket(std::string_view ip) {
 		if (connection == k_HSteamNetConnection_Invalid) {
 			spdlog::error("Failed to connect");
 		}
+		else {
+			connectionState = ConnectionState::CONNECTING;
+		}
 	}
 	else {
 		spdlog::error("Invalid IP format: {}", ip);
 	}
-}
 
-ClientSocket::~ClientSocket() {
-	socketInterface->CloseConnection(connection, 0, nullptr, true); 
+	return isValid();
 }
 
 void ClientSocket::pollIncommingMessages(){
 	pollConnectionStateChanges();
 
-	while (true) {
-		ISteamNetworkingMessage* message = nullptr;
-		int numMsgs = socketInterface->ReceiveMessagesOnConnection(connection, &message, 1);
-		if (numMsgs == 0) {
-			break;
+	if (connectionState == ConnectionState::CONNECTED) {
+		while (true) {
+			ISteamNetworkingMessage* message = nullptr;
+			int numMsgs = socketInterface->ReceiveMessagesOnConnection(connection, &message, 1);
+			if (numMsgs == 0) {
+				break;
+			}
+			if (numMsgs < 0) {
+				spdlog::error("Cannot read message");
+			}
+
+			//std::string_view data{(char*)message->m_pData, (size_t)message->m_cbSize};
+			//spdlog::info("Message received: {}", data);
+			message->Release();
 		}
-		if (numMsgs < 0) {
-			spdlog::error("Cannot read message");
-		}
-		
-		//std::string_view data{(char*)message->m_pData, (size_t)message->m_cbSize};
-		//spdlog::info("Message received: {}", data);
-		message->Release();
 	}
+}
+
+bool ClientSocket::isValid() const {
+	return socketInterface != nullptr;
+}
+
+ConnectionState ClientSocket::getConnectionState() const {
+	if (isValid()) {
+		return connectionState;
+	}
+	return ConnectionState::INVALID;
 }
 
 void ClientSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
@@ -78,27 +105,30 @@ void ClientSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 			// Note: we could distinguish between a timeout, a rejected connection,
 			// or some other transport problem.
 			spdlog::error("Connection failed");
+			connectionState = ConnectionState::CONNECTION_FAILED;
 		}
 		else if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally) {
 			spdlog::error("Connection lost");
+			connectionState = ConnectionState::CONNECTION_FAILED;
 		}
 		else {
 			// NOTE: We could check the reason code for a normal disconnection
 			spdlog::info("Server disconnected us");
+			connectionState = ConnectionState::DISCONNECTED;
 		}
 
 		socketInterface->CloseConnection(connection, 0, nullptr, true);
-		connection = k_HSteamNetConnection_Invalid;
+
 		break;
 	case k_ESteamNetworkingConnectionState_Connecting:
 		// We will get this callback when we start connecting.
 		spdlog::info("Starting to connect");
-
+		connectionState = ConnectionState::CONNECTING;
 		break;
 	case k_ESteamNetworkingConnectionState_Connected:
 		spdlog::info("Connected to server");
+		connectionState = ConnectionState::CONNECTED;
 		break;
-
 	default:
 		// Silences -Wswitch
 		break;

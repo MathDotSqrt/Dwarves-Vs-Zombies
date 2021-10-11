@@ -10,15 +10,28 @@ struct SteamNetConnectionStatusChangedCallback_t;
 
 namespace DVZ::Net {
 
+	enum class ConnectionState {
+		CONNECTED,
+		CONNECTING,
+		CONNECTION_FAILED,
+		DISCONNECTED,
+		INVALID
+	};
+
 	class ClientSocket {
 	public:
-		ClientSocket(std::string_view ip);
+		ClientSocket();
+		ClientSocket(const std::string& ip);
 		~ClientSocket();
 
+		bool connectToServer(const std::string& ip);
 		void pollIncommingMessages();
+		bool isValid() const;
+		ConnectionState getConnectionState() const;
 	private:
-		HSteamNetConnection connection = 0;
+		HSteamNetConnection connection = k_HSteamNetConnection_Invalid;
 		ISteamNetworkingSockets* socketInterface = nullptr;
+		ConnectionState connectionState = ConnectionState::INVALID;
 		static ClientSocket* callbackInstance;
 
 		void onConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);

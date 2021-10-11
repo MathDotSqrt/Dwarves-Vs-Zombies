@@ -99,7 +99,7 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 		chunk_shader->setUniformMat4("VP", VP);
 		vao.bind();
 		ebo.bind();
-		glDrawElements(GL_TRIANGLES, ebo.getNumBytes() / sizeof(Voxel::ChunkRenderData::EBOIndexType), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, (GLsizei)(ebo.getNumBytes() / sizeof(Voxel::ChunkRenderData::EBOIndexType)), GL_UNSIGNED_INT, 0);
 		ebo.unbind();
 		vao.unbind();
 		

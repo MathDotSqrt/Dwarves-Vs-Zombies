@@ -6,7 +6,7 @@
 #include "client/voxel/ChunkRenderData.hpp"
 
 namespace DVZ::Voxel {
-	class ChunkNeighbors;
+	struct ChunkNeighbors;
 
 	class ChunkMesher {
 	public:

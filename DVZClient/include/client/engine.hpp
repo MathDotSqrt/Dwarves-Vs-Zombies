@@ -25,9 +25,6 @@ namespace DVZ{
 		class ChunkRenderDataManager;
 	}
 
-	namespace Net {
-		class ClientSocket;
-	}
 
 	class Engine {
 	public:
@@ -66,7 +63,6 @@ namespace DVZ{
 		//std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;
 
 		entt::registry registry;
-		std::unique_ptr<Net::ClientSocket> netclient;
 		std::unique_ptr<Graphics::Scene> scene;
 		std::unique_ptr<Graphics::SceneManager> sceneManager;
 		std::unique_ptr<Graphics::BasicRenderer> renderer;
