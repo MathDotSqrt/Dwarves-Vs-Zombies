@@ -22,7 +22,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 			netclient->connectToServer("54.85.202.121:50150");
 		}
 		if (netclient->getConnectionState() == Net::ConnectionState::CONNECTED) {
-			
+			netclient->sendMessage("Hello network!");
 		}
 	}
 }
