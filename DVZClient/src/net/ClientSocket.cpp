@@ -9,13 +9,13 @@ using namespace DVZ::Net;
 
 ClientSocket* ClientSocket::callbackInstance = nullptr;
 
-void DebugOutput(ESteamNetworkingSocketsDebugOutputType eType, const char* pszMsg)
-{
+void DebugOutput(ESteamNetworkingSocketsDebugOutputType eType, const char* pszMsg) {
 	SteamNetworkingMicroseconds time = SteamNetworkingUtils()->GetLocalTimestamp();
-	spdlog::info(pszMsg);
-	if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug)
-	{
-		//spdlog::error("Steam networking bug: {}", pszMsg);
+	if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug) {
+		spdlog::error("Steam networking bug: {}", pszMsg);
+	}
+	else {
+		spdlog::info(pszMsg);
 	}
 }
 
@@ -28,6 +28,7 @@ ClientSocket::ClientSocket(){
 	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, DebugOutput);
 
 	socketInterface = SteamNetworkingSockets();
+	spdlog::info("Steam networking sockets initalized");
 }
 
 ClientSocket::ClientSocket(const std::string& ip) : ClientSocket(){
@@ -43,21 +44,24 @@ ClientSocket::~ClientSocket() {
 bool ClientSocket::connectToServer(const std::string& ip) {
 	SteamNetworkingIPAddr serverAddr;
 	serverAddr.Clear();
-	bool is_valid_ip = serverAddr.ParseString(std::string{ ip }.c_str());
+	bool is_valid_ip = serverAddr.ParseString(ip.c_str());
+
+	spdlog::info("Attempting connection to: [{}]", ip);
 
 	if (is_valid_ip) {
 		SteamNetworkingConfigValue_t opt;
 		opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)connectionStatusChangedCallback);
 		connection = socketInterface->ConnectByIPAddress(serverAddr, 1, &opt);
 		if (connection == k_HSteamNetConnection_Invalid) {
-			spdlog::error("Failed to connect");
+			spdlog::error("Connection failed to initalize");
 		}
 		else {
+			spdlog::info("Connecting to: [{}]", ip);
 			connectionState = ConnectionState::CONNECTING;
 		}
 	}
 	else {
-		spdlog::error("Invalid IP format: {}", ip);
+		spdlog::error("Invalid IP format: [{}]", ip);
 	}
 
 	return isValid();
@@ -74,12 +78,14 @@ void ClientSocket::pollIncommingMessages(){
 				break;
 			}
 			if (numMsgs < 0) {
-				spdlog::error("Cannot read message");
+				spdlog::error("Failed to read message");
 			}
 
 			//std::string_view data{(char*)message->m_pData, (size_t)message->m_cbSize};
 			//spdlog::info("Message received: {}", data);
-			message->Release();
+			if (message) {
+				message->Release();
+			}
 		}
 	}
 }
@@ -122,7 +128,7 @@ void ClientSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 		break;
 	case k_ESteamNetworkingConnectionState_Connecting:
 		// We will get this callback when we start connecting.
-		spdlog::info("Starting to connect");
+		spdlog::info("Connection started");
 		connectionState = ConnectionState::CONNECTING;
 		break;
 	case k_ESteamNetworkingConnectionState_Connected:

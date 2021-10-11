@@ -15,9 +15,6 @@ void NetworkSystem::init(Engine& engine) {
 }
 
 void NetworkSystem::gameTick(Engine& engine) {
-
-
-
 	if (netclient->isValid()) {
 		netclient->pollIncommingMessages();
 		if (netclient->getConnectionState() == Net::ConnectionState::CONNECTION_FAILED) {
