@@ -11,7 +11,7 @@ ServerSocket* ServerSocket::callbackInstance = nullptr;
 void DebugOutput(ESteamNetworkingSocketsDebugOutputType eType, const char* pszMsg)
 {
 	SteamNetworkingMicroseconds time = SteamNetworkingUtils()->GetLocalTimestamp();
-	spdlog::error(pszMsg);
+	spdlog::debug(pszMsg);
 	if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug)
 	{
 		//spdlog::error("Steam networking bug: {}", pszMsg);
@@ -64,8 +64,11 @@ void ServerSocket::pollIncomingMessages() {
 		if (num_messages < 0) {
 			spdlog::error("Error polling incoming message");
 		}
-		std::string_view data{(char*)message->m_pData, (size_t)message->m_cbSize};
-		spdlog::info("Message recieved: {}", data);
+
+		if (message) {
+			std::string_view data{ (char*)message->m_pData, (size_t)message->m_cbSize };
+			spdlog::info("Message recieved: {}", data);
+		}
 	}
 }
 
@@ -76,29 +79,29 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 		break;
 	case k_ESteamNetworkingConnectionState_ClosedByPeer:
 	case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-		spdlog::info("Connection closed?");
+		spdlog::info("Connection closed");
 
-		if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected){
+		if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected) {
 			//Something bad probably happened here
 		}
 		socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
 		break;
 	case k_ESteamNetworkingConnectionState_Connecting:
 		spdlog::info("New client connecting...");
-		if (socketsInterface->AcceptConnection(info->m_hConn) != k_EResultOK) {
-			socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
-			spdlog::info("Cannot accept connection!");
-			break;
+		if (socketsInterface->AcceptConnection(info->m_hConn) == k_EResultOK) {
+			if (!socketsInterface->SetConnectionPollGroup(info->m_hConn, pollGroup)) {
+				socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
+				spdlog::error("Failed to set poll group");
+			}
 		}
-
-		if (!socketsInterface->SetConnectionPollGroup(info->m_hConn, pollGroup)) {
+		else {
+			spdlog::info("Failed to accept connection");
 			socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
-			spdlog::error("Failed to set poll group");
-			break;
 		}
 		
 		break;
 	case k_ESteamNetworkingConnectionState_Connected:
+		spdlog::info("Connection accepted");
 		// We will get a callback immediately after accepting the connection.
 		// Since we are the server, we can ignore this, it's not news to us.
 		break;
