@@ -4,7 +4,7 @@
 
 #include "client/net/ClientSocket.hpp"
 
-#include "client/graphics/scene.hpp"
+#include "client/graphics/Scene.hpp"
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
 

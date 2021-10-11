@@ -26,6 +26,8 @@ namespace DVZ::Net {
 
 		bool connectToServer(const std::string& ip);
 		void pollIncommingMessages();
+		void sendMessage(std::string_view sv);
+		
 		bool isValid() const;
 		ConnectionState getConnectionState() const;
 	private:

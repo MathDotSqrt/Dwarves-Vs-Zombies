@@ -34,7 +34,7 @@ int main() {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	while (true) {
-		std::cout << "[Enter Command]>" << std::flush;
+		//std::cout << "[Enter Command]>" << std::flush;
 		std::string line;
 		std::getline(std::cin, line);
 		if (line.size() == 0) {

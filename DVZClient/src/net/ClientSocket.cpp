@@ -1,5 +1,7 @@
 #include "client/net/ClientSocket.hpp"
 
+#include "core/common.hpp"
+
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
 #include <GameNetworkingSockets/steam/isteamnetworkingutils.h>
 #include <spdlog/spdlog.h>
@@ -87,6 +89,12 @@ void ClientSocket::pollIncommingMessages(){
 				message->Release();
 			}
 		}
+	}
+}
+
+void ClientSocket::sendMessage(std::string_view sv) {
+	if (connectionState == ConnectionState::CONNECTED) {
+		socketInterface->SendMessageToConnection(connection, (const void*)sv.data(), (u32)sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
 	}
 }
 
