@@ -21,8 +21,8 @@ DVZ::Camera DVZ::Util::create_default_camera() {
 	camera.fov = 80;
 
 	const DVZ::Window& window = DVZ::Window::getInstance();
-	camera.width = window.getWidth();
-	camera.height = window.getHeight();
+	camera.width = (float)window.getWidth();
+	camera.height = (float)window.getHeight();
 	camera.near = .1f;
 	camera.far = 10000.0f;
 

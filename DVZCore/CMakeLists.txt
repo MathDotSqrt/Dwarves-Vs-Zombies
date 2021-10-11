@@ -31,6 +31,6 @@ target_include_directories(DVZCore PUBLIC "./include")
 target_link_libraries(DVZCore PUBLIC 
 	glm::glm
 	EnTT::EnTT
+	spdlog::spdlog spdlog::spdlog_header_only
 	GameNetworkingSockets::shared
-	spdlog::spdlog
 )

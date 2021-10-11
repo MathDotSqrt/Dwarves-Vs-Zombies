@@ -33,7 +33,6 @@ ClientSocket::ClientSocket(std::string_view ip) {
 	bool is_valid_ip = serverAddr.ParseString(std::string{ip}.c_str());
 
 	if (is_valid_ip) {
-		spdlog::info("Connecting to server at [{}]", ip);
 		SteamNetworkingConfigValue_t opt;
 		opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)connectionStatusChangedCallback);
 		connection = socketInterface->ConnectByIPAddress(serverAddr, 1, &opt);

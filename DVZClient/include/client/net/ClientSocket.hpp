@@ -6,7 +6,7 @@
 #include <string_view>
 
 class ISteamNetworkingSockets;
-class SteamNetConnectionStatusChangedCallback_t;
+struct SteamNetConnectionStatusChangedCallback_t;
 
 namespace DVZ::Net {
 

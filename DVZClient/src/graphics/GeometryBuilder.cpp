@@ -39,7 +39,7 @@ Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(f
 	Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> geometry;
 	float h = width / 2;
 
-	auto gen_face = [&geometry, h](int component, int first, int second, int sign) {
+	auto gen_face = [&geometry, h](int component, int first, int second, float sign) {
 
 		//int first = (component + 1) % 3;
 		//int second = (component + 2) % 3;
@@ -54,7 +54,7 @@ Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(f
 			tex[0] = 0;
 			tex[1] = 0;
 
-			glm::vec3 norm(0);
+			glm::vec3 norm(0.0f);
 			norm[component] = sign;
 
 			geometry.pushVertex(pos, tex, norm);
@@ -70,7 +70,7 @@ Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(f
 			tex[0] = 0;
 			tex[1] = 1;
 
-			glm::vec3 norm(0);
+			glm::vec3 norm(0.0f);
 			norm[component] = sign;
 
 			geometry.pushVertex(pos, tex, norm);
@@ -86,7 +86,7 @@ Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(f
 			tex[0] = 1;
 			tex[1] = 0;
 
-			glm::vec3 norm(0);
+			glm::vec3 norm(0.0f);
 			norm[component] = sign;
 
 			geometry.pushVertex(pos, tex, norm);
@@ -102,27 +102,27 @@ Geometry<PositionAttrib, TexcoordAttrib, NormalAttrib> DVZ::Graphics::gen_cube(f
 			tex[0] = 1;
 			tex[1] = 1;
 
-			glm::vec3 norm(0);
+			glm::vec3 norm(0.0f);
 			norm[component] = sign;
 
 			geometry.pushVertex(pos, tex, norm);
 		}
 
-		auto offset = geometry.getVertexCount() - 4;
+		auto offset = (u32)geometry.getVertexCount() - 4;
 		geometry.pushTriangle(offset + 0, offset + 1, offset + 2);
 		geometry.pushTriangle(offset + 2, offset + 1, offset + 3);
 
 		//geometry.pushVertex(glm::vec4);
 	};
 
-	gen_face(0, 1, 2, 1);
-	gen_face(0, 2, 1, -1);
+	gen_face(0, 1, 2, 1.0f);
+	gen_face(0, 2, 1, -1.0f);
 
-	gen_face(1, 2, 0, 1);
-	gen_face(1, 0, 2, -1);
+	gen_face(1, 2, 0, 1.0f);
+	gen_face(1, 0, 2, -1.0f);
 
-	gen_face(2, 0, 1, 1);
-	gen_face(2, 1, 0, -1);
+	gen_face(2, 0, 1, 1.0f);
+	gen_face(2, 1, 0, -1.0f);
 
 
 	return geometry;

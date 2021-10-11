@@ -38,7 +38,7 @@ static void DVZ::internal_mouse_callback(GLFWwindow* window, int button, int act
 }
 
 static void DVZ::internal_scroll_callback(GLFWwindow* window, double x, double y) {
-    Window::getInstance().scrollDelta = y;
+    Window::getInstance().scrollDelta = (float)y;
 }
 
 Window& Window::createInstance(int width, int height, std::string title) {

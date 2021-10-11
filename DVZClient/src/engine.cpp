@@ -32,7 +32,7 @@ Engine::Engine() :
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
 	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
-	netclient(std::make_unique<Net::ClientSocket>("127.0.0.1:50150")),
+	netclient(std::make_unique<Net::ClientSocket>("54.85.202.121:50150")),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
 

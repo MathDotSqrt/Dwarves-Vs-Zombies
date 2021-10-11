@@ -14,8 +14,8 @@ PerspectiveCamera::PerspectiveCamera() {
 	this->fov = 80;
 
 	const DVZ::Window& window = DVZ::Window::getInstance();
-	this->width = window.getWidth();
-	this->height = window.getHeight();
+	this->width = (float)window.getWidth();
+	this->height = (float)window.getHeight();
 	this->near = .1f;
 	this->far = 10000.0f;
 }

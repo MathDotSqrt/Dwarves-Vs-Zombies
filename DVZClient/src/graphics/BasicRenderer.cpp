@@ -31,7 +31,7 @@ BasicRenderer::BasicRenderer() {
 	auto chunk_shader = ss.load("chunk"_hs, "chunk_shader.vert", "chunk_shader.frag");
 		
 	const auto& window = DVZ::Window::getInstance();
-	P = glm::perspectiveFov<float>(80, window.getWidth(), window.getHeight(), .1f, 100000.0f);
+	P = glm::perspectiveFov<float>(80.0f, (float)window.getWidth(), (float)window.getHeight(), .1f, 100000.0f);
 	V = glm::identity<glm::mat4>();
 	VP = P * V;
 
@@ -44,7 +44,7 @@ void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	glCullFace(GL_CCW);
 	
 	const auto& window = DVZ::Window::getInstance();
-	P = glm::perspectiveFov<float>(camera.fov, window.getWidth(), window.getHeight(), camera.near, camera.far);
+	P = glm::perspectiveFov<float>((float)camera.fov, (float)window.getWidth(), (float)window.getHeight(), camera.near, camera.far);
 
 
 	V = glm::lookAt(camera.pos, camera.rot * glm::vec3(0, 0, -1) + camera.pos, glm::vec3(0, -1, 0));
@@ -72,7 +72,7 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 
 		mesh->vao.bind();
 		mesh->ebo.bind();
-		glDrawElements(GL_TRIANGLES, mesh->ebo.getNumBytes() / sizeof(u32), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, (GLsizei)(mesh->ebo.getNumBytes() / sizeof(u32)), GL_UNSIGNED_INT, 0);
 		mesh->ebo.unbind();
 		mesh->vao.unbind();
 	}
