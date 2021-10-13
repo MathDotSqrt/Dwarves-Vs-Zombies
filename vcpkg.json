@@ -15,6 +15,7 @@
 		"entt",
 		"spdlog",
 		"stb",
-		"gamenetworkingsockets"
+		"gamenetworkingsockets",
+		"cereal"
 	]
 }

@@ -5,6 +5,8 @@ set(HEADER_FILES
 
 	"./include/core/collision/AABB.hpp"
 
+	"./include/core/net/Packet.hpp"
+
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"
@@ -12,6 +14,8 @@ set(HEADER_FILES
 
 set(SOURCE_FILES 
 	"./src/collision/AABB.cpp"
+
+	"./src/net/Packet.cpp"
 
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"

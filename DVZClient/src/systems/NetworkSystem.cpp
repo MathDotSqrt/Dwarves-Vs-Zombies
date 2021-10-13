@@ -1,6 +1,8 @@
 #include "client/systems/NetworkSystem.hpp"
 #include "client/engine.hpp"
 
+#include "core/net/Packet.hpp"
+
 #include <spdlog/spdlog.h>
 
 using namespace DVZ::Systems;
@@ -11,7 +13,9 @@ NetworkSystem::NetworkSystem() : netclient(std::make_unique<Net::ClientSocket>()
 }
 
 void NetworkSystem::init(Engine& engine) {
-
+	const auto buffer = DVZ::Net::serializePacketData(Net::PlayerPositionVelPacketData{glm::vec3(0), glm::vec3(1)});
+	spdlog::info("Buffer size: {}", buffer.size());
+	sizeof(Net::PlayerPositionVelPacketData);
 }
 
 void NetworkSystem::gameTick(Engine& engine) {
