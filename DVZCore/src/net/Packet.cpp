@@ -5,7 +5,6 @@
 
 using namespace DVZ::Net;
 
-using bytestream = std::basic_stringstream<std::byte>;
 
 std::vector<char> DVZ::Net::serializePacketData(const PlayerPositionVelPacketData& data) {
 	std::stringstream ss;

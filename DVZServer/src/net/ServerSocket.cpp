@@ -67,12 +67,27 @@ void ServerSocket::pollIncomingMessages() {
 
 		if (message) {
 			std::string_view data{ (char*)message->m_pData, (size_t)message->m_cbSize };
+			sendMessage(message->m_conn, data);
 			spdlog::info("Message recieved: {}", data);
+			message->Release();
+		}
+	}
+}
+
+void ServerSocket::sendMessage(HSteamNetConnection conn, std::string_view sv) {
+	const auto iter = connections.find(conn);
+	if (iter != connections.end()) {
+		const ConnectionState& state = iter->second;
+		if (state == ConnectionState::CONNECTED) {
+			socketsInterface->SendMessageToConnection(conn, sv.data(), sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
 		}
 	}
 }
 
 void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
+	HSteamNetConnection connection = info->m_hConn;
+	ConnectionState state = ConnectionState::INVALID;
+
 	switch (info->m_info.m_eState) {
 	case k_ESteamNetworkingConnectionState_None:
 		//We get callback when we destroy connections
@@ -83,6 +98,23 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 
 		if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected) {
 			//Something bad probably happened here
+			spdlog::error("Connection failed");
+			state = ConnectionState::CONNECTION_FAILED;
+		}
+		else if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting) {
+			// Note: we could distinguish between a timeout, a rejected connection,
+			// or some other transport problem.
+			spdlog::error("Connection failed");
+			state = ConnectionState::CONNECTION_FAILED;
+		}
+		else if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally) {
+			spdlog::error("Connection lost");
+			state = ConnectionState::CONNECTION_FAILED;
+		}
+		else {
+			// NOTE: We could check the reason code for a normal disconnection
+			spdlog::info("Server disconnected us");
+			state = ConnectionState::DISCONNECTED;
 		}
 		socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
 		break;
@@ -92,16 +124,20 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 			if (!socketsInterface->SetConnectionPollGroup(info->m_hConn, pollGroup)) {
 				socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
 				spdlog::error("Failed to set poll group");
+				state = ConnectionState::CONNECTION_FAILED;
 			}
+			state = ConnectionState::CONNECTING;
 		}
 		else {
 			spdlog::info("Failed to accept connection");
 			socketsInterface->CloseConnection(info->m_hConn, 0, nullptr, false);
+			state = ConnectionState::CONNECTION_FAILED;
 		}
 		
 		break;
 	case k_ESteamNetworkingConnectionState_Connected:
 		spdlog::info("Connection accepted");
+		state = ConnectionState::CONNECTED;
 		// We will get a callback immediately after accepting the connection.
 		// Since we are the server, we can ignore this, it's not news to us.
 		break;
@@ -109,6 +145,8 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 		// Silences -Wswitch
 		break;
 	}
+
+	connections[connection] = state;
 }
 
 void ServerSocket::connectionStatusCallback(SteamNetConnectionStatusChangedCallback_t* info) {

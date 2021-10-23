@@ -17,6 +17,9 @@ namespace DVZ::Systems {
 		void init(Engine& engine) override;
 		void gameTick(Engine& engine) override;
 	private:
+		std::function<void(std::string_view)> func;
+
+		void processMessage(std::string_view message);
 		std::unique_ptr<Net::ClientSocket> netclient = nullptr;
 	};
 }

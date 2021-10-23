@@ -3,7 +3,11 @@
 #define DVZ_SERVER_SOCKET_HPP
 
 #include "core/common.hpp"
+#include "core/net/ConnectionState.hpp"
+
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
+#include <string_view>
+#include <unordered_map>
 
 class ISteamNetworkingSockets;
 
@@ -14,6 +18,7 @@ namespace DVZ::Net {
 		~ServerSocket();
 
 		void pollIncomingMessages();
+		void sendMessage(HSteamNetConnection client, std::string_view sv);
 
 	private:
 		static ServerSocket* callbackInstance;
@@ -21,6 +26,8 @@ namespace DVZ::Net {
 		
 		void onConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info);
 		void pollConnectionStateChanges();
+
+		std::unordered_map<HSteamNetConnection, ConnectionState> connections;
 
 		HSteamListenSocket listenSock = 0;
 		HSteamNetPollGroup pollGroup = 0;

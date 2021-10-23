@@ -2,22 +2,20 @@
 #ifndef DVZ_CLIENT_SOCKET_HPP
 #define DVZ_CLIENT_SOCKET_HPP
 
+#include "core/net/ConnectionState.hpp"
+
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
 #include <string_view>
+#include <functional>
 
 class ISteamNetworkingSockets;
 struct SteamNetConnectionStatusChangedCallback_t;
 
+namespace DVZ::Systems{
+	class NetworkSystem;
+}
+
 namespace DVZ::Net {
-
-	enum class ConnectionState {
-		CONNECTED,
-		CONNECTING,
-		CONNECTION_FAILED,
-		DISCONNECTED,
-		INVALID
-	};
-
 	class ClientSocket {
 	public:
 		ClientSocket();
@@ -25,7 +23,7 @@ namespace DVZ::Net {
 		~ClientSocket();
 
 		bool connectToServer(const std::string& ip);
-		void pollIncommingMessages();
+		void pollIncommingMessages(const std::function<void(std::string_view)>& func);
 		void sendMessage(std::string_view sv);
 		
 		bool isValid() const;

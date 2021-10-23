@@ -5,6 +5,7 @@ set(HEADER_FILES
 
 	"./include/core/collision/AABB.hpp"
 
+	"./include/core/net/ConnectionState.hpp"
 	"./include/core/net/Packet.hpp"
 
 	"./include/core/voxel/block.hpp"

@@ -69,7 +69,7 @@ bool ClientSocket::connectToServer(const std::string& ip) {
 	return isValid();
 }
 
-void ClientSocket::pollIncommingMessages(){
+void ClientSocket::pollIncommingMessages(const std::function<void(std::string_view)>& func){
 	pollConnectionStateChanges();
 
 	if (connectionState == ConnectionState::CONNECTED) {
@@ -85,7 +85,9 @@ void ClientSocket::pollIncommingMessages(){
 
 			//std::string_view data{(char*)message->m_pData, (size_t)message->m_cbSize};
 			//spdlog::info("Message received: {}", data);
-			if (message) {
+			if (message != nullptr && message->m_cbSize > 0) {
+				std::string_view message_view{(char*)message->m_pData, (size_t)message->m_cbSize};
+				func(message_view);
 				message->Release();
 			}
 		}
