@@ -51,7 +51,7 @@ ServerSocket::~ServerSocket() {
 	socketsInterface->CloseListenSocket(listenSock);
 }
 
-void ServerSocket::pollIncomingMessages() {
+void ServerSocket::pollIncomingMessages(const std::function<void(std::string_view, HSteamNetConnection)>& func) {
 	pollConnectionStateChanges();
 
 	while (true) {
@@ -67,19 +67,27 @@ void ServerSocket::pollIncomingMessages() {
 
 		if (message) {
 			std::string_view data{ (char*)message->m_pData, (size_t)message->m_cbSize };
-			sendMessage(message->m_conn, data);
-			spdlog::info("Message recieved: {}", data);
+			func(data, message->m_conn);
 			message->Release();
 		}
 	}
 }
 
-void ServerSocket::sendMessage(HSteamNetConnection conn, std::string_view sv) {
+void ServerSocket::sendMessage(std::string_view sv, HSteamNetConnection conn) {
 	const auto iter = connections.find(conn);
 	if (iter != connections.end()) {
 		const ConnectionState& state = iter->second;
 		if (state == ConnectionState::CONNECTED) {
 			socketsInterface->SendMessageToConnection(conn, sv.data(), sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+		}
+	}
+}
+
+void ServerSocket::sendToAllMessage(std::string_view data, HSteamNetConnection except) {
+	for (const auto& connection : connections) {
+		const auto& [connection_id, state] = connection;
+		if (connection_id != except && state == ConnectionState::CONNECTED) {
+			socketsInterface->SendMessageToConnection(connection_id, data.data(), data.size(), k_nSteamNetworkingSend_Reliable, nullptr);
 		}
 	}
 }

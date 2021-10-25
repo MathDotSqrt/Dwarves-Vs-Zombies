@@ -1,9 +1,13 @@
 set(HEADER_FILES
+	"./include/server/Engine.hpp"
+
 	"./include/server/net/ServerSocket.hpp"
 )
 
 set(SOURCE_FILES 
 	"./src/main.cpp"
+
+	"./src/Engine.cpp"
 
 	"./src/net/ServerSocket.cpp"
 )

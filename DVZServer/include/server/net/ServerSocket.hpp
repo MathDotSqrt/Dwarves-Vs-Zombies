@@ -8,6 +8,7 @@
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
 #include <string_view>
 #include <unordered_map>
+#include <functional>
 
 class ISteamNetworkingSockets;
 
@@ -17,8 +18,9 @@ namespace DVZ::Net {
 		ServerSocket(u16 port);
 		~ServerSocket();
 
-		void pollIncomingMessages();
-		void sendMessage(HSteamNetConnection client, std::string_view sv);
+		void pollIncomingMessages(const std::function<void(std::string_view,HSteamNetConnection)>& func);
+		void sendMessage(std::string_view data, HSteamNetConnection client);
+		void sendToAllMessage(std::string_view data, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
 
 	private:
 		static ServerSocket* callbackInstance;

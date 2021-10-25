@@ -10,10 +10,15 @@
 
 std::atomic<bool> should_run = true;
 
+void on_message(DVZ::Net::ServerSocket& socket, std::string_view message, HSteamNetConnection connection) {
+	socket.sendMessage(message, connection);
+}
+
 void server_loop() {
 
 	DVZ::Net::ServerSocket server{50150};
 
+	std::function<void(std::string_view, HSteamNetConnection)> func = std::bind(&on_message, server, std::placeholders::_1, std::placeholders::_2);
 
 	auto last_time = std::chrono::steady_clock::now();
 	while (should_run.load()) {
@@ -21,9 +26,8 @@ void server_loop() {
 		auto delta = current_time - last_time;
 		if (delta > std::chrono::seconds(1)) {
 			last_time = current_time;
-			server.pollIncomingMessages();
+			server.pollIncomingMessages(func);
 		}
-	
 	}
 }
 
