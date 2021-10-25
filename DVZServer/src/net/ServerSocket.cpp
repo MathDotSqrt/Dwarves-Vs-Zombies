@@ -78,7 +78,7 @@ void ServerSocket::sendMessage(std::string_view sv, HSteamNetConnection conn) {
 	if (iter != connections.end()) {
 		const ConnectionState& state = iter->second;
 		if (state == ConnectionState::CONNECTED) {
-			socketsInterface->SendMessageToConnection(conn, sv.data(), sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+			socketsInterface->SendMessageToConnection(conn, sv.data(), (uint32)sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
 		}
 	}
 }
@@ -87,7 +87,7 @@ void ServerSocket::sendToAllMessage(std::string_view data, HSteamNetConnection e
 	for (const auto& connection : connections) {
 		const auto& [connection_id, state] = connection;
 		if (connection_id != except && state == ConnectionState::CONNECTED) {
-			socketsInterface->SendMessageToConnection(connection_id, data.data(), data.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+			socketsInterface->SendMessageToConnection(connection_id, data.data(), (uint32)data.size(), k_nSteamNetworkingSend_Reliable, nullptr);
 		}
 	}
 }

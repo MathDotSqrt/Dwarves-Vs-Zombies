@@ -1,4 +1,4 @@
-
+#include "server/Engine.hpp"
 #include "server/net/ServerSocket.hpp"
 
 #include <spdlog/spdlog.h>
@@ -8,49 +8,25 @@
 #include <chrono>
 #include <thread>
 
-std::atomic<bool> should_run = true;
-
-void on_message(DVZ::Net::ServerSocket& socket, std::string_view message, HSteamNetConnection connection) {
-	socket.sendMessage(message, connection);
-}
-
-void server_loop() {
-
-	DVZ::Net::ServerSocket server{50150};
-
-	std::function<void(std::string_view, HSteamNetConnection)> func = std::bind(&on_message, server, std::placeholders::_1, std::placeholders::_2);
-
-	auto last_time = std::chrono::steady_clock::now();
-	while (should_run.load()) {
-		auto current_time = std::chrono::steady_clock::now();
-		auto delta = current_time - last_time;
-		if (delta > std::chrono::seconds(1)) {
-			last_time = current_time;
-			server.pollIncomingMessages(func);
-		}
-	}
-}
-
 int main() {
 	spdlog::info("Initializing server...");
+	
+	{
+		DVZ::Engine engine;
 
-	std::thread t{server_loop};
-
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	while (true) {
-		//std::cout << "[Enter Command]>" << std::flush;
-		std::string line;
-		std::getline(std::cin, line);
-		if (line.size() == 0) {
-			break;
+		while (true) {
+			//std::cout << "[Enter Command]>" << std::flush;
+			std::string line;
+			std::getline(std::cin, line);
+			if (line.size() == 0) {
+				break;
+			}
+			else {
+				spdlog::info("Command: {}", line);
+			}
 		}
-		else {
-			spdlog::info("Command: {}", line);
-		}
+		spdlog::info("Shutting down...");
 	}
 
-	spdlog::info("Shutting down...");
-	should_run = false;
-	t.join();
 	spdlog::info("Done.");
 }

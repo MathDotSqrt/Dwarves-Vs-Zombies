@@ -15,7 +15,8 @@ namespace DVZ::Net {
 	enum class PacketID : u8 {
 		ClientConnected,
 		NetPlayerSpawned,
-		PlayerPositionVel
+		PlayerPositionVel,
+		Echo
 	};
 
 	struct PlayerPositionVelPacketData {

@@ -4,12 +4,12 @@
 
 #include <thread>
 #include <atomic>
+#include <memory>
 
-namespace DVZ::Net {
-	class ServerSocket;
-}
 
 namespace DVZ {
+	class NetSystem;
+
 	class Engine {
 	public:
 		Engine();
@@ -17,10 +17,11 @@ namespace DVZ {
 
 		void tick();
 		void updateLoop();
-
 	private:
 		std::thread updateThread;
 		std::atomic<bool> shouldRun;
+
+		std::unique_ptr<NetSystem> netSystem;
 	};
 }
 

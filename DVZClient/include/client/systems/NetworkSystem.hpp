@@ -3,8 +3,9 @@
 #define DVZ_NETWORK_SYSTEM_HPP
 
 #include "client/systems/System.hpp"
-
 #include "client/net/ClientSocket.hpp"
+
+#include "core/net/Packet.hpp"
 
 #include <memory>
 #include <optional>
@@ -18,8 +19,7 @@ namespace DVZ::Systems {
 		void gameTick(Engine& engine) override;
 	private:
 		std::function<void(std::string_view)> func;
-
-		void processMessage(std::string_view message);
+		void onMessage(std::string_view message);
 		std::unique_ptr<Net::ClientSocket> netclient = nullptr;
 	};
 }

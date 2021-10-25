@@ -10,7 +10,7 @@ using namespace DVZ::Systems;
 NetworkSystem::NetworkSystem() : netclient(std::make_unique<Net::ClientSocket>()){
 	netclient->connectToServer("127.0.0.1:50150");
 	assert(netclient->isValid());
-	this->func = std::bind(&NetworkSystem::processMessage, this, std::placeholders::_1);
+	this->func = std::bind(&NetworkSystem::onMessage, this, std::placeholders::_1);
 }
 
 void NetworkSystem::init(Engine& engine) {
@@ -35,6 +35,6 @@ void NetworkSystem::gameTick(Engine& engine) {
 	}
 }
 
-void NetworkSystem::processMessage(std::string_view message) {
+void NetworkSystem::onMessage(std::string_view message) {
 	spdlog::info("{}", message);
 }
