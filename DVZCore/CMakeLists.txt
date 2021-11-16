@@ -8,6 +8,9 @@ set(HEADER_FILES
 	"./include/core/net/ConnectionState.hpp"
 	"./include/core/net/Packet.hpp"
 
+	"./include/core/util/view_streambuf.hpp"
+
+
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"

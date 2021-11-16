@@ -3,6 +3,7 @@
 #define DVZ_CLIENT_SOCKET_HPP
 
 #include "core/net/ConnectionState.hpp"
+#include "core/net/Packet.hpp"
 
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
 #include <string_view>
@@ -25,6 +26,13 @@ namespace DVZ::Net {
 		bool connectToServer(const std::string& ip);
 		void pollIncommingMessages(const std::function<void(std::string_view)>& func);
 		void sendMessage(std::string_view sv);
+
+		template<typename Packet>
+		void sendMessage(const Packet& packet) {
+			const auto& bytes = serializePacketData(packet);
+			std::string_view sv{ bytes.data(), bytes.size() };
+			sendMessage(sv);
+		}
 		
 		bool isValid() const;
 		ConnectionState getConnectionState() const;

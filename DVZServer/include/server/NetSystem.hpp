@@ -20,7 +20,7 @@ namespace DVZ {
 		void tick(Engine& engine);
 	private:
 
-
+		void onEchoPacket(std::string_view sv, HSteamNetConnection connection);
 
 		std::unique_ptr<Net::ServerSocket> socket;
 		//void onMessage(std::string_view sv, HSteamNetConnection connection);

@@ -19,7 +19,19 @@ namespace DVZ::Net {
 		Echo
 	};
 
+	struct EchoPacketData {
+		constexpr static PacketID ID = PacketID::Echo;
+
+		std::string message;
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(message);
+		}
+	};
+
 	struct PlayerPositionVelPacketData {
+		constexpr static PacketID ID = PacketID::PlayerPositionVel;
+
 		glm::vec3 pos;
 		glm::vec3 vel;
 
@@ -29,11 +41,11 @@ namespace DVZ::Net {
 		}
 	};
 
-	using PacketDataVariant = std::variant<PlayerPositionVelPacketData>;
-
+	std::vector<char> serializePacketData(const EchoPacketData& data);
 	std::vector<char> serializePacketData(const PlayerPositionVelPacketData& data);
-
-	PacketID deserializePacketData(std::string_view );
+	
+	bool deserializePacketData(std::string_view, EchoPacketData& out);
+	bool deserializePacketData(std::string_view, PlayerPositionVelPacketData& out);
 	
 }
 

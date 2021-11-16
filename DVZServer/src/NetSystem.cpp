@@ -23,6 +23,8 @@ void NetSystem::tick(Engine& engine) {
 		
 		PacketID id{ static_cast<PacketID>(data[0]) };
 
+		data.remove_prefix(1);
+
 		switch (id) {
 		case PacketID::ClientConnected:
 			break;
@@ -31,6 +33,7 @@ void NetSystem::tick(Engine& engine) {
 		case PacketID::PlayerPositionVel:
 			break;
 		case PacketID::Echo:
+			onEchoPacket(data, connection);
 			break;
 		default:
 			spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
@@ -38,4 +41,14 @@ void NetSystem::tick(Engine& engine) {
 
 		//socket->sendMessage(data, connection);
 	});
+}
+
+void NetSystem::onEchoPacket(std::string_view data, HSteamNetConnection conn) {
+	using namespace Net;
+
+	EchoPacketData echo;
+	deserializePacketData(data, echo);
+	spdlog::info("Echo: {}", echo.message);
+
+	socket->sendMessage(echo, conn);
 }

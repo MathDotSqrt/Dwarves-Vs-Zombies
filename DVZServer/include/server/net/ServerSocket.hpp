@@ -4,6 +4,7 @@
 
 #include "core/common.hpp"
 #include "core/net/ConnectionState.hpp"
+#include "core/net/Packet.hpp"
 
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
 #include <string_view>
@@ -21,6 +22,13 @@ namespace DVZ::Net {
 		void pollIncomingMessages(const std::function<void(std::string_view,HSteamNetConnection)>& func);
 		void sendMessage(std::string_view data, HSteamNetConnection client);
 		void sendToAllMessage(std::string_view data, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+
+		template<typename Packet>
+		void sendMessage(const Packet& packet, HSteamNetConnection client) {
+			const auto& bytes = serializePacketData(packet);
+			std::string_view sv{bytes.data(), bytes.size()};
+			sendMessage(sv, client);
+		}
 
 	private:
 		static ServerSocket* callbackInstance;
