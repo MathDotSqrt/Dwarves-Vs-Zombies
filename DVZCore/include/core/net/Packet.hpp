@@ -4,6 +4,7 @@
 
 #include "core/common.hpp"
 
+#include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <vector>
 #include <string_view>
@@ -14,14 +15,12 @@ namespace DVZ::Net {
 
 	enum class PacketID : u8 {
 		ClientConnected,
-		NetPlayerSpawned,
+		Echo,
 		PlayerPositionVel,
-		Echo
+		NetPlayerSpawned
 	};
 
 	struct EchoPacketData {
-		constexpr static PacketID ID = PacketID::Echo;
-
 		std::string message;
 		template <class Archive>
 		void serialize(Archive& ar) {
@@ -30,8 +29,6 @@ namespace DVZ::Net {
 	};
 
 	struct PlayerPositionVelPacketData {
-		constexpr static PacketID ID = PacketID::PlayerPositionVel;
-
 		glm::vec3 pos;
 		glm::vec3 vel;
 
@@ -41,11 +38,22 @@ namespace DVZ::Net {
 		}
 	};
 
+	struct NetPlayerSpawned {
+		entt::entity server_id;
+
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(server_id);
+		}
+	};
+
 	std::vector<char> serializePacketData(const EchoPacketData& data);
 	std::vector<char> serializePacketData(const PlayerPositionVelPacketData& data);
+	std::vector<char> serializePacketData(const NetPlayerSpawned& data);
 	
 	bool deserializePacketData(std::string_view, EchoPacketData& out);
 	bool deserializePacketData(std::string_view, PlayerPositionVelPacketData& out);
+	bool deserializePacketData(std::string_view, NetPlayerSpawned& out);
 	
 }
 

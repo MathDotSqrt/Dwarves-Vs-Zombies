@@ -22,9 +22,9 @@ namespace DVZ {
 
 		}
 
-		operator const glm::vec3& () const {
-			return static_cast<const glm::vec3&>(*this);
-		}
+		//operator glm::vec3& () {
+		//	return static_cast<glm::vec3&>(*this);
+		//}
 	};
 
 	struct MovementState {
@@ -46,6 +46,7 @@ namespace DVZ {
 	struct VoxelCollider {
 		Collision::AABB collider;
 	};
+
 }
 
 #endif

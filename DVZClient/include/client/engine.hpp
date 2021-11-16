@@ -52,6 +52,9 @@ namespace DVZ{
 		entt::registry& getRegistry();
 		Graphics::Scene& getScene();
 		Voxel::ClientChunkManager& getChunkManager();
+
+		std::unordered_map<entt::entity, entt::entity>& getNetEntityMap();
+		const std::unordered_map<entt::entity, entt::entity>& getNetEntityMap() const;
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
 
@@ -61,6 +64,8 @@ namespace DVZ{
 		std::atomic<bool> shouldStop = false;
 		std::atomic<float> alpha = 0;
 		//std::atomic<std::chrono::time_point<std::chrono::steady_clock>> last_update;
+
+		std::unordered_map<entt::entity, entt::entity> netEntityMap;
 
 		entt::registry registry;
 		std::unique_ptr<Graphics::Scene> scene;

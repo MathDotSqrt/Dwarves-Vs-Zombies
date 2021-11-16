@@ -1,6 +1,8 @@
 #include "client/systems/NetworkSystem.hpp"
 #include "client/engine.hpp"
+#include "client/ClientComponents.hpp"
 
+#include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
 
 #include <spdlog/spdlog.h>
@@ -10,7 +12,6 @@ using namespace DVZ::Systems;
 NetworkSystem::NetworkSystem() : netclient(std::make_unique<Net::ClientSocket>()){
 	netclient->connectToServer("127.0.0.1:50150");
 	assert(netclient->isValid());
-	this->func = std::bind(&NetworkSystem::onMessage, this, std::placeholders::_1);
 }
 
 void NetworkSystem::init(Engine& engine) {
@@ -22,8 +23,9 @@ void NetworkSystem::gameTick(Engine& engine) {
 	using namespace Net;
 	static bool sent = false;
 	if (netclient->isValid()) {
-		//netclient->pollIncommingMessages([&](std::string_view message) {processMessage(message); });
-		netclient->pollIncommingMessages(func);
+		netclient->pollIncommingMessages([&](std::string_view sv) {
+			this->onMessage(engine, sv);
+		});
 
 
 		if (netclient->getConnectionState() == ConnectionState::CONNECTION_FAILED) {
@@ -39,7 +41,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	}
 }
 
-void NetworkSystem::onMessage(std::string_view data) {
+void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 	using namespace Net;
 
 	if (data.size() == 0) {
@@ -51,20 +53,21 @@ void NetworkSystem::onMessage(std::string_view data) {
 	data.remove_prefix(1);
 
 	switch (packetID) {
-	case PacketID::ClientConnected:
-		break;
 	case PacketID::Echo:
-		onEchoPacket(data);
+		onEchoPacket(engine, data);
 		break;
 	case PacketID::PlayerPositionVel:
-		onPlayerPosVelPacket(data);
+		onPlayerPosVelPacket(engine, data);
+		break;
+	case PacketID::NetPlayerSpawned:
+		onNetPlayerSpawned(engine, data);
 		break;
 	default:
 		break;
 	}
 }
 
-void NetworkSystem::onEchoPacket(std::string_view data) {
+void NetworkSystem::onEchoPacket(Engine& engine, std::string_view data) {
 	using namespace Net;
 	EchoPacketData echo;
 	if (deserializePacketData(data, echo)) {
@@ -72,10 +75,31 @@ void NetworkSystem::onEchoPacket(std::string_view data) {
 	}
 }
 
-void NetworkSystem::onPlayerPosVelPacket(std::string_view data) {
+void NetworkSystem::onPlayerPosVelPacket(Engine& engine, std::string_view data) {
 	using namespace Net;
 	PlayerPositionVelPacketData posvel;
 	if (deserializePacketData(data, posvel)) {
 		
+	}
+}
+
+void NetworkSystem::onNetPlayerSpawned(Engine& engine, std::string_view data) {
+	using namespace Net;
+	using namespace entt;
+
+	NetPlayerSpawned spawn;
+	if (deserializePacketData(data, spawn)) {
+		auto& registry = engine.getRegistry();
+		entt::entity netplayer = registry.create();
+		auto& netEntityMap = engine.getNetEntityMap();
+		
+		netEntityMap[spawn.server_id] = netplayer;
+
+		registry.emplace<Transformation>(netplayer, glm::vec3(0, 20, -10));
+		registry.emplace<Velocity>(netplayer, glm::vec3{0});
+		registry.emplace<MovementState>(netplayer);
+		registry.emplace<Direction>(netplayer);
+		registry.emplace<VoxelCollider>(netplayer, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
+		registry.emplace<Renderable>(netplayer, "cube"_hs);
 	}
 }

@@ -51,4 +51,5 @@ void NetSystem::onEchoPacket(std::string_view data, HSteamNetConnection conn) {
 	spdlog::info("Echo: {}", echo.message);
 
 	socket->sendMessage(echo, conn);
+	socket->sendMessage(NetPlayerSpawned{ entt::entity{0} }, conn);
 }

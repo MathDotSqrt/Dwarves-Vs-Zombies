@@ -30,6 +30,13 @@ namespace DVZ::Net {
 			sendMessage(sv, client);
 		}
 
+		template<typename Packet>
+		void sendToAllMessage(const Packet& packet, HSteamNetConnection except = k_HSteamNetConnection_Invalid) {
+			const auto& bytes = serializePacketData(packet);
+			std::string_view sv{ bytes.data(), bytes.size() };
+			sendToAllMessage(sv, client);
+		}
+
 	private:
 		static ServerSocket* callbackInstance;
 		static void connectionStatusCallback(SteamNetConnectionStatusChangedCallback_t* info);

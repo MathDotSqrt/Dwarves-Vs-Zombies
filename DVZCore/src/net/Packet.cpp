@@ -34,11 +34,18 @@ std::vector<char> DVZ::Net::serializePacketData(const PlayerPositionVelPacketDat
 	return serialize<>(PacketID::PlayerPositionVel, data);
 }
 
+std::vector<char> DVZ::Net::serializePacketData(const NetPlayerSpawned& data) {
+	return serialize<>(PacketID::NetPlayerSpawned, data);
+}
 
 bool DVZ::Net::deserializePacketData(std::string_view sv, EchoPacketData& out) {
 	return deserialize<>(sv, out);
 }
 
 bool DVZ::Net::deserializePacketData(std::string_view sv, PlayerPositionVelPacketData& out) {
+	return deserialize<>(sv, out);
+}
+
+bool DVZ::Net::deserializePacketData(std::string_view sv, NetPlayerSpawned& out) {
 	return deserialize<>(sv, out);
 }

@@ -161,3 +161,11 @@ Voxel::ClientChunkManager& Engine::getChunkManager() {
 Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 	return *chunkRenderDataManager;
 }
+
+std::unordered_map<entt::entity, entt::entity>& Engine::getNetEntityMap() {
+	return netEntityMap;
+}
+
+const std::unordered_map<entt::entity, entt::entity>& Engine::getNetEntityMap() const {
+	return netEntityMap;
+}
