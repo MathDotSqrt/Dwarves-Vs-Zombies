@@ -20,6 +20,15 @@ namespace DVZ::Net {
 		NetPlayerSpawned
 	};
 
+	struct ClientConnectedPacketData {
+		std::string name;
+
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(name);
+		}
+	};
+
 	struct EchoPacketData {
 		std::string message;
 		template <class Archive>
@@ -29,12 +38,13 @@ namespace DVZ::Net {
 	};
 
 	struct PlayerPositionVelPacketData {
+		entt::entity entity;
 		glm::vec3 pos;
 		glm::vec3 vel;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+			ar(entity, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
 		}
 	};
 
@@ -47,10 +57,12 @@ namespace DVZ::Net {
 		}
 	};
 
+	std::vector<char> serializePacketData(const ClientConnectedPacketData& data);
 	std::vector<char> serializePacketData(const EchoPacketData& data);
 	std::vector<char> serializePacketData(const PlayerPositionVelPacketData& data);
 	std::vector<char> serializePacketData(const NetPlayerSpawned& data);
 	
+	bool deserializePacketData(std::string_view, ClientConnectedPacketData& out);
 	bool deserializePacketData(std::string_view, EchoPacketData& out);
 	bool deserializePacketData(std::string_view, PlayerPositionVelPacketData& out);
 	bool deserializePacketData(std::string_view, NetPlayerSpawned& out);

@@ -1,0 +1,12 @@
+#ifndef DVZ_SERVER_COMPONENTS_HPP
+#define DVZ_SERVER_COMPONENTS_HPP
+
+#include "core/common.hpp"
+
+namespace DVZ {
+	struct NetPlayer {
+		uint32 connection;
+	};
+}
+
+#endif

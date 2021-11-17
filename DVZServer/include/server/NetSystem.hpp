@@ -16,6 +16,8 @@ namespace DVZ {
 		void tick(Engine& engine);
 	private:
 
+		void onMessage(Engine&, std::string_view sv, HSteamNetConnection connection);
+		void onClientConnected(Engine&, std::string_view sv, HSteamNetConnection connection);
 		void onEchoPacket(Engine&, std::string_view sv, HSteamNetConnection connection);
 
 		//std::unique_ptr<Net::ServerSocket> socket;

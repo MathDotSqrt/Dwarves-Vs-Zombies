@@ -18,7 +18,7 @@ void NetClientManager::update() {
 	}
 	if (netclient->getConnectionState() == ConnectionState::CONNECTED) {
 		if (sent == false) {
-			netclient->sendMessage(EchoPacketData{ "test" });
+			netclient->sendMessage(ClientConnectedPacketData{"MathDotSqrt"});
 			sent = true;
 		}
 	}

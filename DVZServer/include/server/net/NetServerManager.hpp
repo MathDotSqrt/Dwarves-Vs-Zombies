@@ -5,13 +5,14 @@
 #include "server/net/ServerSocket.hpp"
 #include <memory>
 #include <string_view>
+#include <unordered_map>
+#include <entt/entity/entity.hpp>
 
 namespace DVZ::Net {
 
 	class NetServerManager {
 	public:
 		NetServerManager();
-
 
 		template<typename FUNC>
 		void poll(FUNC func) {
@@ -29,13 +30,17 @@ namespace DVZ::Net {
 		void sendToAllMessage(const Packet& packet, HSteamNetConnection except = k_HSteamNetConnection_Invalid) {
 			const auto& bytes = serializePacketData(packet);
 			std::string_view sv{ bytes.data(), bytes.size() };
-			socket->sendToAllMessage(sv, client);
+			socket->sendToAllMessage(sv, except);
 		}
+
+		void addEntityConnectionMapping(entt::entity, HSteamNetConnection conn);
+		HSteamNetConnection getConnectionHandle(entt::entity) const;
 
 		Net::ServerSocket& getSocket();
 
-	private:
+	private: 
 		std::unique_ptr<Net::ServerSocket> socket;
+		std::unordered_map<entt::entity, HSteamNetConnection> entityToConnectionMap;
 	};
 }
 

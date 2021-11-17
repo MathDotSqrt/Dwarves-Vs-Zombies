@@ -25,11 +25,15 @@ namespace DVZ {
 		void tick();
 		void updateLoop();
 
+		entt::registry& getRegistry();
 		Net::NetServerManager& getNetManager();
 
 	private:
 		std::thread updateThread;
 		std::atomic<bool> shouldRun;
+
+		std::unique_ptr<entt::registry> registry;
+
 		std::unique_ptr<NetSystem> netSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
 	};

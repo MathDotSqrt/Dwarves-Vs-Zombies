@@ -69,7 +69,15 @@ void NetworkSystem::onPlayerPosVelPacket(Engine& engine, std::string_view data) 
 	using namespace Net;
 	PlayerPositionVelPacketData posvel;
 	if (deserializePacketData(data, posvel)) {
-		
+		auto& netEntityMap = engine.getNetEntityMap();
+		auto& registry = engine.getRegistry();
+		entt::entity entity = netEntityMap[posvel.entity];
+
+		auto& trans = registry.get<Transformation>(entity);
+		auto& vel = registry.get<Velocity>(entity);
+
+		trans.pos = posvel.pos;
+		vel = posvel.vel;
 	}
 }
 
@@ -87,7 +95,7 @@ void NetworkSystem::onNetPlayerSpawned(Engine& engine, std::string_view data) {
 
 		registry.emplace<Transformation>(netplayer, glm::vec3(0, 20, -10));
 		registry.emplace<Velocity>(netplayer, glm::vec3{0});
-		registry.emplace<MovementState>(netplayer);
+		//registry.emplace<MovementState>(netplayer);
 		registry.emplace<Direction>(netplayer);
 		registry.emplace<VoxelCollider>(netplayer, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 		registry.emplace<Renderable>(netplayer, "cube"_hs);

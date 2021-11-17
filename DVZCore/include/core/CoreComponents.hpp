@@ -5,6 +5,7 @@
 #include "core/collision/AABB.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace DVZ {
 	struct Transformation {

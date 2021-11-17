@@ -1,6 +1,7 @@
 set(HEADER_FILES
 	"./include/server/Engine.hpp"
 	"./include/server/NetSystem.hpp"
+	"./include/server/ServerComponents.hpp"
 
 	"./include/server/net/NetServerManager.hpp"
 	"./include/server/net/ServerSocket.hpp"

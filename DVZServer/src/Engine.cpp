@@ -10,6 +10,7 @@ using namespace DVZ;
 
 Engine::Engine() : 
 	shouldRun(true), 
+	registry(std::make_unique<entt::registry>()),
 	netSystem(std::make_unique<DVZ::NetSystem>(*this)),
 	netManager(std::make_unique<DVZ::Net::NetServerManager>()),
 	updateThread(&Engine::updateLoop, this) {
@@ -35,11 +36,15 @@ void Engine::updateLoop() {
 	while (shouldRun.load()) {
 		auto current_time = std::chrono::steady_clock::now();
 		auto delta = current_time - last_time;
-		if (delta > duration{1}) {
+		if (delta > duration{1/60.0f}) {
 			last_time = current_time;
 			tick();
 		}
 	}
+}
+
+entt::registry& Engine::getRegistry(){
+	return *registry;
 }
 
 Net::NetServerManager& Engine::getNetManager() {
