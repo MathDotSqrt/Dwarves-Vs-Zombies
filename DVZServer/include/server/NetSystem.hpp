@@ -7,10 +7,6 @@
 #include <memory>
 #include <string_view>
 
-namespace DVZ::Net {
-	class ServerSocket;
-}
-
 namespace DVZ {
 	class Engine;
 
@@ -20,9 +16,9 @@ namespace DVZ {
 		void tick(Engine& engine);
 	private:
 
-		void onEchoPacket(std::string_view sv, HSteamNetConnection connection);
+		void onEchoPacket(Engine&, std::string_view sv, HSteamNetConnection connection);
 
-		std::unique_ptr<Net::ServerSocket> socket;
+		//std::unique_ptr<Net::ServerSocket> socket;
 		//void onMessage(std::string_view sv, HSteamNetConnection connection);
 	};
 }

@@ -5,6 +5,7 @@ set(HEADER_FILES
 	"./include/client/window.hpp"
 
 	"./include/client/net/ClientSocket.hpp"
+	"./include/client/net/NetClientManager.hpp"
 
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
@@ -48,6 +49,7 @@ set(SOURCE_FILES
 	"./src/window.cpp"
 
 	"./src/net/ClientSocket.cpp"
+	"./src/net/NetClientManager.cpp"
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"

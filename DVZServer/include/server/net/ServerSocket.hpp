@@ -23,19 +23,7 @@ namespace DVZ::Net {
 		void sendMessage(std::string_view data, HSteamNetConnection client);
 		void sendToAllMessage(std::string_view data, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
 
-		template<typename Packet>
-		void sendMessage(const Packet& packet, HSteamNetConnection client) {
-			const auto& bytes = serializePacketData(packet);
-			std::string_view sv{bytes.data(), bytes.size()};
-			sendMessage(sv, client);
-		}
-
-		template<typename Packet>
-		void sendToAllMessage(const Packet& packet, HSteamNetConnection except = k_HSteamNetConnection_Invalid) {
-			const auto& bytes = serializePacketData(packet);
-			std::string_view sv{ bytes.data(), bytes.size() };
-			sendToAllMessage(sv, client);
-		}
+		
 
 	private:
 		static ServerSocket* callbackInstance;

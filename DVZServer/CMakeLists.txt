@@ -2,6 +2,7 @@ set(HEADER_FILES
 	"./include/server/Engine.hpp"
 	"./include/server/NetSystem.hpp"
 
+	"./include/server/net/NetServerManager.hpp"
 	"./include/server/net/ServerSocket.hpp"
 )
 
@@ -11,6 +12,7 @@ set(SOURCE_FILES
 	"./src/Engine.cpp"
 	"./src/NetSystem.cpp"
 
+	"./src/net/NetServerManager.cpp"
 	"./src/net/ServerSocket.cpp"
 )
 

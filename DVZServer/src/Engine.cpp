@@ -1,5 +1,6 @@
 #include "server/Engine.hpp"
 #include "server/NetSystem.hpp"
+#include "server/net/NetServerManager.hpp"
 #include "server/net/ServerSocket.hpp"
 
 
@@ -9,7 +10,8 @@ using namespace DVZ;
 
 Engine::Engine() : 
 	shouldRun(true), 
-	netSystem(std::make_unique<DVZ::NetSystem>(*this)), 
+	netSystem(std::make_unique<DVZ::NetSystem>(*this)),
+	netManager(std::make_unique<DVZ::Net::NetServerManager>()),
 	updateThread(&Engine::updateLoop, this) {
 
 
@@ -38,4 +40,8 @@ void Engine::updateLoop() {
 			tick();
 		}
 	}
+}
+
+Net::NetServerManager& Engine::getNetManager() {
+	return *netManager;
 }

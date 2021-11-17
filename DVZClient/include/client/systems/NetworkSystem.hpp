@@ -3,7 +3,6 @@
 #define DVZ_NETWORK_SYSTEM_HPP
 
 #include "client/systems/System.hpp"
-#include "client/net/ClientSocket.hpp"
 
 #include "core/net/Packet.hpp"
 
@@ -25,7 +24,7 @@ namespace DVZ::Systems {
 		void onPlayerPosVelPacket(Engine&, std::string_view data);
 		void onNetPlayerSpawned(Engine&, std::string_view data);
 
-		std::unique_ptr<Net::ClientSocket> netclient = nullptr;
+		//std::unique_ptr<Net::ClientSocket> netclient = nullptr;
 	};
 }
 

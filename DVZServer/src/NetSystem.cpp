@@ -1,5 +1,5 @@
 #include "server/NetSystem.hpp"
-#include "server/net/ServerSocket.hpp"
+#include "server/net/NetServerManager.hpp"
 #include "server/Engine.hpp"
 
 #include "core/net/Packet.hpp"
@@ -8,19 +8,20 @@
 
 using namespace DVZ;
 
-NetSystem::NetSystem(Engine& engine) : socket(std::make_unique<Net::ServerSocket>(50150)){
+NetSystem::NetSystem(Engine& engine) {
 
 }
 
 void NetSystem::tick(Engine& engine) {
-	socket->pollIncomingMessages([&](std::string_view data, HSteamNetConnection connection) {
+	Net::NetServerManager& netManager = engine.getNetManager();
+	netManager.poll([&](std::string_view data, HSteamNetConnection connection) {
 		using namespace Net;
-		
+
 		if (data.size() == 0) {
 			spdlog::error("Empty message from [{}]", connection);
 			return;
 		}
-		
+
 		PacketID id{ static_cast<PacketID>(data[0]) };
 
 		data.remove_prefix(1);
@@ -33,23 +34,28 @@ void NetSystem::tick(Engine& engine) {
 		case PacketID::PlayerPositionVel:
 			break;
 		case PacketID::Echo:
-			onEchoPacket(data, connection);
+			onEchoPacket(engine, data, connection);
 			break;
 		default:
 			spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
+			break;
 		}
-
-		//socket->sendMessage(data, connection);
 	});
 }
 
-void NetSystem::onEchoPacket(std::string_view data, HSteamNetConnection conn) {
+void NetSystem::onEchoPacket(Engine& engine, std::string_view data, HSteamNetConnection conn) {
 	using namespace Net;
+
+	Net::NetServerManager& netManager = engine.getNetManager();
+
 
 	EchoPacketData echo;
 	deserializePacketData(data, echo);
 	spdlog::info("Echo: {}", echo.message);
 
-	socket->sendMessage(echo, conn);
-	socket->sendMessage(NetPlayerSpawned{ entt::entity{0} }, conn);
+	netManager.sendMessage(echo, conn);
+	netManager.sendMessage(NetPlayerSpawned{ entt::entity{0} }, conn);
+
+	//socket->sendMessage(echo, conn);
+	//socket->sendMessage(NetPlayerSpawned{ entt::entity{0} }, conn);
 }

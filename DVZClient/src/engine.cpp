@@ -3,6 +3,7 @@
 #include "client/window.hpp"
 
 #include "client/net/ClientSocket.hpp"
+#include "client/net/NetClientManager.hpp"
 
 #include "client/graphics/Scene.hpp"
 #include "client/graphics/BasicRenderer.hpp"
@@ -31,6 +32,7 @@ Engine::Engine() :
 	scene(std::make_unique<Graphics::Scene>()), 
 	sceneManager(std::make_unique<Graphics::SceneManager>()),
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
+	netManager(std::make_unique<Net::NetClientManager>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
 	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
 	updateThread(&Engine::updateLoop, this){
@@ -152,6 +154,10 @@ entt::registry& Engine::getRegistry() {
 
 Graphics::Scene& Engine::getScene() {
 	return *scene;
+}
+
+Net::NetClientManager& Engine::getNetManager() {
+	return *netManager;
 }
 
 Voxel::ClientChunkManager& Engine::getChunkManager() {

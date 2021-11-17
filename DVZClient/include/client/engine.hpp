@@ -26,6 +26,10 @@ namespace DVZ{
 	}
 
 
+	namespace Net {
+		class NetClientManager;
+	}
+
 	class Engine {
 	public:
 		using duration = std::chrono::duration<float>;
@@ -51,8 +55,8 @@ namespace DVZ{
 
 		entt::registry& getRegistry();
 		Graphics::Scene& getScene();
+		Net::NetClientManager& getNetManager();
 		Voxel::ClientChunkManager& getChunkManager();
-
 		std::unordered_map<entt::entity, entt::entity>& getNetEntityMap();
 		const std::unordered_map<entt::entity, entt::entity>& getNetEntityMap() const;
 	private:
@@ -71,6 +75,8 @@ namespace DVZ{
 		std::unique_ptr<Graphics::Scene> scene;
 		std::unique_ptr<Graphics::SceneManager> sceneManager;
 		std::unique_ptr<Graphics::BasicRenderer> renderer;
+
+		std::unique_ptr<Net::NetClientManager> netManager;
 
 		std::unique_ptr<Voxel::ClientChunkManager> chunkManager;
 		std::unique_ptr<Voxel::ChunkRenderDataManager> chunkRenderDataManager;
