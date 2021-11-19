@@ -16,7 +16,8 @@ namespace DVZ::Net {
 
 		template<typename FUNC>
 		void poll(FUNC func) {
-			socket->pollIncomingMessages(func);
+			if(socket)
+				socket->pollIncomingMessages(func);
 		}
 
 		template<typename Packet>

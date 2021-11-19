@@ -28,7 +28,13 @@ void NetworkSystem::gameTick(Engine& engine) {
 		this->onMessage(engine, sv);
 	});
 
+	auto& registry = engine.getRegistry();
+	entt::entity entity = engine.getPlayer();
 	
+	auto& transform = registry.get<Transformation>(entity);
+	auto& vel = registry.get<Velocity>(entity);
+
+	netManager.sendMessage(Net::SB_PlayerPositionVel{transform.pos, vel});
 }
 
 void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
@@ -80,7 +86,9 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 
 		if (client_id != entt::null) {
 			auto& transform = registry.get<Transformation>(client_id);
+			auto& vel = registry.get<Velocity>(client_id);
 			transform.pos = packet.pos;
+			vel = packet.vel;
 		}
 	}
 }
@@ -109,7 +117,6 @@ void NetworkSystem::onSpawnPosition(Engine& engine, std::string_view data) {
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();
 		entt::entity player = engine.getPlayer();
-		spdlog::info("Spawn!!");
 		auto& transform = registry.get<Transformation>(player);
 		transform.pos = packet.pos;
 	}

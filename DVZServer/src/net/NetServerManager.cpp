@@ -7,6 +7,7 @@ NetServerManager::NetServerManager() : socket(std::make_unique<Net::ServerSocket
 
 void NetServerManager::addEntityConnectionMapping(entt::entity entity, HSteamNetConnection connection) {
 	entityToConnectionMap[entity] = connection;
+	connectionToEntityMap[connection] = entity;
 }
 
 HSteamNetConnection NetServerManager::getConnectionHandle(entt::entity entity) const {

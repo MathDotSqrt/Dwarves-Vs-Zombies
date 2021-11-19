@@ -24,7 +24,7 @@ void NetSystem::tick(Engine& engine) {
 
 	auto& registry = engine.getRegistry();
 
-	auto view = registry.view<Transformation, Velocity>();
+	auto view = registry.view<Transformation, Velocity, NetPlayer>();
 
 	for (entt::entity entity : view) {
 		auto& trans = view.get<Transformation>(entity);
@@ -35,9 +35,8 @@ void NetSystem::tick(Engine& engine) {
 		data.pos = trans.pos;
 		data.vel = vel;
 
-		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
 		trans.pos = trans.pos + vel;
-
+		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
 	}
 }
 
@@ -75,18 +74,21 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		auto& netManager = engine.getNetManager();
 
 		entt::entity clientID = registry.create();
-		spdlog::info("New clientID [{}]", clientID);
-
 		glm::vec3 spawn_pos = glm::vec3(0, 100, 0);
 
-		registry.emplace<Transformation>(clientID, spawn_pos);
-		registry.emplace<Velocity>(clientID, glm::vec3{0});
-
 		netManager.addEntityConnectionMapping(clientID, conn);
-
 		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn);
 		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn);
 		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn);
+		
+		registry.emplace<Transformation>(clientID, spawn_pos);
+		registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
+		registry.emplace<NetPlayer>(clientID, conn);
+
+		auto view = registry.view<NetPlayer>();
+		for (entt::entity entity : view) {
+			netManager.sendMessage(Net::CB_PlayerJoinPacket{ entity }, conn);
+		}
 	}
 }
 
@@ -96,9 +98,14 @@ void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HStea
 		auto& registry = engine.getRegistry();
 		auto& netManager = engine.getNetManager();
 		entt::entity player = netManager.getEntity(conn);
-		auto& transform = registry.get<Transformation>(player);
-		
-		transform.pos = packet.pos;
+
+		if (player != entt::null) {
+			auto& transform = registry.get<Transformation>(player);
+			auto& vel = registry.get<Velocity>(player);
+
+			transform.pos = packet.pos;
+			vel = packet.vel;
+		}
 	}
 }
 
