@@ -26,8 +26,7 @@ ClientSocket::ClientSocket(){
 	if (!GameNetworkingSockets_Init(nullptr, errMsg)) {
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
 	}
-
-	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, DebugOutput);
+	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Warning, DebugOutput);
 
 	socketInterface = SteamNetworkingSockets();
 	spdlog::info("Steam networking sockets initalized");
