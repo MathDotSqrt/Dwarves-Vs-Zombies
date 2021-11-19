@@ -8,11 +8,11 @@
 using namespace DVZ::Net;
 
 template<typename T>
-std::vector<char> serialize(PacketID id, const T& packet) {
+std::vector<char> serialize(const T& packet) {
 	std::stringstream ss;
 	cereal::BinaryOutputArchive archive{ ss };
 
-	archive(id);
+	archive(T::packet);
 	archive(packet);
 
 	return std::vector<char>{std::istreambuf_iterator<char>{ss}, std::istreambuf_iterator<char>{}};
@@ -26,34 +26,50 @@ bool deserialize(std::string_view sv, T& packet) {
 	return true;
 }
 
-std::vector<char> DVZ::Net::serializePacketData(const ClientConnectedPacketData& data) {
-	return serialize<>(PacketID::ClientConnected , data);
+std::vector<char> DVZ::Net::serializePacketData(const SB_ClientJoinPacket& data) {
+	return serialize<>(data);
 }
 
-std::vector<char> DVZ::Net::serializePacketData(const EchoPacketData& data) {
-	return serialize<>(PacketID::Echo, data);
+std::vector<char> DVZ::Net::serializePacketData(const SB_PlayerPositionVel& data) {
+	return serialize<>(data);
 }
 
-std::vector<char> DVZ::Net::serializePacketData(const PlayerPositionVelPacketData& data) {
-	return serialize<>(PacketID::PlayerPositionVel, data);
+std::vector<char> DVZ::Net::serializePacketData(const CB_AssignNetIDPacket& data) {
+	return serialize<>(data);
 }
 
-std::vector<char> DVZ::Net::serializePacketData(const NetPlayerSpawned& data) {
-	return serialize<>(PacketID::NetPlayerSpawned, data);
+std::vector<char> DVZ::Net::serializePacketData(const CB_SpawnPositionPacket& data) {
+	return serialize<>(data);
 }
 
-bool DVZ::Net::deserializePacketData(std::string_view sv, ClientConnectedPacketData& out) {
+std::vector<char> DVZ::Net::serializePacketData(const CB_EntityPositionVelPacket& data) {
+	return serialize<>(data);
+}
+
+std::vector<char> DVZ::Net::serializePacketData(const CB_PlayerJoinPacket& data) {
+	return serialize<>(data);
+}
+
+bool DVZ::Net::deserializePacketData(std::string_view sv, SB_ClientJoinPacket& out) {
 	return deserialize<>(sv, out);
 }
 
-bool DVZ::Net::deserializePacketData(std::string_view sv, EchoPacketData& out) {
+bool DVZ::Net::deserializePacketData(std::string_view sv, SB_PlayerPositionVel& out) {
 	return deserialize<>(sv, out);
 }
 
-bool DVZ::Net::deserializePacketData(std::string_view sv, PlayerPositionVelPacketData& out) {
+bool DVZ::Net::deserializePacketData(std::string_view sv, CB_AssignNetIDPacket& out) {
 	return deserialize<>(sv, out);
 }
 
-bool DVZ::Net::deserializePacketData(std::string_view sv, NetPlayerSpawned& out) {
+bool DVZ::Net::deserializePacketData(std::string_view sv, CB_SpawnPositionPacket& out) {
+	return deserialize<>(sv, out);
+}
+
+bool DVZ::Net::deserializePacketData(std::string_view sv, CB_EntityPositionVelPacket& out) {
+	return deserialize<>(sv, out);
+}
+
+bool DVZ::Net::deserializePacketData(std::string_view sv, CB_PlayerJoinPacket& out) {
 	return deserialize<>(sv, out);
 }

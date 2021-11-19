@@ -19,6 +19,16 @@ HSteamNetConnection NetServerManager::getConnectionHandle(entt::entity entity) c
 	return k_HSteamNetConnection_Invalid;
 }
 
+entt::entity NetServerManager::getEntity(HSteamNetConnection connection) const { 
+	const auto iter = connectionToEntityMap.find(connection);
+
+	if (iter != connectionToEntityMap.end()) {
+		return iter->second;
+	}
+
+	return entt::null;
+}
+
 ServerSocket& NetServerManager::getSocket() {
 	return *socket;
 }

@@ -15,11 +15,13 @@ namespace DVZ::Net {
 				update();
 			}
 		}
-
-
+		bool hasServerID(entt::entity server) const;
+		void addServerIDMap(entt::entity server, entt::entity client);
+		entt::entity getClientID(entt::entity server) const;
 	private:
 		void update();
 		std::unique_ptr<Net::ClientSocket> netclient = nullptr;
+		std::unordered_map<entt::entity, entt::entity> serverIDMap;
 	};
 }
 

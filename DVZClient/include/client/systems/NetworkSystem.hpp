@@ -18,11 +18,12 @@ namespace DVZ::Systems {
 		void gameTick(Engine& engine) override;
 	private:
 		std::function<void(std::string_view)> func;
-		void onMessage(Engine&, std::string_view data);
+		void onMessage(Engine& engine, std::string_view data);
 
-		void onEchoPacket(Engine&, std::string_view data);
-		void onPlayerPosVelPacket(Engine&, std::string_view data);
-		void onNetPlayerSpawned(Engine&, std::string_view data);
+		void onAssignNetID(Engine& engine, std::string_view data);
+		void onEntityPositionVel(Engine& engine, std::string_view data);
+		void onPlayerJoin(Engine& engine, std::string_view data);
+		void onSpawnPosition(Engine& engine, std::string_view data);
 
 		//std::unique_ptr<Net::ClientSocket> netclient = nullptr;
 	};

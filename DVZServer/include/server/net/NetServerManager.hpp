@@ -35,12 +35,14 @@ namespace DVZ::Net {
 
 		void addEntityConnectionMapping(entt::entity, HSteamNetConnection conn);
 		HSteamNetConnection getConnectionHandle(entt::entity) const;
+		entt::entity getEntity(HSteamNetConnection conn) const;
 
 		Net::ServerSocket& getSocket();
 
 	private: 
 		std::unique_ptr<Net::ServerSocket> socket;
 		std::unordered_map<entt::entity, HSteamNetConnection> entityToConnectionMap;
+		std::unordered_map<HSteamNetConnection, entt::entity> connectionToEntityMap;
 	};
 }
 

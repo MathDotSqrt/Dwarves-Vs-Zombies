@@ -43,61 +43,74 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 	data.remove_prefix(1);
 
 	switch (packetID) {
-	case PacketID::Echo:
-		onEchoPacket(engine, data);
+	case PacketID::CB_AssignNetID:
+		onAssignNetID(engine, data);
 		break;
-	case PacketID::PlayerPositionVel:
-		onPlayerPosVelPacket(engine, data);
+	case PacketID::CB_EntityPositionVel:
+		onEntityPositionVel(engine, data);
 		break;
-	case PacketID::NetPlayerSpawned:
-		onNetPlayerSpawned(engine, data);
+	case PacketID::CB_PlayerJoin:
+		onPlayerJoin(engine, data);
+		break;
+	case PacketID::CB_SpawnPosition:
+		onSpawnPosition(engine, data);
 		break;
 	default:
 		break;
 	}
 }
 
-void NetworkSystem::onEchoPacket(Engine& engine, std::string_view data) {
-	using namespace Net;
-	EchoPacketData echo;
-	if (deserializePacketData(data, echo)) {
-		spdlog::info("Echo: {}", echo.message);
+void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
+	Net::CB_AssignNetIDPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& manager = engine.getNetManager();
+		entt::entity internal_id = engine.getPlayer();
+		manager.addServerIDMap(packet.id, internal_id);
 	}
 }
 
-void NetworkSystem::onPlayerPosVelPacket(Engine& engine, std::string_view data) {
-	using namespace Net;
-	PlayerPositionVelPacketData posvel;
-	if (deserializePacketData(data, posvel)) {
-		auto& netEntityMap = engine.getNetEntityMap();
+void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
+	Net::CB_EntityPositionVelPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();
-		entt::entity entity = netEntityMap[posvel.entity];
+		auto& manager = engine.getNetManager();
 
-		auto& trans = registry.get<Transformation>(entity);
-		auto& vel = registry.get<Velocity>(entity);
+		entt::entity server_id = packet.entity;
+		entt::entity client_id = manager.getClientID(server_id);
 
-		trans.pos = posvel.pos;
-		vel = posvel.vel;
+		if (client_id != entt::null) {
+			auto& transform = registry.get<Transformation>(client_id);
+			transform.pos = packet.pos;
+		}
 	}
 }
 
-void NetworkSystem::onNetPlayerSpawned(Engine& engine, std::string_view data) {
-	using namespace Net;
-	using namespace entt;
-
-	NetPlayerSpawned spawn;
-	if (deserializePacketData(data, spawn)) {
-		auto& registry = engine.getRegistry();
-		entt::entity netplayer = registry.create();
-		auto& netEntityMap = engine.getNetEntityMap();
+void NetworkSystem::onPlayerJoin(Engine& engine, std::string_view data) {
+	Net::CB_PlayerJoinPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		using namespace entt;
 		
-		netEntityMap[spawn.server_id] = netplayer;
+		auto& registry = engine.getRegistry();
+		auto& manager = engine.getNetManager();
+		
+		entt::entity clientID = registry.create();
+		registry.emplace<Transformation>(clientID, glm::vec3{ 0 });
+		registry.emplace<Velocity>(clientID, glm::vec3{0});
+		registry.emplace<Direction>(clientID);
+		registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
+		registry.emplace<Renderable>(clientID, "cube"_hs);
 
-		registry.emplace<Transformation>(netplayer, glm::vec3(0, 20, -10));
-		registry.emplace<Velocity>(netplayer, glm::vec3{0});
-		//registry.emplace<MovementState>(netplayer);
-		registry.emplace<Direction>(netplayer);
-		registry.emplace<VoxelCollider>(netplayer, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
-		registry.emplace<Renderable>(netplayer, "cube"_hs);
+		manager.addServerIDMap(packet.server_id, clientID);
+	}
+}
+
+void NetworkSystem::onSpawnPosition(Engine& engine, std::string_view data) {
+	Net::CB_SpawnPositionPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& registry = engine.getRegistry();
+		entt::entity player = engine.getPlayer();
+		spdlog::info("Spawn!!");
+		auto& transform = registry.get<Transformation>(player);
+		transform.pos = packet.pos;
 	}
 }

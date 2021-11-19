@@ -30,12 +30,12 @@ void NetSystem::tick(Engine& engine) {
 		auto& trans = view.get<Transformation>(entity);
 		const auto& vel = view.get<Velocity>(entity);
 
-		PlayerPositionVelPacketData data;
+		Net::CB_EntityPositionVelPacket data;
 		data.entity = entity;
 		data.pos = trans.pos;
 		data.vel = vel;
 
-		netManager.sendToAllMessage(data);
+		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
 		trans.pos = trans.pos + vel;
 
 	}
@@ -54,15 +54,11 @@ void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnec
 	data.remove_prefix(1);
 
 	switch (id) {
-	case PacketID::ClientConnected:
-		onClientConnected(engine, data, connection);
+	case PacketID::SB_ClientJoin:
+		onClientJoin(engine, data, connection);
 		break;
-	case PacketID::NetPlayerSpawned:
-		break;
-	case PacketID::PlayerPositionVel:
-		break;
-	case PacketID::Echo:
-		onEchoPacket(engine, data, connection);
+	case PacketID::SB_PlayerPositionVel:
+		onPlayerPositionVel(engine, data, connection);
 		break;
 	default:
 		spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
@@ -70,32 +66,39 @@ void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnec
 	}
 }
 
-void NetSystem::onClientConnected(Engine& engine, std::string_view data, HSteamNetConnection conn){
-	using namespace Net;
+void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetConnection conn){
+	Net::SB_ClientJoinPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		spdlog::info("Welcome: {}", packet.name);
 
-	ClientConnectedPacketData client;
-	deserializePacketData(data, client);
-	spdlog::info("Welcome: {}", client.name);
+		auto& registry = engine.getRegistry();
+		auto& netManager = engine.getNetManager();
 
-	auto& registry = engine.getRegistry();
-	auto& netManager = engine.getNetManager();
+		entt::entity clientID = registry.create();
+		spdlog::info("New clientID [{}]", clientID);
 
-	entt::entity entity = registry.create();
-	registry.emplace<Transformation>(entity, glm::vec3{0, 20, -10});
-	registry.emplace<Velocity>(entity, glm::vec3{0, .1f, 0});
-	//registry.emplace<NetPlayer>(newclient, conn);
+		glm::vec3 spawn_pos = glm::vec3(0, 100, 0);
 
-	netManager.sendMessage(NetPlayerSpawned{ entity }, conn);
+		registry.emplace<Transformation>(clientID, spawn_pos);
+		registry.emplace<Velocity>(clientID, glm::vec3{0});
+
+		netManager.addEntityConnectionMapping(clientID, conn);
+
+		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn);
+		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn);
+		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn);
+	}
 }
 
-void NetSystem::onEchoPacket(Engine& engine, std::string_view data, HSteamNetConnection conn) {
-	using namespace Net;
-
-	Net::NetServerManager& netManager = engine.getNetManager();
-
-
-	EchoPacketData echo;
-	deserializePacketData(data, echo);
-	spdlog::info("Echo: {}", echo.message);
-	netManager.sendMessage(echo, conn);
+void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Net::SB_PlayerPositionVel packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& registry = engine.getRegistry();
+		auto& netManager = engine.getNetManager();
+		entt::entity player = netManager.getEntity(conn);
+		auto& transform = registry.get<Transformation>(player);
+		
+		transform.pos = packet.pos;
+	}
 }
+

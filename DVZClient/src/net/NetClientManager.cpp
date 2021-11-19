@@ -18,8 +18,25 @@ void NetClientManager::update() {
 	}
 	if (netclient->getConnectionState() == ConnectionState::CONNECTED) {
 		if (sent == false) {
-			netclient->sendMessage(ClientConnectedPacketData{"MathDotSqrt"});
+			netclient->sendMessage(SB_ClientJoinPacket{"MathDotSqrt"});
 			sent = true;
 		}
 	}
+}
+
+bool NetClientManager::hasServerID(entt::entity server) const {
+	return serverIDMap.find(server) != serverIDMap.end();
+}
+
+void NetClientManager::addServerIDMap(entt::entity server, entt::entity client) {
+	serverIDMap[server] = client;
+}
+
+entt::entity NetClientManager::getClientID(entt::entity server) const {
+	const auto iter = serverIDMap.find(server);
+	if (iter != serverIDMap.end()) {
+		return iter->second;
+	}
+
+	return entt::null;
 }
