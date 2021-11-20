@@ -16,6 +16,7 @@ namespace DVZ {
 
 	
 	class NetSystem;
+	class PhysicsSystem;
 
 	class Engine {
 	public:
@@ -35,6 +36,7 @@ namespace DVZ {
 		std::unique_ptr<entt::registry> registry;
 
 		std::unique_ptr<NetSystem> netSystem;
+		std::unique_ptr<PhysicsSystem> physicsSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
 	};
 }

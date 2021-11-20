@@ -6,6 +6,7 @@
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <vector>
 #include <string_view>
 #include <cstddef>
@@ -34,15 +35,15 @@ namespace DVZ::Net {
 		}
 	};
 
-	struct SB_PlayerPositionVel {
+	struct SB_PlayerPositionRotPacket {
 		constexpr static PacketID packet = PacketID::SB_PlayerPositionVel;
 
 		glm::vec3 pos;
-		glm::vec3 vel;
+		glm::quat rot;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+			ar(pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z);
 		}
 	};
 
@@ -68,16 +69,16 @@ namespace DVZ::Net {
 		}
 	};
 
-	struct CB_EntityPositionVelPacket {
+	struct CB_EntityPositionRotPacket {
 		constexpr static PacketID packet = PacketID::CB_EntityPositionVel;
 
 		entt::entity entity;
 		glm::vec3 pos;
-		glm::vec3 vel;
+		glm::quat rot;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(entity, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+			ar(entity, pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z);
 		}
 	};
 
@@ -98,19 +99,19 @@ namespace DVZ::Net {
 	}
 
 	std::vector<char> serializePacketData(const SB_ClientJoinPacket& data);
-	std::vector<char> serializePacketData(const SB_PlayerPositionVel& data);
+	std::vector<char> serializePacketData(const SB_PlayerPositionRotPacket& data);
 
 	std::vector<char> serializePacketData(const CB_AssignNetIDPacket& data);
 	std::vector<char> serializePacketData(const CB_SpawnPositionPacket& data);
-	std::vector<char> serializePacketData(const CB_EntityPositionVelPacket& data);
+	std::vector<char> serializePacketData(const CB_EntityPositionRotPacket& data);
 	std::vector<char> serializePacketData(const CB_PlayerJoinPacket& data);
 	
 	bool deserializePacketData(std::string_view, SB_ClientJoinPacket& out);
-	bool deserializePacketData(std::string_view, SB_PlayerPositionVel& out);
+	bool deserializePacketData(std::string_view, SB_PlayerPositionRotPacket& out);
 
 	bool deserializePacketData(std::string_view, CB_AssignNetIDPacket& out);
 	bool deserializePacketData(std::string_view, CB_SpawnPositionPacket& out);
-	bool deserializePacketData(std::string_view, CB_EntityPositionVelPacket& out);
+	bool deserializePacketData(std::string_view, CB_EntityPositionRotPacket& out);
 	bool deserializePacketData(std::string_view, CB_PlayerJoinPacket& out);
 	
 }

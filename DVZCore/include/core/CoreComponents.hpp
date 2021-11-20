@@ -48,6 +48,11 @@ namespace DVZ {
 		Collision::AABB collider;
 	};
 
+	struct Network {
+		glm::vec3 last_pos = glm::vec3{0};
+		glm::quat last_rot = glm::quat(1, 0, 0, 0);
+		float duration_seconds = 0;
+	};
 }
 
 #endif

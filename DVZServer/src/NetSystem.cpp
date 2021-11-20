@@ -6,6 +6,7 @@
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
 
+#include <glm/gtx/norm.hpp>
 #include <spdlog/spdlog.h>
 
 using namespace DVZ;
@@ -24,19 +25,23 @@ void NetSystem::tick(Engine& engine) {
 
 	auto& registry = engine.getRegistry();
 
-	auto view = registry.view<Transformation, Velocity, NetPlayer>();
+	auto view = registry.view<Transformation, Velocity, Network>();
 
 	for (entt::entity entity : view) {
-		auto& trans = view.get<Transformation>(entity);
+		const auto& trans = view.get<Transformation>(entity);
 		const auto& vel = view.get<Velocity>(entity);
+		auto& network = view.get<Network>(entity);
 
-		Net::CB_EntityPositionVelPacket data;
-		data.entity = entity;
-		data.pos = trans.pos;
-		data.vel = vel;
+		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+			Net::CB_EntityPositionRotPacket data;
+			data.entity = entity;
+			data.pos = trans.pos;
+			data.rot = trans.rot;
+			//data.vel = vel;
 
-		trans.pos = trans.pos + vel;
-		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
+			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
+			network.last_pos = trans.pos;
+		}
 	}
 }
 
@@ -83,9 +88,9 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		
 		registry.emplace<Transformation>(clientID, spawn_pos);
 		registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
-		registry.emplace<NetPlayer>(clientID, conn);
+		registry.emplace<Network>(clientID);
 
-		auto view = registry.view<NetPlayer>();
+		auto view = registry.view<Network>();
 		for (entt::entity entity : view) {
 			netManager.sendMessage(Net::CB_PlayerJoinPacket{ entity }, conn);
 		}
@@ -93,7 +98,7 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 }
 
 void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
-	Net::SB_PlayerPositionVel packet;
+	Net::SB_PlayerPositionRotPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();
 		auto& netManager = engine.getNetManager();
@@ -101,10 +106,8 @@ void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HStea
 
 		if (player != entt::null) {
 			auto& transform = registry.get<Transformation>(player);
-			auto& vel = registry.get<Velocity>(player);
-
 			transform.pos = packet.pos;
-			vel = packet.vel;
+			transform.rot = packet.rot;
 		}
 	}
 }

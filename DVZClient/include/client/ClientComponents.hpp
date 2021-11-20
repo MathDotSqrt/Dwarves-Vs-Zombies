@@ -11,6 +11,12 @@
 
 namespace DVZ {
 
+	struct InterpolateNetValues {
+		glm::vec3 pos;
+		glm::quat rot;
+		float duration_seconds;
+	};
+
 	struct Renderable {
 		entt::id_type mesh_id;
 		DVZ::ID instance_id = DVZ::NullID;

@@ -24,7 +24,7 @@ ServerSocket::ServerSocket(u16 port) {
 	if (!GameNetworkingSockets_Init(nullptr, errMsg))
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
 
-	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, DebugOutput);
+	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Warning, DebugOutput);
 
 	socketsInterface = SteamNetworkingSockets();
 	SteamNetworkingIPAddr serverLocalAddr;
@@ -106,7 +106,7 @@ void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCall
 
 		if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected) {
 			//Something bad probably happened here
-			spdlog::error("Connection failed");
+			//spdlog::error("Connection failed");
 			state = ConnectionState::CONNECTION_FAILED;
 		}
 		else if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting) {

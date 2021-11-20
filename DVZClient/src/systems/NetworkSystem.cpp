@@ -32,9 +32,17 @@ void NetworkSystem::gameTick(Engine& engine) {
 	entt::entity entity = engine.getPlayer();
 	
 	auto& transform = registry.get<Transformation>(entity);
-	auto& vel = registry.get<Velocity>(entity);
+	auto& network = registry.get<Network>(entity);
 
-	netManager.sendMessage(Net::SB_PlayerPositionVel{transform.pos, vel});
+	if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
+		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot });
+		network.last_pos = transform.pos;
+		network.last_rot = transform.rot;
+	}
+
+
+	auto view = registry.view<Transformation, InterpolateNetValues>();
+
 }
 
 void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
@@ -76,7 +84,7 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 }
 
 void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
-	Net::CB_EntityPositionVelPacket packet;
+	Net::CB_EntityPositionRotPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();
 		auto& manager = engine.getNetManager();
@@ -85,10 +93,12 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		entt::entity client_id = manager.getClientID(server_id);
 
 		if (client_id != entt::null) {
-			auto& transform = registry.get<Transformation>(client_id);
-			auto& vel = registry.get<Velocity>(client_id);
-			transform.pos = packet.pos;
-			vel = packet.vel;
+			auto& interpolate = registry.get<InterpolateNetValues>(client_id);
+			//auto& vel = registry.get<Velocity>(client_id);
+			interpolate.pos = packet.pos;
+			interpolate.rot = packet.rot;
+			interpolate.duration_seconds = 0;
+			//vel = packet.vel;
 		}
 	}
 }
@@ -107,6 +117,7 @@ void NetworkSystem::onPlayerJoin(Engine& engine, std::string_view data) {
 		registry.emplace<Direction>(clientID);
 		registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 		registry.emplace<Renderable>(clientID, "cube"_hs);
+		registry.emplace<InterpolateNetValues>(clientID);
 
 		manager.addServerIDMap(packet.server_id, clientID);
 	}

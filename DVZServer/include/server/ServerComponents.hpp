@@ -4,9 +4,7 @@
 #include "core/common.hpp"
 
 namespace DVZ {
-	struct NetPlayer {
-		uint32 connection;
-	};
+
 }
 
 #endif
