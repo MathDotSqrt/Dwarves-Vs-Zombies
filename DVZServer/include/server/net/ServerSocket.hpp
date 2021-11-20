@@ -20,8 +20,8 @@ namespace DVZ::Net {
 		~ServerSocket();
 
 		void pollIncomingMessages(const std::function<void(std::string_view,HSteamNetConnection)>& func);
-		void sendMessage(std::string_view data, HSteamNetConnection client);
-		void sendToAllMessage(std::string_view data, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+		void sendMessage(std::string_view data, HSteamNetConnection client, bool reliable);
+		void sendToAllMessage(std::string_view data, HSteamNetConnection except, bool reliable);
 
 		
 

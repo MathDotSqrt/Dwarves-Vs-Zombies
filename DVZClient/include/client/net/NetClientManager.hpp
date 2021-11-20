@@ -16,10 +16,10 @@ namespace DVZ::Net {
 			}
 		}
 		template<typename Packet>
-		void sendMessage(const Packet& packet) {
+		void sendMessage(const Packet& packet, bool reliable=true) {
 			const auto& bytes = serializePacketData(packet);
 			std::string_view sv{ bytes.data(), bytes.size() };
-			netclient->sendMessage(sv);
+			netclient->sendMessage(sv, reliable);
 		}
 
 		bool hasServerID(entt::entity server) const;

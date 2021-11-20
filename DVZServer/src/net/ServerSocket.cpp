@@ -73,21 +73,23 @@ void ServerSocket::pollIncomingMessages(const std::function<void(std::string_vie
 	}
 }
 
-void ServerSocket::sendMessage(std::string_view sv, HSteamNetConnection conn) {
+void ServerSocket::sendMessage(std::string_view sv, HSteamNetConnection conn, bool reliable) {
 	const auto iter = connections.find(conn);
 	if (iter != connections.end()) {
 		const ConnectionState& state = iter->second;
 		if (state == ConnectionState::CONNECTED) {
-			socketsInterface->SendMessageToConnection(conn, sv.data(), (uint32)sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+			const auto send_type = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
+			socketsInterface->SendMessageToConnection(conn, sv.data(), (uint32)sv.size(), reliable, nullptr);
 		}
 	}
 }
 
-void ServerSocket::sendToAllMessage(std::string_view data, HSteamNetConnection except) {
+void ServerSocket::sendToAllMessage(std::string_view data, HSteamNetConnection except, bool reliable) {
 	for (const auto& connection : connections) {
 		const auto& [connection_id, state] = connection;
 		if (connection_id != except && state == ConnectionState::CONNECTED) {
-			socketsInterface->SendMessageToConnection(connection_id, data.data(), (uint32)data.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+			const auto send_type = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
+			socketsInterface->SendMessageToConnection(connection_id, data.data(), (uint32)data.size(), reliable, nullptr);
 		}
 	}
 }

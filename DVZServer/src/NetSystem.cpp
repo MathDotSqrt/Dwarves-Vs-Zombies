@@ -39,7 +39,7 @@ void NetSystem::tick(Engine& engine) {
 			data.rot = trans.rot;
 			//data.vel = vel;
 
-			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity));
+			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
 			network.last_pos = trans.pos;
 		}
 	}
@@ -82,18 +82,20 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		glm::vec3 spawn_pos = glm::vec3(0, 100, 0);
 
 		netManager.addEntityConnectionMapping(clientID, conn);
-		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn);
-		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn);
-		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn);
+		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn, true);
+		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn, true);
+		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn, true);
 		
+		auto view = registry.view<Network>();
+		for (entt::entity entity : view) {
+			netManager.sendMessage(Net::CB_PlayerJoinPacket{ entity }, conn, true);
+		}
+
 		registry.emplace<Transformation>(clientID, spawn_pos);
 		registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
 		registry.emplace<Network>(clientID);
 
-		auto view = registry.view<Network>();
-		for (entt::entity entity : view) {
-			netManager.sendMessage(Net::CB_PlayerJoinPacket{ entity }, conn);
-		}
+		
 	}
 }
 

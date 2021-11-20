@@ -21,17 +21,24 @@ namespace DVZ::Net {
 		}
 
 		template<typename Packet>
-		void sendMessage(const Packet& packet, HSteamNetConnection client) {
+		void sendMessage(const Packet& packet, HSteamNetConnection client, bool reliable=true) {
 			const auto& bytes = serializePacketData(packet);
 			std::string_view sv{ bytes.data(), bytes.size() };
-			socket->sendMessage(sv, client);
+			socket->sendMessage(sv, client, reliable);
 		}
 
 		template<typename Packet>
-		void sendToAllMessage(const Packet& packet, HSteamNetConnection except = k_HSteamNetConnection_Invalid) {
+		void sendToAllMessage(const Packet& packet, bool reliable=true) {
 			const auto& bytes = serializePacketData(packet);
 			std::string_view sv{ bytes.data(), bytes.size() };
-			socket->sendToAllMessage(sv, except);
+			socket->sendToAllMessage(sv, k_HSteamNetConnection_Invalid, reliable);
+		}
+
+		template<typename Packet>
+		void sendToAllMessage(const Packet& packet, HSteamNetConnection except, bool reliable=true) {
+			const auto& bytes = serializePacketData(packet);
+			std::string_view sv{ bytes.data(), bytes.size() };
+			socket->sendToAllMessage(sv, except, reliable);
 		}
 
 		void addEntityConnectionMapping(entt::entity, HSteamNetConnection conn);

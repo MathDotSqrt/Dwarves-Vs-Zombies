@@ -35,7 +35,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto& network = registry.get<Network>(entity);
 
 	if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
-		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot });
+		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot }, false);
 		network.last_pos = transform.pos;
 		network.last_rot = transform.rot;
 	}
@@ -77,6 +77,7 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 	Net::CB_AssignNetIDPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
+		spdlog::info("Assigned Net ID: [{}]", packet.id);
 		auto& manager = engine.getNetManager();
 		entt::entity internal_id = engine.getPlayer();
 		manager.addServerIDMap(packet.id, internal_id);
@@ -93,11 +94,11 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		entt::entity client_id = manager.getClientID(server_id);
 
 		if (client_id != entt::null) {
-			auto& interpolate = registry.get<InterpolateNetValues>(client_id);
+			auto& interpolate = registry.get<Transformation>(client_id);
 			//auto& vel = registry.get<Velocity>(client_id);
 			interpolate.pos = packet.pos;
 			interpolate.rot = packet.rot;
-			interpolate.duration_seconds = 0;
+			//interpolate.duration_seconds = 0;
 			//vel = packet.vel;
 		}
 	}
@@ -108,6 +109,9 @@ void NetworkSystem::onPlayerJoin(Engine& engine, std::string_view data) {
 	if (Net::deserializePacketData(data, packet)) {
 		using namespace entt;
 		
+		spdlog::info("Player Joined: [{}]", packet.server_id);
+
+
 		auto& registry = engine.getRegistry();
 		auto& manager = engine.getNetManager();
 		

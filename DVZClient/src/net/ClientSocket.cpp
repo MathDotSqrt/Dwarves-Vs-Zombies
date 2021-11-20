@@ -93,9 +93,10 @@ void ClientSocket::pollIncommingMessages(const std::function<void(std::string_vi
 	}
 }
 
-void ClientSocket::sendMessage(std::string_view sv) {
+void ClientSocket::sendMessage(std::string_view sv, bool reliable) {
 	if (connectionState == ConnectionState::CONNECTED) {
-		socketInterface->SendMessageToConnection(connection, (const void*)sv.data(), (u32)sv.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+		const auto send_type = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
+		socketInterface->SendMessageToConnection(connection, (const void*)sv.data(), (u32)sv.size(), send_type, nullptr);
 	}
 }
 
