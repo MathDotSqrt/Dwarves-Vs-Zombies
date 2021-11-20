@@ -32,15 +32,17 @@ void Engine::tick() {
 }
 
 void Engine::updateLoop() {
-	using duration = std::chrono::duration<float>;
+	
+	const auto start_time = std::chrono::steady_clock::now();
+	auto last_time = start_time;
 
-	auto last_time = std::chrono::steady_clock::now();
 
 	while (shouldRun.load()) {
 		auto current_time = std::chrono::steady_clock::now();
 		auto delta = current_time - last_time;
 		if (delta > duration{1/60.0f}) {
 			last_time = current_time;
+			total_time = current_time - start_time;
 			tick();
 		}
 	}
@@ -52,4 +54,8 @@ entt::registry& Engine::getRegistry(){
 
 Net::NetServerManager& Engine::getNetManager() {
 	return *netManager;
+}
+
+DVZ::duration Engine::getTimeElapsed() const {
+	return total_time;
 }

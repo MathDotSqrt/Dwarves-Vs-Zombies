@@ -24,6 +24,15 @@ ServerSocket::ServerSocket(u16 port) {
 	if (!GameNetworkingSockets_Init(nullptr, errMsg))
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
 
+	static i32 delay = 50;
+	static float drop_rate = 0.1f;
+	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
+	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
+	
+	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
+	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
+
+	
 	SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Warning, DebugOutput);
 
 	socketsInterface = SteamNetworkingSockets();

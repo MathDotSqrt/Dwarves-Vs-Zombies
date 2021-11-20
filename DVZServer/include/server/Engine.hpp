@@ -17,6 +17,7 @@ namespace DVZ {
 	
 	class NetSystem;
 	class PhysicsSystem;
+	using duration = std::chrono::duration<float>;
 
 	class Engine {
 	public:
@@ -28,6 +29,7 @@ namespace DVZ {
 
 		entt::registry& getRegistry();
 		Net::NetServerManager& getNetManager();
+		duration getTimeElapsed() const;
 
 	private:
 		std::thread updateThread;
@@ -38,6 +40,8 @@ namespace DVZ {
 		std::unique_ptr<NetSystem> netSystem;
 		std::unique_ptr<PhysicsSystem> physicsSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
+
+		duration total_time;
 	};
 }
 

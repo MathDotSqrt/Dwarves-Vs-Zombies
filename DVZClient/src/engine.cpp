@@ -66,7 +66,7 @@ Engine::~Engine() {
 	updateThread.join();
 }
 
-void Engine::update(duration total_time) {
+void Engine::update() {
 	auto& window = Window::getInstance();
 	if (window.isPressed('1')) {
 		spdlog::set_level(spdlog::level::debug);
@@ -99,9 +99,9 @@ void Engine::updateLoop() {
 	initUpdateLoop();
 	spdlog::info("Engine: launched update loop with ticks per second: [{}]", TPS);
 
-	std::chrono::time_point current_time = std::chrono::steady_clock::now();
+	std::chrono::time_point start_time = std::chrono::steady_clock::now();
+	std::chrono::time_point current_time = start_time;
 	duration accum{0};
-	duration t{ 0.0 };
 	while (!shouldStop) {
 		std::chrono::time_point new_time = std::chrono::steady_clock::now();
 		//TODO: clamp frametime?? https://gafferongames.com/post/fix_your_timestep/
@@ -112,11 +112,11 @@ void Engine::updateLoop() {
 
 		while (accum >= dt) {
 			//last_update = std::chrono::steady_clock::now();
-			update(t);
+			total_time = new_time - start_time;
+			update();
 
 			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
 			sceneManager->bufferScene(*scene);
-			t += dt;
 			accum -= dt;
 
 			//This is a bug, it is possible for alpha to be larger than 1
@@ -169,3 +169,6 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 	return *chunkRenderDataManager;
 }
 
+duration Engine::getElaspsedTime() const{
+	return total_time;
+}

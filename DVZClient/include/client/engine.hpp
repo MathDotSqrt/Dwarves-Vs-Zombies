@@ -30,9 +30,10 @@ namespace DVZ{
 		class NetClientManager;
 	}
 
+	using duration = std::chrono::duration<float>;
+
 	class Engine {
 	public:
-		using duration = std::chrono::duration<float>;
 
 		constexpr static float TPS = 60.0f;
 
@@ -45,7 +46,7 @@ namespace DVZ{
 			systems.back()->init(*this);
 		}
 
-		void update(duration total_time);
+		void update();
 		void initUpdateLoop();
 		void updateLoop();
 		void render();
@@ -57,6 +58,8 @@ namespace DVZ{
 		Graphics::Scene& getScene();
 		Net::NetClientManager& getNetManager();
 		Voxel::ClientChunkManager& getChunkManager();
+
+		duration getElaspsedTime() const;
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
 
@@ -79,6 +82,7 @@ namespace DVZ{
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
+		duration total_time;
 	};
 }
 
