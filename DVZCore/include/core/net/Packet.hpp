@@ -75,10 +75,11 @@ namespace DVZ::Net {
 		entt::entity entity;
 		glm::vec3 pos;
 		glm::quat rot;
+		float server_time;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(entity, pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z);
+			ar(entity, pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z, server_time);
 		}
 	};
 

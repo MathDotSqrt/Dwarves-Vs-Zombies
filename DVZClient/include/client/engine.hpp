@@ -4,6 +4,8 @@
 #define DVZ_ENGINE_HPP
 
 #include "client/systems/System.hpp"
+#include "core/time.hpp"
+
 #include <chrono>
 #include <atomic>
 #include <thread>
@@ -29,8 +31,6 @@ namespace DVZ{
 	namespace Net {
 		class NetClientManager;
 	}
-
-	using duration = std::chrono::duration<float>;
 
 	class Engine {
 	public:
@@ -59,12 +59,14 @@ namespace DVZ{
 		Net::NetClientManager& getNetManager();
 		Voxel::ClientChunkManager& getChunkManager();
 
-		duration getElaspsedTime() const;
+		void setSimulationTime(duration duration);
+		duration getSimulationTime() const;
+
+		duration dt{ 1 / TPS };
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
 
 
-		duration dt{ 1 / TPS };
 
 		std::atomic<bool> shouldStop = false;
 		std::atomic<float> alpha = 0;
@@ -82,7 +84,7 @@ namespace DVZ{
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
-		duration total_time;
+		duration simulation_time = duration{ 0.0f };
 	};
 }
 

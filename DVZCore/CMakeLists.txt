@@ -2,6 +2,7 @@
 set(HEADER_FILES 
 	"./include/core/common.hpp"
 	"./include/core/CoreComponents.hpp"
+	"./include/core/time.hpp"
 
 	"./include/core/collision/AABB.hpp"
 

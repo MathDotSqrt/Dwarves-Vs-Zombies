@@ -37,6 +37,7 @@ void NetSystem::tick(Engine& engine) {
 			data.entity = entity;
 			data.pos = trans.pos;
 			data.rot = trans.rot;
+			data.server_time = engine.getTimeElapsed().count();
 			//data.vel = vel;
 
 			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);

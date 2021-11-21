@@ -13,6 +13,6 @@ void PhysicsSystem::tick(Engine& engine) {
 	
 	auto view = registry.view<Transformation, Velocity>();
 	view.each([](Transformation& transform, Velocity& vel) {
-		transform.pos = transform.pos + vel;
+		//transform.pos = transform.pos + vel;
 	});
 }

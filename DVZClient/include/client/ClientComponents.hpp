@@ -2,19 +2,30 @@
 
 #ifndef DVZ_CLIENT_COMPONENTS_HPP
 #define DVZ_CLIENT_COMPONENTS_HPP
+#include "client/util/packedfreelist.hpp"
+
+#include "core/time.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <entt/core/hashed_string.hpp>
-#include "client/util/packedfreelist.hpp"
-
-
+#include <optional>
 namespace DVZ {
-
-	struct InterpolateNetValues {
+	struct PositionHistory {
 		glm::vec3 pos;
 		glm::quat rot;
-		float duration_seconds;
+		duration server_time;
+	};
+
+	struct InterpolateNetValues {
+		std::vector<PositionHistory> buffer;
+
+		InterpolateNetValues();
+		InterpolateNetValues(glm::vec3, glm::quat, duration server_time);
+
+		std::optional<PositionHistory> computeInterpolation(duration target_time) const;
+		void appendHistory(const PositionHistory& entry, duration client_time);
+		const PositionHistory& getMostRecentHistory() const;
 	};
 
 	struct Renderable {

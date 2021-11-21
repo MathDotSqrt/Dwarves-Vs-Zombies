@@ -3,7 +3,6 @@
 #include "client/ClientComponents.hpp"
 #include "client/net/NetClientManager.hpp"
 
-
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
 
@@ -42,6 +41,17 @@ void NetworkSystem::gameTick(Engine& engine) {
 
 
 	auto view = registry.view<Transformation, InterpolateNetValues>();
+	duration current_time = engine.getSimulationTime();
+	view.each([&](Transformation& transform, InterpolateNetValues& interpolate) {
+		constexpr std::chrono::milliseconds interpolation_offset{ 100 };
+		const auto target_time = engine.getSimulationTime() - interpolation_offset;
+		std::optional<PositionHistory> entry = interpolate.computeInterpolation(target_time);
+
+		if(entry){
+			transform.pos = entry->pos;
+			transform.rot = entry->rot;
+		}
+	});
 
 }
 
@@ -94,12 +104,15 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		entt::entity client_id = manager.getClientID(server_id);
 
 		if (client_id != entt::null) {
-			auto& interpolate = registry.get<Transformation>(client_id);
+			auto& transform = registry.get<Transformation>(client_id);
+			auto& interpolate = registry.get<InterpolateNetValues>(client_id);
 			//auto& vel = registry.get<Velocity>(client_id);
-			interpolate.pos = packet.pos;
-			interpolate.rot = packet.rot;
-			//interpolate.duration_seconds = 0;
-			//vel = packet.vel;
+			//transform.pos = packet.pos;
+			//transform.rot = packet.rot;
+			const duration server_time{packet.server_time};
+			PositionHistory entry{ packet.pos, packet.rot, server_time };
+			interpolate.appendHistory(entry, server_time);
+			engine.setSimulationTime(server_time);
 		}
 	}
 }

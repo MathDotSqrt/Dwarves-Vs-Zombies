@@ -40,9 +40,9 @@ void Engine::updateLoop() {
 	while (shouldRun.load()) {
 		auto current_time = std::chrono::steady_clock::now();
 		auto delta = current_time - last_time;
-		if (delta > duration{1/60.0f}) {
+		while (delta > duration{1/60.0f}) {
 			last_time = current_time;
-			total_time = current_time - start_time;
+			total_time += duration{ 1 / 60.0f };
 			tick();
 		}
 	}

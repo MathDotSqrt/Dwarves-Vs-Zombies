@@ -41,7 +41,7 @@ namespace DVZ {
 		std::unique_ptr<PhysicsSystem> physicsSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
 
-		duration total_time;
+		duration total_time{0};
 	};
 }
 

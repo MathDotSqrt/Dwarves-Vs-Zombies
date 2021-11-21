@@ -112,7 +112,7 @@ void Engine::updateLoop() {
 
 		while (accum >= dt) {
 			//last_update = std::chrono::steady_clock::now();
-			total_time = new_time - start_time;
+			simulation_time += dt;
 			update();
 
 			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
@@ -169,6 +169,10 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 	return *chunkRenderDataManager;
 }
 
-duration Engine::getElaspsedTime() const{
-	return total_time;
+void Engine::setSimulationTime(duration server_time) {
+	simulation_time = server_time;
+}
+
+duration Engine::getSimulationTime() const{
+	return simulation_time;
 }

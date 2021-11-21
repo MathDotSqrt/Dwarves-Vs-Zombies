@@ -6,6 +6,7 @@ set(HEADER_FILES
 
 	"./include/client/net/ClientSocket.hpp"
 	"./include/client/net/NetClientManager.hpp"
+	"./include/client/net/NetComponentUtil.hpp"
 
 	"./include/client/graphics/Attrib.hpp"
 	"./include/client/graphics/BasicRenderer.hpp"
@@ -44,12 +45,14 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES 
+	"./src/ClientComponents.cpp"
 	"./src/engine.cpp"
 	"./src/main.cpp"
 	"./src/window.cpp"
 
 	"./src/net/ClientSocket.cpp"
 	"./src/net/NetClientManager.cpp"
+	"./src/net/NetComponentUtil.cpp"
 
 	"./src/graphics/Attrib.cpp"
 	"./src/graphics/BasicRenderer.cpp"
