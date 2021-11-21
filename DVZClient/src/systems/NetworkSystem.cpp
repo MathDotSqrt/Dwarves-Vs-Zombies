@@ -43,7 +43,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto view = registry.view<Transformation, InterpolateNetValues>();
 	duration current_time = engine.getSimulationTime();
 	view.each([&](Transformation& transform, InterpolateNetValues& interpolate) {
-		constexpr std::chrono::milliseconds interpolation_offset{ 100 };
+		constexpr std::chrono::milliseconds interpolation_offset{ 200 };
 		const auto target_time = engine.getSimulationTime() - interpolation_offset;
 		std::optional<PositionHistory> entry = interpolate.computeInterpolation(target_time);
 
