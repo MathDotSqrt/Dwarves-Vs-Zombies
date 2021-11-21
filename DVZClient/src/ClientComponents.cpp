@@ -19,10 +19,10 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(durati
 	
 	if (buffer.size() == 1) {
 		if (target_time >= buffer[0].server_time) {
-			return getMostRecentHistory();
+			return {};
 		}
 		else { 
-			return getMostRecentHistory();
+			return {};
 		}
 	}
 
@@ -34,15 +34,12 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(durati
 			const auto denom = t1.server_time - t2.server_time;
 			const auto num = target_time - t2.server_time;
 			const auto alpha = num / denom;
-			if (alpha > 1) {
-				spdlog::info("INFO: {}", alpha);
-			}
-			const auto interpolate_pos = glm::mix(t1.pos, t2.pos, alpha);
-			const auto interpolate_quat = glm::slerp(t1.rot, t2.rot, alpha);
+
+			const auto interpolate_pos = glm::mix(t2.pos, t1.pos, alpha);
+			const auto interpolate_quat = glm::slerp(t2.rot, t1.rot, alpha);
 			return PositionHistory{interpolate_pos, interpolate_quat, target_time};
 		}
 	}
-	spdlog::info("SNIP");
 	return {};
 }
 
@@ -54,7 +51,7 @@ void InterpolateNetValues::appendHistory(const PositionHistory& new_entry, durat
 	buffer.insert(iter, new_entry);
 
 	//const auto erase_iter = std::remove_if(buffer.begin(), buffer.end(), [&](const PositionHistory& entry) {
-	//	return (client_time - entry.server_time) > std::chrono::milliseconds(100);
+	//	return (client_time - entry.server_time) > std::chrono::milliseconds(200);
 	//});
 	//buffer.erase(erase_iter, buffer.end());
 }

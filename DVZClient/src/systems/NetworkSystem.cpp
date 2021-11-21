@@ -95,6 +95,7 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 }
 
 void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
+	static bool test = true;
 	Net::CB_EntityPositionRotPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();

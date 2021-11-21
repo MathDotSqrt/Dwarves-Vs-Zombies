@@ -34,9 +34,6 @@ namespace DVZ{
 
 	class Engine {
 	public:
-
-		constexpr static float TPS = 60.0f;
-
 		Engine();
 		~Engine();
 
@@ -62,7 +59,7 @@ namespace DVZ{
 		void setSimulationTime(duration duration);
 		duration getSimulationTime() const;
 
-		duration dt{ 1 / TPS };
+		duration dt{ 1.0f / TPS };
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
 

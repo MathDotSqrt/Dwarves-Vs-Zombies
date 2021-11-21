@@ -3,6 +3,7 @@
 #include "server/PhysicsSystem.hpp"
 #include "server/net/NetServerManager.hpp"
 #include "server/net/ServerSocket.hpp"
+#include "core/time.hpp"
 
 
 #include <spdlog/spdlog.h>
@@ -33,17 +34,23 @@ void Engine::tick() {
 
 void Engine::updateLoop() {
 	
+	constexpr duration dt{ 1.0f / TPS };
+
 	const auto start_time = std::chrono::steady_clock::now();
 	auto last_time = start_time;
-
-
+	duration accum{ 0 };
 	while (shouldRun.load()) {
-		auto current_time = std::chrono::steady_clock::now();
-		auto delta = current_time - last_time;
-		while (delta > duration{1/60.0f}) {
-			last_time = current_time;
-			total_time += duration{ 1 / 60.0f };
+		std::chrono::time_point new_time = std::chrono::steady_clock::now();
+		duration frame_time = new_time - last_time;
+		last_time = new_time;
+
+		accum += frame_time;
+
+		while (accum >= dt) {
+			//last_update = std::chrono::steady_clock::now();
+			total_time += dt;
 			tick();
+			accum -= dt;
 		}
 	}
 }
