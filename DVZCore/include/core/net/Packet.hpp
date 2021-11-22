@@ -52,10 +52,11 @@ namespace DVZ::Net {
 		constexpr static PacketID packet = PacketID::CB_AssignNetID;
 
 		entt::entity id;
+		simulation_duration server_time;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(id);
+			ar(id, server_time);
 		}
 	};
 

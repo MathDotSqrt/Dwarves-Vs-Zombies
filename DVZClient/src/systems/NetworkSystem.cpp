@@ -88,6 +88,8 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 		auto& manager = engine.getNetManager();
 		entt::entity internal_id = engine.getPlayer();
 		manager.addServerIDMap(packet.id, internal_id);
+
+		engine.setSimulationTime(packet.server_time);
 	}
 }
 
@@ -108,8 +110,7 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 			//transform.pos = packet.pos;
 			//transform.rot = packet.rot;
 			PositionHistory entry{ packet.pos, packet.rot, packet.server_time };
-			interpolate.appendHistory(entry, packet.server_time);
-			engine.setSimulationTime(packet.server_time);
+			interpolate.appendHistory(entry, engine.getSimulationTime());
 		}
 	}
 }
