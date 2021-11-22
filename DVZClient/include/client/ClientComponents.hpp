@@ -18,7 +18,7 @@ namespace DVZ {
 	};
 
 	struct InterpolateNetValues {
-		constexpr static auto interpolation_offset = std::chrono::duration_cast<simulation_duration>(std::chrono::milliseconds(200));
+		constexpr static auto interpolation_offset = std::chrono::duration_cast<simulation_duration>(std::chrono::milliseconds(100));
 		std::vector<PositionHistory> buffer;
 
 		InterpolateNetValues();
