@@ -16,6 +16,7 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(simula
 	simulation_duration target_time = client_time - interpolation_offset;
 	
 	if (buffer.size() == 0) {
+		spdlog::info("0 buffer");
 		return {};
 	}
 	
@@ -38,7 +39,9 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(simula
 		}
 	}
 
-	return {};
+	spdlog::error("Oh shit");
+
+	return buffer.back();
 }
 
 void InterpolateNetValues::appendHistory(const PositionHistory& new_entry, simulation_duration client_time) {
@@ -50,7 +53,7 @@ void InterpolateNetValues::appendHistory(const PositionHistory& new_entry, simul
 
 	if (buffer.size() >= 3) {
 		const auto erase_iter = std::remove_if(buffer.begin() + 2, buffer.end(), [&](const PositionHistory& entry) {
-			return (client_time - entry.server_time) > (2 * interpolation_offset);
+			return (client_time - entry.server_time) > (1 * interpolation_offset);
 		});
 		buffer.erase(erase_iter, buffer.end());
 	}

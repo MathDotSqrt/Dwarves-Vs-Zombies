@@ -31,11 +31,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	{
-		DVZ::Engine engine;
-
+		std::string ip = "127.0.0.1:50150";
 		if (argc == 2) {
-			engine.setIP(argv[1]);
+			ip = argv[1];
 		}
+
+		DVZ::Engine engine{ip};
+
 
 		while (!window.shouldClose()) {
 			engine.render();

@@ -28,7 +28,7 @@
 
 using namespace DVZ;
 
-Engine::Engine() : 
+Engine::Engine(std::string_view ip) : 
 	scene(std::make_unique<Graphics::Scene>()), 
 	sceneManager(std::make_unique<Graphics::SceneManager>()),
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
@@ -37,6 +37,8 @@ Engine::Engine() :
 	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
 	updateThread(&Engine::updateLoop, this){
 	using namespace entt;
+
+	setIP(ip);
 
 	entt::entity player = registry.create();
 	registry.emplace<Transformation>(player, glm::vec3(0, 20, -10));

@@ -34,7 +34,7 @@ namespace DVZ{
 
 	class Engine {
 	public:
-		Engine();
+		Engine(std::string_view ip);
 		~Engine();
 
 		template<typename SYS>
