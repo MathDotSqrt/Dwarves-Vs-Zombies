@@ -1,7 +1,7 @@
 #include "client/systems/PhysicsSystem.hpp"
 #include "client/engine.hpp"
 #include "client/ClientComponents.hpp"
-#include "client/voxel/clientchunkmanager.hpp"
+#include "client/voxel/ClientChunkManager.hpp"
 
 #include "core/CoreComponents.hpp"
 #include "core/voxel/VoxelCollision.hpp"

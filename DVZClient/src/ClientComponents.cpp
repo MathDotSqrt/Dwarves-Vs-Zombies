@@ -38,7 +38,6 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(simula
 		}
 	}
 
-	spdlog::error("Should not be here");
 	return {};
 }
 
