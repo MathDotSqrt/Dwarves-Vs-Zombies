@@ -56,14 +56,10 @@ namespace DVZ{
 		Net::NetClientManager& getNetManager();
 		Voxel::ClientChunkManager& getChunkManager();
 
-		void setSimulationTime(duration duration);
-		duration getSimulationTime() const;
-
-		duration dt{ 1.0f / TPS };
+		void setSimulationTime(simulation_duration duration);
+		simulation_duration getSimulationTime() const;
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
-
-
 
 		std::atomic<bool> shouldStop = false;
 		std::atomic<float> alpha = 0;
@@ -81,7 +77,7 @@ namespace DVZ{
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
-		duration simulation_time = duration{ 0.0f };
+		simulation_duration simulation_time = simulation_duration{ 0 };
 	};
 }
 

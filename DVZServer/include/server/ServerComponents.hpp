@@ -4,7 +4,9 @@
 #include "core/common.hpp"
 
 namespace DVZ {
-
+	struct Debug {
+		float timer;
+	};
 }
 
 #endif

@@ -110,20 +110,20 @@ void Engine::updateLoop() {
 
 		accum += frame_time;
 
-		while (accum >= dt) {
+		while (accum >= DT) {
 			//last_update = std::chrono::steady_clock::now();
-			simulation_time += dt;
+			simulation_time += DT;
 			update();
 
 			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
 			sceneManager->bufferScene(*scene);
-			accum -= dt;
+			accum -= DT;
 
 			//This is a bug, it is possible for alpha to be larger than 1
-			this->alpha = accum / dt;
+			this->alpha = accum / DT;
 		}
 
-		this->alpha = accum / dt;
+		this->alpha = accum / DT;
 	}
 }
 
@@ -169,10 +169,11 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 	return *chunkRenderDataManager;
 }
 
-void Engine::setSimulationTime(duration server_time) {
+void Engine::setSimulationTime(simulation_duration server_time) {
 	simulation_time = server_time;
 }
 
-duration Engine::getSimulationTime() const{
+
+simulation_duration Engine::getSimulationTime() const{
 	return simulation_time;
 }

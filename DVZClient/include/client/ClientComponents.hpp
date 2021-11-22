@@ -14,17 +14,18 @@ namespace DVZ {
 	struct PositionHistory {
 		glm::vec3 pos;
 		glm::quat rot;
-		duration server_time;
+		simulation_duration server_time;
 	};
 
 	struct InterpolateNetValues {
+		constexpr static auto interpolation_offset = std::chrono::duration_cast<simulation_duration>(std::chrono::milliseconds(100));
 		std::vector<PositionHistory> buffer;
 
 		InterpolateNetValues();
-		InterpolateNetValues(glm::vec3, glm::quat, duration server_time);
+		InterpolateNetValues(glm::vec3, glm::quat, simulation_duration server_time);
 
-		std::optional<PositionHistory> computeInterpolation(duration target_time) const;
-		void appendHistory(const PositionHistory& entry, duration client_time);
+		std::optional<PositionHistory> computeInterpolation(simulation_duration client_time) const;
+		void appendHistory(const PositionHistory& entry, simulation_duration client_time);
 		const PositionHistory& getMostRecentHistory() const;
 	};
 

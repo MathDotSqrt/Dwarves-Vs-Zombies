@@ -12,7 +12,13 @@
 using namespace DVZ;
 
 NetSystem::NetSystem(Engine& engine) {
+	auto& registry = engine.getRegistry();
 
+	entt::entity test = registry.create();
+	registry.emplace<Transformation>(test, glm::vec3{0, 100, 0});
+	registry.emplace<Velocity>(test);
+	registry.emplace<Debug>(test, 0);
+	registry.emplace<Network>(test);
 }
 
 void NetSystem::tick(Engine& engine) {
@@ -32,12 +38,13 @@ void NetSystem::tick(Engine& engine) {
 		const auto& vel = view.get<Velocity>(entity);
 		auto& network = view.get<Network>(entity);
 
-		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		if (true) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
 			data.rot = trans.rot;
-			data.server_time = engine.getTimeElapsed().count();
+			data.server_time = engine.getTimeElapsed();
 			//data.vel = vel;
 
 			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);

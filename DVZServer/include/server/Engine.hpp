@@ -2,6 +2,8 @@
 #ifndef DVZ_ENGINE_HPP
 #define DVZ_ENGINE_HPP
 
+#include "core/time.hpp"
+
 #include <entt/entt.hpp>
 #include <thread>
 #include <atomic>
@@ -29,7 +31,7 @@ namespace DVZ {
 
 		entt::registry& getRegistry();
 		Net::NetServerManager& getNetManager();
-		duration getTimeElapsed() const;
+		simulation_duration getTimeElapsed() const;
 
 	private:
 		std::thread updateThread;
@@ -41,7 +43,7 @@ namespace DVZ {
 		std::unique_ptr<PhysicsSystem> physicsSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
 
-		duration total_time{0};
+		simulation_duration total_time{0};
 	};
 }
 

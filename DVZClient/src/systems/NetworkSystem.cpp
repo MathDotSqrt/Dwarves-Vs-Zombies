@@ -33,7 +33,8 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto& transform = registry.get<Transformation>(entity);
 	auto& network = registry.get<Network>(entity);
 
-	if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
+	//if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
+	if (true) {
 		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot }, false);
 		network.last_pos = transform.pos;
 		network.last_rot = transform.rot;
@@ -43,10 +44,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto view = registry.view<Transformation, InterpolateNetValues>();
 	duration current_time = engine.getSimulationTime();
 	view.each([&](Transformation& transform, InterpolateNetValues& interpolate) {
-		constexpr std::chrono::milliseconds interpolation_offset{ 200 };
-		const auto target_time = engine.getSimulationTime() - interpolation_offset;
-		std::optional<PositionHistory> entry = interpolate.computeInterpolation(target_time);
-
+		std::optional<PositionHistory> entry = interpolate.computeInterpolation(engine.getSimulationTime());
 		if(entry){
 			transform.pos = entry->pos;
 			transform.rot = entry->rot;
@@ -110,10 +108,9 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 			//auto& vel = registry.get<Velocity>(client_id);
 			//transform.pos = packet.pos;
 			//transform.rot = packet.rot;
-			const duration server_time{packet.server_time};
-			PositionHistory entry{ packet.pos, packet.rot, server_time };
-			interpolate.appendHistory(entry, server_time);
-			engine.setSimulationTime(server_time);
+			PositionHistory entry{ packet.pos, packet.rot, packet.server_time };
+			interpolate.appendHistory(entry, packet.server_time);
+			engine.setSimulationTime(packet.server_time);
 		}
 	}
 }

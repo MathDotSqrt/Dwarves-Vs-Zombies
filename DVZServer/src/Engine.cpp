@@ -13,13 +13,11 @@ using namespace DVZ;
 Engine::Engine() : 
 	shouldRun(true), 
 	registry(std::make_unique<entt::registry>()),
+	netManager(std::make_unique<DVZ::Net::NetServerManager>()),
 	netSystem(std::make_unique<DVZ::NetSystem>(*this)),
 	physicsSystem(std::make_unique<DVZ::PhysicsSystem>(*this)),
-	netManager(std::make_unique<DVZ::Net::NetServerManager>()),
 	updateThread(&Engine::updateLoop, this) {
 
-
-	
 }
 
 Engine::~Engine() {
@@ -34,8 +32,6 @@ void Engine::tick() {
 
 void Engine::updateLoop() {
 	
-	constexpr duration dt{ 1.0f / TPS };
-
 	const auto start_time = std::chrono::steady_clock::now();
 	auto last_time = start_time;
 	duration accum{ 0 };
@@ -46,11 +42,11 @@ void Engine::updateLoop() {
 
 		accum += frame_time;
 
-		while (accum >= dt) {
+		while (accum >= DT) {
 			//last_update = std::chrono::steady_clock::now();
-			total_time += dt;
+			total_time += DT;
 			tick();
-			accum -= dt;
+			accum -= DT;
 		}
 	}
 }
@@ -63,6 +59,6 @@ Net::NetServerManager& Engine::getNetManager() {
 	return *netManager;
 }
 
-DVZ::duration Engine::getTimeElapsed() const {
+DVZ::simulation_duration Engine::getTimeElapsed() const {
 	return total_time;
 }

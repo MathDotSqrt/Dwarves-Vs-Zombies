@@ -4,7 +4,7 @@
 #include <chrono>
 
 namespace DVZ {
-	constexpr int TPS = 10;
+	constexpr int TPS = 60;
 
 	using duration = std::chrono::duration<float>;
 	using simulation_duration = std::chrono::duration<u32, std::ratio<1, TPS>>;

@@ -3,6 +3,7 @@
 #define DVZ_PACKET_IDS_HPP
 
 #include "core/common.hpp"
+#include "core/time.hpp"
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -75,7 +76,7 @@ namespace DVZ::Net {
 		entt::entity entity;
 		glm::vec3 pos;
 		glm::quat rot;
-		float server_time;
+		simulation_duration server_time;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
