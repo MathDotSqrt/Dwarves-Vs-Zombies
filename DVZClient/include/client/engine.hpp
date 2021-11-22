@@ -58,6 +58,8 @@ namespace DVZ{
 
 		void setSimulationTime(simulation_duration duration);
 		simulation_duration getSimulationTime() const;
+
+		void setIP(std::string_view sv);
 	private:
 		Voxel::ChunkRenderDataManager& getChunkRenderDataManager();
 
@@ -78,6 +80,8 @@ namespace DVZ{
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
 		simulation_duration simulation_time = simulation_duration{ 0 };
+
+		std::string ip = "127.0.0.1:50150";
 	};
 }
 

@@ -5,8 +5,12 @@
 
 using namespace DVZ::Net;
 NetClientManager::NetClientManager() : netclient(std::make_unique<Net::ClientSocket>()) {
-	netclient->connectToServer("127.0.0.1:50150");
-	assert(netclient->isValid());
+	//netclient->connectToServer("127.0.0.1:50150");
+	//assert(netclient->isValid());
+}
+
+void NetClientManager::connectTo(std::string_view ip) {
+	netclient->connectToServer(std::string{ ip });
 }
 
 void NetClientManager::update() {
@@ -15,7 +19,7 @@ void NetClientManager::update() {
 	if (netclient->getConnectionState() == ConnectionState::CONNECTION_FAILED) {
 		spdlog::info("Lets try that again");
 		//netclient->connectToServer("54.85.202.121:50150");
-		netclient->connectToServer("127.0.0.1:50150");
+		//netclient->connectToServer("127.0.0.1:50150");
 	}
 	if (netclient->getConnectionState() == ConnectionState::CONNECTED) {
 		if (sent == false) {

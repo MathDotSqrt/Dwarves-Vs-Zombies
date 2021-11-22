@@ -21,7 +21,7 @@ namespace DVZ::Net {
 			std::string_view sv{ bytes.data(), bytes.size() };
 			netclient->sendMessage(sv, reliable);
 		}
-
+		void connectTo(std::string_view ip);
 		bool hasServerID(entt::entity server) const;
 		void addServerIDMap(entt::entity server, entt::entity client);
 		entt::entity getClientID(entt::entity server) const;

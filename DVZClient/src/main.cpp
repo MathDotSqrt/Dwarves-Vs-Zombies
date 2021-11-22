@@ -15,7 +15,7 @@ void set_log_level() {
 #endif // DVZ_CLIENT_DEBUG
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	using namespace DVZ::Graphics;
 	using namespace entt;
 
@@ -32,6 +32,11 @@ int main() {
 
 	{
 		DVZ::Engine engine;
+
+		if (argc == 2) {
+			engine.setIP(argv[1]);
+		}
+
 		while (!window.shouldClose()) {
 			engine.render();
 			window.update();

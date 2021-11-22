@@ -177,3 +177,8 @@ void Engine::setSimulationTime(simulation_duration server_time) {
 simulation_duration Engine::getSimulationTime() const{
 	return simulation_time;
 }
+
+void Engine::setIP(std::string_view sv) {
+	ip = sv;
+	getNetManager().connectTo(ip);
+}
