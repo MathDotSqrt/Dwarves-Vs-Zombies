@@ -20,6 +20,7 @@ namespace DVZ::Net {
 		SB_PlayerPositionVel,		//Server Bound: position vel of client player
 		
 		CB_AssignNetID,				//Client Bound: gives client its server assigned ID
+		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
 		CB_SpawnPosition,			//Client Bound: specifies spawn position of client player
 		CB_EntityPositionVel,		//Client Bound: position vel of entities/players 
 		CB_PlayerJoin				//Client Bound: notifies client a new player joined
@@ -52,11 +53,21 @@ namespace DVZ::Net {
 		constexpr static PacketID packet = PacketID::CB_AssignNetID;
 
 		entt::entity id;
+
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(id);
+		}
+	};
+
+	struct CB_SyncSimulationClockPacket {
+		constexpr static PacketID packet = PacketID::CB_SyncSimulationClock;
+
 		simulation_duration server_time;
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(id, server_time);
+			ar(server_time);
 		}
 	};
 
@@ -105,6 +116,7 @@ namespace DVZ::Net {
 	std::vector<char> serializePacketData(const SB_PlayerPositionRotPacket& data);
 
 	std::vector<char> serializePacketData(const CB_AssignNetIDPacket& data);
+	std::vector<char> serializePacketData(const CB_SyncSimulationClockPacket& data);
 	std::vector<char> serializePacketData(const CB_SpawnPositionPacket& data);
 	std::vector<char> serializePacketData(const CB_EntityPositionRotPacket& data);
 	std::vector<char> serializePacketData(const CB_PlayerJoinPacket& data);
@@ -113,6 +125,7 @@ namespace DVZ::Net {
 	bool deserializePacketData(std::string_view, SB_PlayerPositionRotPacket& out);
 
 	bool deserializePacketData(std::string_view, CB_AssignNetIDPacket& out);
+	bool deserializePacketData(std::string_view, CB_SyncSimulationClockPacket& out);
 	bool deserializePacketData(std::string_view, CB_SpawnPositionPacket& out);
 	bool deserializePacketData(std::string_view, CB_EntityPositionRotPacket& out);
 	bool deserializePacketData(std::string_view, CB_PlayerJoinPacket& out);

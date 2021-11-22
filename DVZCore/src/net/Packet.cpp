@@ -38,6 +38,10 @@ std::vector<char> DVZ::Net::serializePacketData(const CB_AssignNetIDPacket& data
 	return serialize<>(data);
 }
 
+std::vector<char> DVZ::Net::serializePacketData(const CB_SyncSimulationClockPacket& data) {
+	return serialize<>(data);
+}
+
 std::vector<char> DVZ::Net::serializePacketData(const CB_SpawnPositionPacket& data) {
 	return serialize<>(data);
 }
@@ -59,6 +63,10 @@ bool DVZ::Net::deserializePacketData(std::string_view sv, SB_PlayerPositionRotPa
 }
 
 bool DVZ::Net::deserializePacketData(std::string_view sv, CB_AssignNetIDPacket& out) {
+	return deserialize<>(sv, out);
+}
+
+bool DVZ::Net::deserializePacketData(std::string_view sv, CB_SyncSimulationClockPacket& out) {
 	return deserialize<>(sv, out);
 }
 

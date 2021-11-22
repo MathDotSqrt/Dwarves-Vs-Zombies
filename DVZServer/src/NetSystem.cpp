@@ -31,11 +31,30 @@ void NetSystem::tick(Engine& engine) {
 
 	auto& registry = engine.getRegistry();
 
-	auto view = registry.view<Transformation, Velocity, Network>();
 
+	auto netplayer_view = registry.view<Transformation, Network, NetPlayer>();
+
+	netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, true);
+
+	for (entt::entity entity : netplayer_view) {
+		const auto& trans = netplayer_view.get<Transformation>(entity);
+		auto& network = netplayer_view.get<Network>(entity);
+
+		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		Net::CB_EntityPositionRotPacket data;
+		data.entity = entity;
+		data.pos = trans.pos;
+		data.rot = trans.rot;
+		data.server_time = engine.getTimeElapsed();
+		//data.vel = vel;
+		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
+		network.last_pos = trans.pos;
+		//}
+	}
+
+	auto view = registry.view<Transformation, Velocity, Network>(entt::exclude<NetPlayer>);
 	for (entt::entity entity : view) {
 		const auto& trans = view.get<Transformation>(entity);
-		const auto& vel = view.get<Velocity>(entity);
 		auto& network = view.get<Network>(entity);
 
 		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
@@ -46,7 +65,7 @@ void NetSystem::tick(Engine& engine) {
 			data.server_time = engine.getTimeElapsed();
 			//data.vel = vel;
 
-			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
+			netManager.sendToAllMessage(data, false);
 			network.last_pos = trans.pos;
 		//}
 	}
@@ -89,7 +108,7 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		glm::vec3 spawn_pos = glm::vec3(0, 100, 0);
 
 		netManager.addEntityConnectionMapping(clientID, conn);
-		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID, engine.getTimeElapsed()}, conn, true);
+		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn, true);
 		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn, true);
 		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn, true);
 		
@@ -101,6 +120,7 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		registry.emplace<Transformation>(clientID, spawn_pos);
 		registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
 		registry.emplace<Network>(clientID);
+		registry.emplace<NetPlayer>(clientID);
 
 		
 	}

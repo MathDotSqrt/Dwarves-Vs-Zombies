@@ -7,6 +7,10 @@ namespace DVZ {
 	struct Debug {
 		float timer;
 	};
+
+	struct NetPlayer {
+
+	};
 }
 
 #endif

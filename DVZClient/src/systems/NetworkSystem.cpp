@@ -67,6 +67,9 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 	case PacketID::CB_AssignNetID:
 		onAssignNetID(engine, data);
 		break;
+	case PacketID::CB_SyncSimulationClock:
+		onSyncSimulationClock(engine, data);
+		break;
 	case PacketID::CB_EntityPositionVel:
 		onEntityPositionVel(engine, data);
 		break;
@@ -89,6 +92,12 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 		entt::entity internal_id = engine.getPlayer();
 		manager.addServerIDMap(packet.id, internal_id);
 
+	}
+}
+
+void NetworkSystem::onSyncSimulationClock(Engine& engine, std::string_view data) {
+	Net::CB_SyncSimulationClockPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
 		engine.setSimulationTime(packet.server_time);
 	}
 }
