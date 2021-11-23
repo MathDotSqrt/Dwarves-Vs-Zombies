@@ -86,13 +86,13 @@ void Engine::update() {
 }
 
 void Engine::initUpdateLoop() {
+	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::MovementSystem>();
 	this->addSystem<Systems::PhysicsSystem>();
 
 	this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::RenderSystem>();
-	this->addSystem<Systems::NetworkSystem>();
 }
 
 void Engine::updateLoop() {
@@ -114,12 +114,7 @@ void Engine::updateLoop() {
 
 		while (accum >= DT) {
 			//last_update = std::chrono::steady_clock::now();
-			if (sync_time) {
-				simulation_time = last_server_time;
-				sync_time = false;
-			}
-
-			simulation_time += DT;
+			client_simulation_time += DT;
 			update();
 
 			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
@@ -177,14 +172,15 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 }
 
 void Engine::setSimulationTime(simulation_duration server_time) {
-	sync_time = true;
-	last_server_time = std::max(server_time, last_server_time);
-	//simulation_time = server_time;
+	if (server_time > last_server_time) {
+		last_server_time = server_time;
+		sync_offset = last_server_time - client_simulation_time;
+	}
 }
 
 
-simulation_duration Engine::getSimulationTime() const{
-	return simulation_time;
+simulation_duration Engine::getServerSimulationTime() const{
+	return client_simulation_time + sync_offset;
 }
 
 void Engine::setIP(std::string_view sv) {

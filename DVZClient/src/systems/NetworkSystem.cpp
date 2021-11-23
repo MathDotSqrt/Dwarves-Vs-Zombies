@@ -41,9 +41,9 @@ void NetworkSystem::gameTick(Engine& engine) {
 
 
 	auto view = registry.view<Transformation, InterpolateNetValues>();
-	duration current_time = engine.getSimulationTime();
+	simulation_duration current_time = engine.getServerSimulationTime();
 	view.each([&](Transformation& transform, InterpolateNetValues& interpolate) {
-		std::optional<PositionHistory> entry = interpolate.computeInterpolation(engine.getSimulationTime());
+		std::optional<PositionHistory> entry = interpolate.computeInterpolation(current_time);
 		if(entry){
 			transform.pos = entry->pos;
 			transform.rot = entry->rot;
@@ -119,7 +119,7 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 			//transform.pos = packet.pos;
 			//transform.rot = packet.rot;
 			PositionHistory entry{ packet.pos, packet.rot, packet.server_time };
-			interpolate.appendHistory(entry, engine.getSimulationTime());
+			interpolate.appendHistory(entry, engine.getServerSimulationTime());
 		}
 	}
 }

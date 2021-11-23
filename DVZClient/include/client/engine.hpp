@@ -57,7 +57,8 @@ namespace DVZ{
 		Voxel::ClientChunkManager& getChunkManager();
 
 		void setSimulationTime(simulation_duration duration);
-		simulation_duration getSimulationTime() const;
+		simulation_duration getServerSimulationTime() const;
+		simulation_duration getClientSimulationTime() const;
 
 		void setIP(std::string_view sv);
 	private:
@@ -80,9 +81,9 @@ namespace DVZ{
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
 
-		bool sync_time = false;
 		simulation_duration last_server_time = simulation_duration{ 0 };
-		simulation_duration simulation_time = simulation_duration{ 0 };
+		simulation_duration sync_offset = simulation_duration{ 0 };
+		simulation_duration client_simulation_time = simulation_duration{ 0 };
 
 		std::string ip = "127.0.0.1:50150";
 	};
