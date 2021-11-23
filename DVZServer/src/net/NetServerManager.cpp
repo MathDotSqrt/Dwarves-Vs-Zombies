@@ -30,6 +30,21 @@ entt::entity NetServerManager::getEntity(HSteamNetConnection connection) const {
 	return entt::null;
 }
 
+bool NetServerManager::shouldAcceptClientMovement(entt::entity entity, simulation_duration client_time) {
+	const auto iter = clientLastUpdateMap.find(entity);
+
+	if (iter != clientLastUpdateMap.end()) {
+		if (iter->second < client_time) {
+			iter->second = client_time;
+			return true;
+		}
+		return false;
+	}
+
+	clientLastUpdateMap[entity] = client_time;
+	return true;
+}
+
 ServerSocket& NetServerManager::getSocket() {
 	return *socket;
 }

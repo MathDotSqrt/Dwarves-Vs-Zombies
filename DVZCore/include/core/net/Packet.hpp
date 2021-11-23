@@ -42,10 +42,10 @@ namespace DVZ::Net {
 
 		glm::vec3 pos;
 		glm::quat rot;
-
+		simulation_duration client_time;
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z);
+			ar(pos.x, pos.y, pos.z, rot.w, rot.x, rot.y, rot.z, client_time);
 		}
 	};
 

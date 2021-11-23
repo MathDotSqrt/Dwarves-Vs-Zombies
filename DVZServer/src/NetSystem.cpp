@@ -133,7 +133,7 @@ void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HStea
 		auto& netManager = engine.getNetManager();
 		entt::entity player = netManager.getEntity(conn);
 
-		if (player != entt::null) {
+		if (player != entt::null && netManager.shouldAcceptClientMovement(player, packet.client_time)) {
 			auto& transform = registry.get<Transformation>(player);
 			transform.pos = packet.pos;
 			transform.rot = packet.rot;

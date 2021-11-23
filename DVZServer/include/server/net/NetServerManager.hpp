@@ -45,12 +45,15 @@ namespace DVZ::Net {
 		HSteamNetConnection getConnectionHandle(entt::entity) const;
 		entt::entity getEntity(HSteamNetConnection conn) const;
 
+		bool shouldAcceptClientMovement(entt::entity, simulation_duration client_time);
+
 		Net::ServerSocket& getSocket();
 
 	private: 
 		std::unique_ptr<Net::ServerSocket> socket;
 		std::unordered_map<entt::entity, HSteamNetConnection> entityToConnectionMap;
 		std::unordered_map<HSteamNetConnection, entt::entity> connectionToEntityMap;
+		std::unordered_map<entt::entity, simulation_duration> clientLastUpdateMap;
 	};
 }
 

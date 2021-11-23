@@ -183,6 +183,10 @@ simulation_duration Engine::getServerSimulationTime() const{
 	return client_simulation_time + sync_offset;
 }
 
+simulation_duration Engine::getClientSimulationTime() const {
+	return client_simulation_time;
+}
+
 void Engine::setIP(std::string_view sv) {
 	ip = sv;
 	getNetManager().connectTo(ip);

@@ -34,7 +34,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto& network = registry.get<Network>(entity);
 
 	//if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
-		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot }, false);
+		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot, engine.getClientSimulationTime() }, false);
 		network.last_pos = transform.pos;
 		network.last_rot = transform.rot;
 	//}
