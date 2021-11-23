@@ -1,4 +1,7 @@
 #include "server/net/NetServerManager.hpp"
+
+#include <spdlog/spdlog.h>
+
 using namespace DVZ::Net;
 
 NetServerManager::NetServerManager() : socket(std::make_unique<Net::ServerSocket>(50150)) {
@@ -38,6 +41,7 @@ bool NetServerManager::shouldAcceptClientMovement(entt::entity entity, simulatio
 			iter->second = client_time;
 			return true;
 		}
+		spdlog::info("out of order");
 		return false;
 	}
 
