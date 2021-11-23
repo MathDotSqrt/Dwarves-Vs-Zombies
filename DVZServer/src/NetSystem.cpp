@@ -34,7 +34,7 @@ void NetSystem::tick(Engine& engine) {
 
 	auto netplayer_view = registry.view<Transformation, Network, NetPlayer>();
 
-	netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, true);
+	netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, false);
 
 	for (entt::entity entity : netplayer_view) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);

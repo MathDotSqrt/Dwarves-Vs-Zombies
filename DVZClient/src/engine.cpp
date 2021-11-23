@@ -114,6 +114,11 @@ void Engine::updateLoop() {
 
 		while (accum >= DT) {
 			//last_update = std::chrono::steady_clock::now();
+			if (sync_time) {
+				simulation_time = last_server_time;
+				sync_time = false;
+			}
+
 			simulation_time += DT;
 			update();
 
@@ -172,7 +177,9 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 }
 
 void Engine::setSimulationTime(simulation_duration server_time) {
-	simulation_time = server_time;
+	sync_time = true;
+	last_server_time = std::max(server_time, last_server_time);
+	//simulation_time = server_time;
 }
 
 

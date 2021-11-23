@@ -79,6 +79,9 @@ namespace DVZ{
 		std::thread updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
+
+		bool sync_time = false;
+		simulation_duration last_server_time = simulation_duration{ 0 };
 		simulation_duration simulation_time = simulation_duration{ 0 };
 
 		std::string ip = "127.0.0.1:50150";
