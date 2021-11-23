@@ -28,15 +28,15 @@ ServerSocket::ServerSocket(u16 port) {
 	static float drop_rate = 0.f;
 	static float reorder_rate = 5.f;
 	static i32 reorder_delay = 50;
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLag_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&delay));
 	
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketLoss_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&drop_rate));
 
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&reorder_rate));
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&reorder_rate));
-	SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Time, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&reorder_delay));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Send, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&reorder_rate));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Recv, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Float, (const void*)(&reorder_rate));
+	//SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_FakePacketReorder_Time, k_ESteamNetworkingConfig_Global, 0, k_ESteamNetworkingConfig_Int32, (const void*)(&reorder_delay));
 
 
 	
