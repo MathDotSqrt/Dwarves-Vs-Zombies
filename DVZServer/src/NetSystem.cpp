@@ -48,6 +48,7 @@ void NetSystem::tick(Engine& engine) {
 			data.server_time = engine.getTimeElapsed();
 			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
 			network.last_pos = trans.pos;
+			network.last_rot = trans.rot;
 		}
 	}
 
