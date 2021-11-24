@@ -34,13 +34,13 @@ void NetSystem::tick(Engine& engine) {
 
 	auto netplayer_view = registry.view<Transformation, Network, NetPlayer>();
 
-	//netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, false);
+	netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, true);
 
 	for (entt::entity entity : netplayer_view) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);
 		auto& network = netplayer_view.get<Network>(entity);
 
-		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
@@ -48,7 +48,7 @@ void NetSystem::tick(Engine& engine) {
 			data.server_time = engine.getTimeElapsed();
 			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
 			network.last_pos = trans.pos;
-		}
+		//}
 	}
 
 	auto view = registry.view<Transformation, Velocity, Network>(entt::exclude<NetPlayer>);
