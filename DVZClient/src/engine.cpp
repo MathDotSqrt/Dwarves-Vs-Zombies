@@ -89,6 +89,15 @@ void Engine::update() {
 		desync = false;
 	}
 
+	if (window.isPressed('l')) {
+		pause = true;
+		client_simulation_time += simulation_duration{ 1 };
+	}
+	if (window.isPressed('j')) {
+		pause = true;
+		client_simulation_time -= simulation_duration{ 1 };
+	}
+
 	for (auto& system : systems) {
 		system->gameTick(*this);
 	}
@@ -100,7 +109,7 @@ void Engine::initUpdateLoop() {
 	this->addSystem<Systems::MovementSystem>();
 	this->addSystem<Systems::PhysicsSystem>();
 
-	this->addSystem<Systems::VoxelSystem>();
+	//this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::RenderSystem>();
 }
 
@@ -123,7 +132,8 @@ void Engine::updateLoop() {
 
 		while (accum >= DT) {
 			//last_update = std::chrono::steady_clock::now();
-			client_simulation_time += DT;
+			if(pause == false)
+				client_simulation_time += DT;
 			update();
 
 			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
