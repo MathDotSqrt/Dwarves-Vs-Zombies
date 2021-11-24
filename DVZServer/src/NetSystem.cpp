@@ -40,7 +40,7 @@ void NetSystem::tick(Engine& engine) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);
 		auto& network = netplayer_view.get<Network>(entity);
 
-		if (glm::distance2(trans.pos, network.last_pos) > .001f || trans.rot != network.last_rot) {
+		if (glm::distance2(trans.pos, network.last_pos) > .001f || glm::dot(trans.rot, network.last_rot) > .001f) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
