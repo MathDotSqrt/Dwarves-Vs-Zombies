@@ -70,30 +70,30 @@ Engine::~Engine() {
 
 void Engine::update() {
 	auto& window = Window::getInstance();
-	if (window.isPressed('1')) {
+	if (window.isDown('1')) {
 		spdlog::set_level(spdlog::level::debug);
 	}
-	if (window.isPressed('2')) {
+	if (window.isDown('2')) {
 		spdlog::set_level(spdlog::level::info);
 	}
-	if (window.isPressed('3')) {
+	if (window.isDown('3')) {
 		spdlog::set_level(spdlog::level::err);
 	}
 
-	if (window.isPressed('r')) {
+	if (window.isDown('r')) {
 		desync = true;
 		client_simulation_time = simulation_duration{0};
 	}
 
-	if (window.isPressed('t')) {
+	if (window.isDown('t')) {
 		desync = false;
 	}
 
-	if (window.isPressed('l')) {
+	if (window.isDown('l')) {
 		pause = true;
 		client_simulation_time += simulation_duration{ 1 };
 	}
-	if (window.isPressed('j')) {
+	if (window.isDown('j')) {
 		pause = true;
 		client_simulation_time -= simulation_duration{ 1 };
 	}
@@ -156,7 +156,7 @@ void Engine::render() {
 	//spdlog::debug("{}", alpha.load());
 	sceneManager->computeInterpolate(alpha.load());
 
-	if (Window::getInstance().isPressed('c'))
+	if (Window::getInstance().isDown('c'))
 		chunkRenderDataManager->clearRenderData();
 	chunkRenderDataManager->update();
 	renderer->render(sceneManager->getInterpolatedScene(), *chunkRenderDataManager);

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <array>
 
 struct GLFWwindow;
 
@@ -36,8 +37,8 @@ namespace DVZ {
 
 		void update();
 
-		bool isPressed(char c) const;
-		bool isPressed(Keys keys) const;
+		bool isDown(char c) const;
+		bool isDown(Keys keys) const;
 		bool isClick(Mouse mouse) const;
 		bool shouldClose() const;
 
@@ -61,6 +62,7 @@ namespace DVZ {
 		float scrollDelta = 0;
 		bool hasFocus = true;
 		bool isMouseDisabled;
+		std::array<bool, 256> key_pressed;
 
 		Window(int width, int height, std::string title);
 

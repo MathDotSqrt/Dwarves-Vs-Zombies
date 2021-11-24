@@ -98,11 +98,11 @@ void Window::update() {
     glfwPollEvents();
 }
 
-bool Window::isPressed(char c) const {
+bool Window::isDown(char c) const {
     return GLFW_PRESS == glfwGetKey(window, toupper(c));
 }
 
-bool Window::isPressed(Keys key) const {
+bool Window::isDown(Keys key) const {
 
     switch (key) {
     case Keys::LEFT_SHIFT:
