@@ -39,10 +39,8 @@ void NetSystem::tick(Engine& engine) {
 	for (entt::entity entity : netplayer_view) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);
 		auto& network = netplayer_view.get<Network>(entity);
-		auto& netplayer = netplayer_view.get<NetPlayer>(entity);
 
-		netplayer.timer -= simulation_duration{ 1 };
-		if (netplayer.timer == simulation_duration{ 0 }) {
+		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
@@ -50,10 +48,7 @@ void NetSystem::tick(Engine& engine) {
 			data.server_time = engine.getTimeElapsed();
 			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
 			network.last_pos = trans.pos;
-
-			netplayer.timer = NetPlayer::DELAY;
 		}
-		
 	}
 
 	auto view = registry.view<Transformation, Velocity, Network>(entt::exclude<NetPlayer>);
@@ -61,7 +56,7 @@ void NetSystem::tick(Engine& engine) {
 		const auto& trans = view.get<Transformation>(entity);
 		auto& network = view.get<Network>(entity);
 
-		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
@@ -71,7 +66,7 @@ void NetSystem::tick(Engine& engine) {
 
 			netManager.sendToAllMessage(data, false);
 			network.last_pos = trans.pos;
-		//}
+		}
 	}
 }
 

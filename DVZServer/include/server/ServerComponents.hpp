@@ -9,9 +9,6 @@ namespace DVZ {
 	};
 
 	struct NetPlayer {
-		constexpr static int UPS = 30;
-		constexpr static auto DELAY = std::chrono::duration_cast<simulation_duration>(duration{ 1.0f / UPS });
-		simulation_duration timer = DELAY;
 	};
 }
 
