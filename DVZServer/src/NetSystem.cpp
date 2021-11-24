@@ -39,17 +39,21 @@ void NetSystem::tick(Engine& engine) {
 	for (entt::entity entity : netplayer_view) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);
 		auto& network = netplayer_view.get<Network>(entity);
+		auto& netplayer = netplayer_view.get<NetPlayer>(entity);
 
-		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
-		Net::CB_EntityPositionRotPacket data;
-		data.entity = entity;
-		data.pos = trans.pos;
-		data.rot = trans.rot;
-		data.server_time = engine.getTimeElapsed();
-		//data.vel = vel;
-		netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
-		network.last_pos = trans.pos;
-		//}
+		netplayer.timer -= simulation_duration{ 1 };
+		if (netplayer.timer == simulation_duration{ 0 }) {
+			Net::CB_EntityPositionRotPacket data;
+			data.entity = entity;
+			data.pos = trans.pos;
+			data.rot = trans.rot;
+			data.server_time = engine.getTimeElapsed();
+			netManager.sendToAllMessage(data, netManager.getConnectionHandle(entity), false);
+			network.last_pos = trans.pos;
+
+			netplayer.timer = NetPlayer::DELAY;
+		}
+		
 	}
 
 	auto view = registry.view<Transformation, Velocity, Network>(entt::exclude<NetPlayer>);
