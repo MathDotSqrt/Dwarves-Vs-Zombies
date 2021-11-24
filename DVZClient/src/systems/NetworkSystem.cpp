@@ -98,7 +98,7 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 void NetworkSystem::onSyncSimulationClock(Engine& engine, std::string_view data) {
 	Net::CB_SyncSimulationClockPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
-		engine.setSimulationTime(packet.server_time);
+		//engine.setSimulationTime(packet.server_time);
 	}
 }
 
@@ -120,6 +120,7 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 			//transform.rot = packet.rot;
 			PositionHistory entry{ packet.pos, packet.rot, packet.server_time };
 			interpolate.appendHistory(entry, engine.getServerSimulationTime());
+			engine.setSimulationTime(packet.server_time);
 		}
 	}
 }
