@@ -34,7 +34,7 @@ void NetSystem::tick(Engine& engine) {
 
 	auto netplayer_view = registry.view<Transformation, Network, NetPlayer>();
 
-	netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, true);
+	//netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{engine.getTimeElapsed()}, false);
 
 	for (entt::entity entity : netplayer_view) {
 		const auto& trans = netplayer_view.get<Transformation>(entity);
@@ -110,6 +110,8 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 		netManager.sendMessage(Net::CB_AssignNetIDPacket{clientID}, conn, true);
 		netManager.sendMessage(Net::CB_SpawnPositionPacket{ spawn_pos }, conn, true);
 		netManager.sendToAllMessage(Net::CB_PlayerJoinPacket{ clientID }, conn, true);
+		netManager.sendToAllMessage(Net::CB_SyncSimulationClockPacket{ engine.getTimeElapsed() }, false);
+
 		
 		auto view = registry.view<Network>();
 		for (entt::entity entity : view) {
