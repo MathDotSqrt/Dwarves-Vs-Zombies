@@ -56,7 +56,7 @@ void NetSystem::tick(Engine& engine) {
 		const auto& trans = view.get<Transformation>(entity);
 		auto& network = view.get<Network>(entity);
 
-		if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
+		//if (glm::distance2(trans.pos, network.last_pos) > .01f || trans.rot != network.last_rot) {
 			Net::CB_EntityPositionRotPacket data;
 			data.entity = entity;
 			data.pos = trans.pos;
@@ -66,7 +66,7 @@ void NetSystem::tick(Engine& engine) {
 
 			netManager.sendToAllMessage(data, false);
 			network.last_pos = trans.pos;
-		}
+		//}
 	}
 }
 
