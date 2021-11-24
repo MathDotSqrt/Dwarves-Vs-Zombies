@@ -80,20 +80,26 @@ void Engine::update() {
 		spdlog::set_level(spdlog::level::err);
 	}
 
-	if (window.isDown('r')) {
+	if (window.isPressed('r')) {
+		spdlog::info("Reset");
 		desync = true;
+		pause = false;
 		client_simulation_time = simulation_duration{0};
 	}
 
-	if (window.isDown('t')) {
+	if (window.isPressed('t')) {
+		spdlog::info("Continue");
 		desync = false;
+		pause = false;
 	}
 
-	if (window.isDown('l')) {
+	if (window.isPressed('l') || window.isDown('p')) {
+		desync = true;
 		pause = true;
 		client_simulation_time += simulation_duration{ 1 };
 	}
-	if (window.isDown('j')) {
+	if (window.isPressed('j') || window.isDown('i')) {
+		desync = true;
 		pause = true;
 		client_simulation_time -= simulation_duration{ 1 };
 	}

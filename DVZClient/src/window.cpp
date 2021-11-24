@@ -96,6 +96,14 @@ void Window::update() {
     scrollDelta = 0;
     glfwSwapBuffers(window);
     glfwPollEvents();
+    std::swap(key_pressed, last_key_pressed);
+    for (char c = 'a'; c <= 'z'; c++) {
+        key_pressed[c] = isDown(c);
+    }
+}
+
+bool Window::isPressed(char c) {
+    return key_pressed[c] && !last_key_pressed[c];
 }
 
 bool Window::isDown(char c) const {

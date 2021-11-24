@@ -40,8 +40,9 @@ int main(int argc, char* argv[]) {
 
 
 		while (!window.shouldClose()) {
-			engine.render();
 			window.update();
+			engine.render();
+			
 		}
 	}
 

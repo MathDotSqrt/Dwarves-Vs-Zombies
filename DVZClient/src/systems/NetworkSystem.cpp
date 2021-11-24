@@ -39,16 +39,8 @@ void NetworkSystem::gameTick(Engine& engine) {
 		network.last_rot = transform.rot;
 	//}
 
-	static simulation_duration last_time{ -1 };
-	
-	
 	auto view = registry.view<Transformation, InterpolateNetValues>();
 	simulation_duration current_time = engine.getServerSimulationTime();
-	
-	if (current_time == last_time) {
-		spdlog::info("duplicate simulation time");
-	}
-	last_time = current_time;
 	
 	view.each([&](Transformation& transform, InterpolateNetValues& interpolate) {
 		std::optional<PositionHistory> entry = interpolate.computeInterpolation(current_time);
