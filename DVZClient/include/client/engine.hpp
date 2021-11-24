@@ -81,6 +81,7 @@ namespace DVZ{
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
 
+		bool desync = false;
 		simulation_duration last_server_time = simulation_duration{ 0 };
 		simulation_duration sync_offset = simulation_duration{ 0 };
 		simulation_duration client_simulation_time = simulation_duration{ 0 };

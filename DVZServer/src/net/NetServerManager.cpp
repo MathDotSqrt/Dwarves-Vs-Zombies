@@ -41,7 +41,6 @@ bool NetServerManager::shouldAcceptClientMovement(entt::entity entity, simulatio
 			iter->second = client_time;
 			return true;
 		}
-		spdlog::info("out of order");
 		return false;
 	}
 

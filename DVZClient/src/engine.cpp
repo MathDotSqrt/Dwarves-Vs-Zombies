@@ -80,6 +80,15 @@ void Engine::update() {
 		spdlog::set_level(spdlog::level::err);
 	}
 
+	if (window.isPressed('r')) {
+		desync = true;
+		client_simulation_time = simulation_duration{0};
+	}
+
+	if (window.isPressed('t')) {
+		desync = false;
+	}
+
 	for (auto& system : systems) {
 		system->gameTick(*this);
 	}
@@ -172,7 +181,7 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 }
 
 void Engine::setSimulationTime(simulation_duration server_time) {
-	if (server_time > last_server_time) {
+	if (server_time > last_server_time && desync == false) {
 		last_server_time = server_time;
 		sync_offset = last_server_time - client_simulation_time;
 	}

@@ -4,6 +4,8 @@
 
 using namespace DVZ;
 
+//https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization
+
 InterpolateNetValues::InterpolateNetValues() {
 	
 }
@@ -21,13 +23,16 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(simula
 	}
 	
 	if (target_time > buffer[0].server_time) {
+		spdlog::info("out paced");
 		return buffer[0];
 	}
 
 	for (size_t i = 0; i < buffer.size() - 1; i++) {
 		const auto& t1 = buffer[i];
 		const auto& t2 = buffer[i + 1];
-
+		if (t1.server_time == t2.server_time) {
+			spdlog::error("UASDHASDHAS");
+		}
 		if (t1.server_time >= target_time && target_time >= t2.server_time) {
 			const auto denom = t1.server_time - t2.server_time;
 			const auto num = target_time - t2.server_time;
@@ -44,19 +49,19 @@ std::optional<PositionHistory> InterpolateNetValues::computeInterpolation(simula
 	return buffer.back();
 }
 
-void InterpolateNetValues::appendHistory(const PositionHistory& new_entry, simulation_duration client_time) {
+void InterpolateNetValues::appendHistory(const PositionHistory& new_entry, simulation_duration server_time) {
 	const auto iter = std::find_if(buffer.begin(), buffer.end(), [&](const PositionHistory& entry) {
-		return new_entry.server_time >= entry.server_time;
+		return new_entry.server_time > entry.server_time;
 	});
 
 	buffer.insert(iter, new_entry);
 
-	if (buffer.size() >= 3) {
-		const auto erase_iter = std::remove_if(buffer.begin() + 2, buffer.end(), [&](const PositionHistory& entry) {
-			return (client_time - entry.server_time) > (1 * interpolation_offset);
-		});
-		buffer.erase(erase_iter, buffer.end());
-	}
+	//if (buffer.size() >= 3) {
+	//	const auto erase_iter = std::remove_if(buffer.begin() + 2, buffer.end(), [&](const PositionHistory& entry) {
+	//		return (server_time - entry.server_time) > (1 * interpolation_offset);
+	//	});
+	//	buffer.erase(erase_iter, buffer.end());
+	//}
 }
 
 const PositionHistory& InterpolateNetValues::getMostRecentHistory() const {
