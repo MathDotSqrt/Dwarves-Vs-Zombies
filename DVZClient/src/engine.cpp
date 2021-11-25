@@ -19,8 +19,8 @@
 #include "client/voxel/ClientChunkManager.hpp"
 #include "client/voxel/ChunkRenderDataManager.hpp"
 
-#include "client/util/transform.hpp"
-
+#include "client/util/camera_util.hpp"
+#include "core/util/transform.hpp"
 #include "core/CoreComponents.hpp"
 
 #include <chrono>
@@ -100,16 +100,6 @@ void Engine::initUpdateLoop() {
 	registry.emplace<Direction>(player);
 	registry.emplace<VoxelCollider>(player, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 	registry.emplace<Network>(player);
-
-	entt::entity test = registry.create();
-	registry.emplace<Transformation>(test, glm::vec3(), glm::quat(1, 0, 0, 0), glm::vec3(.1f));
-	registry.emplace<Velocity>(test, glm::vec3(.0, 0, 0));
-	registry.emplace<Renderable>(test, "cube"_hs);
-
-	entt::entity test2 = registry.create();
-	registry.emplace<Transformation>(test2, glm::vec3(1, 1, 1), glm::quat(1, 0, 0, 0), glm::vec3(.1f));
-	registry.emplace<Velocity>(test2, glm::vec3(.0, 0, 0));
-	registry.emplace<Renderable>(test2, "cube"_hs);
 
 	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::InputSystem>();

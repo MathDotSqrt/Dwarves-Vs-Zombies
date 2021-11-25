@@ -30,10 +30,10 @@ set(HEADER_FILES
 	"./include/client/systems/RenderSystem.hpp"
 	"./include/client/systems/VoxelSystem.hpp"
 
+	"./include/client/util/camera_util.hpp"
 	"./include/client/util/freelist.hpp"
 	"./include/client/util/id.hpp"
 	"./include/client/util/packedfreelist.hpp"
-	"./include/client/util/transform.hpp"
 	"./include/client/util/util.hpp"
 
 	"./include/client/voxel/ChunkGeometry.hpp"
@@ -71,7 +71,7 @@ set(SOURCE_FILES
 	"./src/systems/RenderSystem.cpp"
 	"./src/systems/VoxelSystem.cpp"
 
-	"./src/util/transform.cpp"
+	"./src/util/camera_util.cpp"
 
 	"./src/voxel/ChunkGeometry.cpp"
 	"./src/voxel/ChunkMesher.cpp"

@@ -1,12 +1,9 @@
 #include "client/graphics/BasicRenderer.hpp"
 #include "client/graphics/GeometryBuilder.hpp"
 #include "client/graphics/Attrib.hpp"
-
-#include "client/util/transform.hpp"
-
 #include "client/voxel/ChunkRenderDataManager.hpp"
-
 #include "client/window.hpp"
+#include "core/util/transform.hpp"
 
 
 #include <GL/glew.h>

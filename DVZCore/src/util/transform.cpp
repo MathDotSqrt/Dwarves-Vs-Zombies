@@ -1,7 +1,4 @@
-#include "client/util/transform.hpp"
-#include "client/window.hpp"
-
-#include <glm/gtx/euler_angles.hpp>
+#include "core/util/transform.hpp"
 
 glm::quat DVZ::Util::remove_pitch(const glm::quat& q) {
 	glm::vec3 eular = glm::eulerAngles(q);
@@ -14,17 +11,4 @@ glm::mat4 DVZ::Util::to_transform(const glm::vec3& pos, const glm::quat& rot, co
 	M = M * glm::toMat4(rot);
 	M = glm::scale(M, scale);
 	return M;
-}
-
-DVZ::Camera DVZ::Util::create_default_camera() {
-	DVZ::Camera camera;
-	camera.fov = 80;
-
-	const DVZ::Window& window = DVZ::Window::getInstance();
-	camera.width = (float)window.getWidth();
-	camera.height = (float)window.getHeight();
-	camera.near = .1f;
-	camera.far = 10000.0f;
-
-	return camera;
 }

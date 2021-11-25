@@ -2,6 +2,7 @@
 set(HEADER_FILES 
 	"./include/core/common.hpp"
 	"./include/core/CoreComponents.hpp"
+	"./include/core/MovementUtil.hpp"
 	"./include/core/time.hpp"
 
 	"./include/core/collision/AABB.hpp"
@@ -9,6 +10,7 @@ set(HEADER_FILES
 	"./include/core/net/ConnectionState.hpp"
 	"./include/core/net/Packet.hpp"
 
+	"./include/core/util/transform.hpp"
 	"./include/core/util/view_streambuf.hpp"
 
 
@@ -18,9 +20,13 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES 
+	"./src/MovementUtil.cpp"
+
 	"./src/collision/AABB.cpp"
 
 	"./src/net/Packet.cpp"
+
+	"./src/util/transform.cpp"
 
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"
