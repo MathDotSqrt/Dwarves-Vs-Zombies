@@ -77,7 +77,6 @@ void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 void NetworkSystem::onSyncSimulationClock(Engine& engine, std::string_view data) {
 	Net::CB_SyncSimulationClockPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
-		engine.setSimulationTime(packet.server_time);
 	}
 }
 

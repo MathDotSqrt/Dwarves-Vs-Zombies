@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	{
-		std::string ip = "34.201.118.166:50150";
+		std::string ip = "127.0.0.1:50150";
 		if (argc == 2) {
 			ip = argv[1];
 		}
