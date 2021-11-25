@@ -19,7 +19,7 @@ namespace DVZ {
 		void onMessage(Engine&, std::string_view sv, HSteamNetConnection connection);
 		void onClientJoin(Engine&, std::string_view sv, HSteamNetConnection connection);
 		void onPlayerPositionVel(Engine&, std::string_view sv, HSteamNetConnection connection);
-
+		void onPlayerInput(Engine&, std::string_view sv, HSteamNetConnection connection);
 		//std::unique_ptr<Net::ServerSocket> socket;
 		//void onMessage(std::string_view sv, HSteamNetConnection connection);
 	};

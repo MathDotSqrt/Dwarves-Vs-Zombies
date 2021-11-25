@@ -52,14 +52,15 @@ namespace DVZ::Net {
 
 	struct SB_PlayerInput {
 		constexpr static PacketID packet = PacketID::SB_PlayerInput;
+		glm::quat rot;
+		simulation_duration client_time;
 
 		i8 forward;
 		i8 strafe;
 		i8 fly;
-		simulation_duration client_time;
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(forward, strafe, fly, client_time);
+			ar(rot.x, rot.y, rot.z, rot.w, client_time, forward, strafe, fly);
 		}
 	};
 

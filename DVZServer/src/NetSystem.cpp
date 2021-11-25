@@ -53,6 +53,8 @@ void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnec
 	case PacketID::SB_PlayerPositionVel:
 		onPlayerPositionVel(engine, data, connection);
 		break;
+	case PacketID::SB_PlayerInput:
+		break;
 	default:
 		spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
 		break;
@@ -63,7 +65,19 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 	Net::SB_ClientJoinPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		spdlog::info("Welcome: {}", packet.name);
+		auto& registry = engine.getRegistry();
+		auto& netManager = engine.getNetManager();
+		
+		entt::entity player = registry.create();
 
+		netManager.addEntityConnectionMapping(player, conn);
+
+		glm::vec3 spawn_pos{0, 100, 0};
+		registry.emplace<Transformation>(player, spawn_pos);
+		registry.emplace<Velocity>(player);
+		registry.emplace<MovementState>(player);
+		registry.emplace<Direction>(player);
+		registry.emplace<Network>(player);
 	}
 }
 
@@ -71,6 +85,25 @@ void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HStea
 	Net::SB_PlayerPositionRotPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 
+	}
+}
+
+void NetSystem::onPlayerInput(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Net::SB_PlayerInput packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& registry = engine.getRegistry();
+		auto& netManager = engine.getNetManager();
+		entt::entity player = netManager.getEntity(conn);
+		
+		if (netManager.setEntityInputTime(player, packet.client_time)) {
+			auto& transform = registry.get<Transformation>(player);
+			auto& state = registry.get<MovementState>(player);
+
+			transform.rot = packet.rot;
+			state.forward = packet.forward;
+			state.strafe = packet.strafe;
+			state.fly = packet.fly;
+		}
 	}
 }
 

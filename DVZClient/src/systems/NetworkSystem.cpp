@@ -28,7 +28,18 @@ void NetworkSystem::gameTick(Engine& engine) {
 	});
 
 	auto& registry = engine.getRegistry();
-	entt::entity entity = engine.getPlayer();
+	entt::entity player = engine.getPlayer();
+
+	const auto& transform = registry.get<Transformation>(player);
+	const auto& state = registry.get<MovementState>(player);
+	Net::SB_PlayerInput packet;
+	packet.forward = (i8)state.forward;
+	packet.strafe = (i8)state.strafe;
+	packet.fly = (i8)state.fly;
+	packet.client_time = engine.getClientSimulationTime();
+	packet.rot = transform.rot;
+	
+	netManager.sendMessage(packet, false);
 }
 
 void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
