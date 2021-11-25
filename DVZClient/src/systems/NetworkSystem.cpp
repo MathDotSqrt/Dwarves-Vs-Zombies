@@ -34,7 +34,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	auto& network = registry.get<Network>(entity);
 
 	//if (glm::distance2(network.last_pos, transform.pos) > .01f || transform.rot != network.last_rot) {
-		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot, engine.getClientSimulationTime() }, false);
+		netManager.sendMessage(Net::SB_PlayerPositionRotPacket{ transform.pos, transform.rot, engine.getClientSimulationTime() }, true);
 		network.last_pos = transform.pos;
 		network.last_rot = transform.rot;
 	//}
@@ -118,6 +118,7 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 			//auto& vel = registry.get<Velocity>(client_id);
 			//transform.pos = packet.pos;
 			//transform.rot = packet.rot;
+			//engine.setSimulationTime(packet.server_time);
 			PositionHistory entry{ packet.pos, packet.rot, packet.server_time };
 			interpolate.appendHistory(entry, engine.getServerSimulationTime());
 		}
