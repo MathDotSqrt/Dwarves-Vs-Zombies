@@ -1,4 +1,4 @@
-#include "server/NetSystem.hpp"
+#include "server/ServerNetRecvSystem.hpp"
 #include "server/net/NetServerManager.hpp"
 #include "server/Engine.hpp"
 #include "server/ServerComponents.hpp"
@@ -11,17 +11,21 @@
 
 using namespace DVZ;
 
-NetSystem::NetSystem(Engine& engine) {
+ServerNetRecvSystem::ServerNetRecvSystem() {
+
+}
+
+void ServerNetRecvSystem::init(Engine& engine){
 	auto& registry = engine.getRegistry();
 
 	entt::entity test = registry.create();
-	registry.emplace<Transformation>(test, glm::vec3{0, 100, 0});
+	registry.emplace<Transformation>(test, glm::vec3{ 0, 100, 0 });
 	registry.emplace<Velocity>(test);
-	registry.emplace<Debug>(test, 0);
-	registry.emplace<Network>(test);
+	registry.emplace<Debug>(test, 0.0f);
+	registry.emplace<NetPlayer>(test);
 }
 
-void NetSystem::tick(Engine& engine) {
+void ServerNetRecvSystem::tick(Engine& engine) {
 	using namespace Net;
 
 	Net::NetServerManager& netManager = engine.getNetManager();
@@ -29,12 +33,9 @@ void NetSystem::tick(Engine& engine) {
 		onMessage(engine, data, connection);
 	});
 
-	auto& registry = engine.getRegistry();
-	auto netplayer_view = registry.view<Transformation, Network, NetPlayer>();
-
 }
 
-void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnection connection) {
+void ServerNetRecvSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnection connection) {
 	using namespace Net;
 
 	if (data.size() == 0) {
@@ -54,6 +55,7 @@ void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnec
 		onPlayerPositionVel(engine, data, connection);
 		break;
 	case PacketID::SB_PlayerInput:
+		onPlayerInput(engine, data, connection);
 		break;
 	default:
 		spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
@@ -61,7 +63,7 @@ void NetSystem::onMessage(Engine& engine, std::string_view data, HSteamNetConnec
 	}
 }
 
-void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetConnection conn){
+void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetConnection conn){
 	Net::SB_ClientJoinPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		spdlog::info("Welcome: {}", packet.name);
@@ -74,21 +76,25 @@ void NetSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetCon
 
 		glm::vec3 spawn_pos{0, 100, 0};
 		registry.emplace<Transformation>(player, spawn_pos);
-		registry.emplace<Velocity>(player);
+		registry.emplace<Velocity>(player, glm::vec3{0});
 		registry.emplace<MovementState>(player);
 		registry.emplace<Direction>(player);
 		registry.emplace<Network>(player);
+		registry.emplace<NetPlayer>(player);
+
+		netManager.sendMessage(Net::CB_AssignNetIDPacket{player}, conn, true);
+		netManager.sendMessage(Net::CB_SpawnPositionPacket{spawn_pos}, conn, true);
 	}
 }
 
-void NetSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+void ServerNetRecvSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
 	Net::SB_PlayerPositionRotPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 
 	}
 }
 
-void NetSystem::onPlayerInput(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, HSteamNetConnection conn) {
 	Net::SB_PlayerInput packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();

@@ -1,5 +1,6 @@
 #include "server/Engine.hpp"
-#include "server/NetSystem.hpp"
+#include "server/ServerNetRecvSystem.hpp"
+#include "server/ServerNetSendSystem.hpp"
 #include "server/PhysicsSystem.hpp"
 #include "server/net/NetServerManager.hpp"
 #include "server/net/ServerSocket.hpp"
@@ -14,8 +15,9 @@ Engine::Engine() :
 	shouldRun(true), 
 	registry(std::make_unique<entt::registry>()),
 	netManager(std::make_unique<DVZ::Net::NetServerManager>()),
-	netSystem(std::make_unique<DVZ::NetSystem>(*this)),
-	physicsSystem(std::make_unique<DVZ::PhysicsSystem>(*this)),
+	netRecvSystem(std::make_unique<DVZ::ServerNetRecvSystem>()),
+	netSendSystem(std::make_unique<DVZ::ServerNetSendSystem>()),
+	physicsSystem(std::make_unique<DVZ::PhysicsSystem>()),
 	updateThread(&Engine::updateLoop, this) {
 
 }
@@ -25,9 +27,16 @@ Engine::~Engine() {
 	updateThread.join();
 }
 
+void Engine::init() {
+	netRecvSystem->init(*this);
+	physicsSystem->init(*this);
+	netSendSystem->init(*this);
+}
+
 void Engine::tick() {
-	netSystem->tick(*this);
+	netRecvSystem->tick(*this);
 	physicsSystem->tick(*this);
+	netSendSystem->tick(*this);
 }
 
 void Engine::updateLoop() {

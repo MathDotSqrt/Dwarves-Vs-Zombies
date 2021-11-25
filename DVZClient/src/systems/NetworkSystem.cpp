@@ -97,7 +97,10 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		auto& registry = engine.getRegistry();
 		auto& manager = engine.getNetManager();
 
-		
+		entt::entity entity = manager.getClientID(packet.entity);
+		auto& transform = registry.get<Transformation>(entity);
+		transform.pos = packet.pos;	
+		//transform.rot = packet.rot;
 	}
 }
 

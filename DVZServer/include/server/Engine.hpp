@@ -17,7 +17,8 @@ namespace DVZ {
 	}
 
 	
-	class NetSystem;
+	class ServerNetRecvSystem;
+	class ServerNetSendSystem;
 	class PhysicsSystem;
 	using duration = std::chrono::duration<float>;
 
@@ -26,6 +27,7 @@ namespace DVZ {
 		Engine();
 		~Engine();
 
+		void init();
 		void tick();
 		void updateLoop();
 
@@ -39,7 +41,8 @@ namespace DVZ {
 
 		std::unique_ptr<entt::registry> registry;
 
-		std::unique_ptr<NetSystem> netSystem;
+		std::unique_ptr<ServerNetRecvSystem> netRecvSystem;
+		std::unique_ptr<ServerNetSendSystem> netSendSystem;
 		std::unique_ptr<PhysicsSystem> physicsSystem;
 		std::unique_ptr<Net::NetServerManager> netManager;
 

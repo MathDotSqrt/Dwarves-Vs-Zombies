@@ -6,7 +6,8 @@ namespace DVZ {
 
 	class PhysicsSystem {
 	public:
-		PhysicsSystem(Engine& engine);
+		PhysicsSystem();
+		void init(Engine& engine);
 		void tick(Engine& engine);
 	};
 }

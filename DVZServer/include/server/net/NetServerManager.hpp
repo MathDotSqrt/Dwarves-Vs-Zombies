@@ -6,6 +6,7 @@
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include <optional>
 #include <entt/entity/entity.hpp>
 
 namespace DVZ::Net {
@@ -46,12 +47,13 @@ namespace DVZ::Net {
 		entt::entity getEntity(HSteamNetConnection conn) const;
 
 		bool setEntityInputTime(entt::entity entity, simulation_duration client_time);
+		std::optional<simulation_duration> shouldAckEntityInput(entt::entity entity);
 	private: 
 		std::unique_ptr<Net::ServerSocket> socket;
 		std::unordered_map<entt::entity, HSteamNetConnection> entityToConnectionMap;
 		std::unordered_map<HSteamNetConnection, entt::entity> connectionToEntityMap;
 	
-		std::unordered_map<entt::entity, simulation_duration> entityLastUpdateTime;
+		std::unordered_map<entt::entity, std::pair<simulation_duration, bool>> entityLastUpdateTime;
 	};
 }
 

@@ -6,8 +6,12 @@
 
 using namespace DVZ;
 
-PhysicsSystem::PhysicsSystem(Engine& engine) {
+PhysicsSystem::PhysicsSystem() {
 
+}
+
+void PhysicsSystem::init(Engine& engine) {
+	
 }
 
 void PhysicsSystem::tick(Engine& engine) {
@@ -29,5 +33,11 @@ void PhysicsSystem::tick(Engine& engine) {
 	auto view = registry.view<Transformation, Velocity>();
 	view.each([](Transformation& transform, Velocity& vel) {
 		transform.pos = transform.pos + vel;
+	});
+
+	movement_view.each([](MovementState& state, Velocity& vel, Transformation& transform, Direction& dir) {
+		state.forward = 0;
+		state.strafe = 0;
+		state.fly = 0;
 	});
 }

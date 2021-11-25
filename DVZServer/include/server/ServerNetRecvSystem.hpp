@@ -10,9 +10,10 @@
 namespace DVZ {
 	class Engine;
 
-	class NetSystem {
+	class ServerNetRecvSystem {
 	public:
-		NetSystem(Engine& engine);
+		ServerNetRecvSystem();
+		void init(Engine& engine);
 		void tick(Engine& engine);
 	private:
 
