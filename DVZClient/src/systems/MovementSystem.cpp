@@ -17,7 +17,6 @@ void MovementSystem::init(Engine& engine) {
 void MovementSystem::gameTick(Engine& engine) {
 	auto& registry = engine.getRegistry();
 
-
 	auto camera_view = registry.view<Input, Transformation, Camera, Direction>();
 	camera_view.each([&](Input& input, Transformation& transform, Camera& camera, Direction& dir) {
 		glm::vec2 delta = input.current_cursor_pos - input.last_cursor_pos;
