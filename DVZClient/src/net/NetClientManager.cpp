@@ -46,8 +46,8 @@ entt::entity NetClientManager::getClientID(entt::entity server) const {
 	return entt::null;
 }
 
-void NetClientManager::appendRequest(const MovementState& input, const glm::vec3& pos, simulation_duration client_time) {
-	unackedRequestBuffer.push_back(Request{input, pos, client_time});
+void NetClientManager::appendRequest(const MovementState& input, const Transformation& transform, simulation_duration client_time) {
+	unackedRequestBuffer.push_back(Request{input, transform, client_time});
 }
 
 bool NetClientManager::ackRequest(const glm::vec3& auth_pos, simulation_duration client_request_time) {
@@ -56,11 +56,15 @@ bool NetClientManager::ackRequest(const glm::vec3& auth_pos, simulation_duration
 	});
 	
 	if (iter != unackedRequestBuffer.end()) {
-		const glm::vec3& predicted_pos = iter->pos;
+		const glm::vec3& predicted_pos = iter->transform.pos;
 		bool is_prediction_correct = glm::distance2(predicted_pos, auth_pos) < .01f;
 		unackedRequestBuffer.erase(unackedRequestBuffer.begin(), iter + 1);
 
 		return is_prediction_correct;
 	}
 	return true;
+}
+
+std::vector<Request>& NetClientManager::getUnackedRequests() {
+	return unackedRequestBuffer;
 }

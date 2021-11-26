@@ -2,6 +2,7 @@
 #include "client/engine.hpp"
 #include "client/ClientComponents.hpp"
 #include "client/net/NetClientManager.hpp"
+#include "client/predict_client.hpp"
 
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
@@ -39,7 +40,7 @@ void NetworkSystem::gameTick(Engine& engine) {
 	packet.client_time = engine.getClientSimulationTime();
 	packet.rot = transform.rot;
 	
-	netManager.appendRequest(state, transform.pos, engine.getClientSimulationTime());
+	netManager.appendRequest(state, transform, engine.getClientSimulationTime());
 	netManager.sendMessage(packet, false);
 
 }
@@ -117,8 +118,13 @@ void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
 
 		entt::entity player = engine.getPlayer();
 		if (manager.ackRequest(packet.pos, packet.client_time) == false) {
-			auto& transform = registry.get<Transformation>(player);
-			transform.pos = packet.pos;
+
+			Transformation transform = manager.getUnackedRequests().front().transform;
+			transform.pos = packet.pos;	//set pos to authoritative pos
+			for (Net::Request& request : manager.getUnackedRequests()) {
+				ClientPlayerState player_state = DVZ::predict_client_player_state(engine, request.input, transform);
+				transform = player_state.transform;
+			}
 		}
 	}
 }

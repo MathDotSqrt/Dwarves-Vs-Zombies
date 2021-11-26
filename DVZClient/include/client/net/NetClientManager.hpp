@@ -7,6 +7,12 @@
 #include <optional>
 namespace DVZ::Net {
 
+	struct Request {
+		MovementState input;
+		Transformation transform;
+		simulation_duration client_time;
+	};
+
 	class NetClientManager {
 	public:
 		NetClientManager();
@@ -29,15 +35,11 @@ namespace DVZ::Net {
 		void addServerIDMap(entt::entity server, entt::entity client);
 		entt::entity getClientID(entt::entity server) const;
 
-		void appendRequest(const MovementState& input, const glm::vec3& pos, simulation_duration client_time);
+		void appendRequest(const MovementState& input, const Transformation& pos, simulation_duration client_time);
 		bool ackRequest(const glm::vec3& pos, simulation_duration client_request_time);
-	private:
 
-		struct Request {
-			MovementState input;
-			glm::vec3 pos;
-			simulation_duration client_time;
-		};
+		std::vector<Request>& getUnackedRequests();
+	private:
 
 		void update();
 		std::unique_ptr<Net::ClientSocket> netclient = nullptr;
