@@ -7,6 +7,8 @@ set(HEADER_FILES
 
 	"./include/server/net/NetServerManager.hpp"
 	"./include/server/net/ServerSocket.hpp"
+
+	"./include/server/voxel/ServerChunkManager.hpp"
 )
 
 set(SOURCE_FILES 
@@ -19,6 +21,8 @@ set(SOURCE_FILES
 
 	"./src/net/NetServerManager.cpp"
 	"./src/net/ServerSocket.cpp"
+
+	"./src/voxel/ServerChunkManager.cpp"
 )
 
 add_executable(DVZServer ${HEADER_FILES} ${SOURCE_FILES})

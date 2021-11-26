@@ -16,7 +16,10 @@ namespace DVZ {
 		class NetServerManager;
 	}
 
-	
+	namespace Voxel {
+		class ServerChunkManager;
+	}
+
 	class ServerNetRecvSystem;
 	class ServerNetSendSystem;
 	class PhysicsSystem;
@@ -33,6 +36,7 @@ namespace DVZ {
 
 		entt::registry& getRegistry();
 		Net::NetServerManager& getNetManager();
+		Voxel::ServerChunkManager& getChunkManager();
 		simulation_duration getTimeElapsed() const;
 
 	private:
@@ -44,8 +48,9 @@ namespace DVZ {
 		std::unique_ptr<ServerNetRecvSystem> netRecvSystem;
 		std::unique_ptr<ServerNetSendSystem> netSendSystem;
 		std::unique_ptr<PhysicsSystem> physicsSystem;
-		std::unique_ptr<Net::NetServerManager> netManager;
 
+		std::unique_ptr<Net::NetServerManager> netManager;
+		std::unique_ptr<Voxel::ServerChunkManager> chunkManager;
 		simulation_duration total_time{0};
 	};
 }

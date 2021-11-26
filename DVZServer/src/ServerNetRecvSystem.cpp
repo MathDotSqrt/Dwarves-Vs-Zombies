@@ -79,6 +79,7 @@ void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HS
 		registry.emplace<Velocity>(player, glm::vec3{0});
 		registry.emplace<MovementState>(player);
 		registry.emplace<Direction>(player);
+		registry.emplace<VoxelCollider>(player, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 		registry.emplace<Network>(player);
 		registry.emplace<NetPlayer>(player);
 

@@ -3,6 +3,8 @@
 #include "core/CoreComponents.hpp"
 #include "core/MovementUtil.hpp"
 #include "server/ServerComponents.hpp"
+#include "server/voxel/ServerChunkManager.hpp"
+#include "core/voxel/VoxelCollision.hpp"
 
 using namespace DVZ;
 
@@ -20,6 +22,24 @@ void PhysicsSystem::tick(Engine& engine) {
 	auto movement_view = registry.view<MovementState, Velocity, Transformation, Direction>();
 	movement_view.each([](MovementState& state, Velocity& vel, Transformation& transform, Direction& dir) {
 		vel = computePlayerVelocity(state, transform.rot, dir);
+	});
+
+	Voxel::ServerChunkManager& manager = engine.getChunkManager();
+	auto getBlockFunc = [&manager](const Voxel::WorldCoords& coords) -> Voxel::BlockType {
+		return manager.getBlock(coords);
+	};
+
+	auto chunk_collider_view = registry.view<Transformation, Velocity, VoxelCollider>();
+	chunk_collider_view.each([&](Transformation& trans, Velocity& vel, VoxelCollider& collider) {
+		Collision::AABB worldspace_aabb = collider.collider;
+		worldspace_aabb.min += trans.pos;
+		worldspace_aabb.max += trans.pos;
+
+		auto broadphase = Voxel::broadphase(worldspace_aabb, vel, getBlockFunc);
+		glm::vec3 new_vel = Voxel::sample_terrain_collision(trans.pos, vel, collider.collider, broadphase);
+
+		vel = new_vel;
+		//vel.y = 0;
 	});
 
 	auto debug_view = registry.view<Velocity, Debug>();
