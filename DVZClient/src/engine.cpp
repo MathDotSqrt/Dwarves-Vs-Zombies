@@ -10,7 +10,7 @@
 #include "client/graphics/GeometryBuilder.hpp"
 
 #include "client/systems/InputSystem.hpp"
-#include "client/systems/MovementSystem.hpp"
+#include "client/systems/ClientPredictionSystem.hpp"
 #include "client/systems/RenderSystem.hpp"
 #include "client/systems/VoxelSystem.hpp"
 #include "client/systems/PhysicsSystem.hpp"
@@ -102,9 +102,7 @@ void Engine::initUpdateLoop() {
 	registry.emplace<Network>(player);
 
 	this->addSystem<Systems::InputSystem>();
-	this->addSystem<Systems::MovementSystem>();
-	this->addSystem<Systems::PhysicsSystem>();
-
+	this->addSystem<Systems::ClientPredictionSystem>();
 	//this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::RenderSystem>();
@@ -163,13 +161,18 @@ void Engine::signalStop() {
 	shouldStop = true;
 }
 
-entt::entity Engine::getPlayer() {
-	return *registry.view<Player>().begin();
+entt::entity Engine::getPlayer() const {
+	return registry.view<const Player>().front();
 }
 
 entt::registry& Engine::getRegistry() {
 	return registry;
 }
+
+const entt::registry& Engine::getRegistry() const {
+	return registry;
+}
+
 
 Graphics::Scene& Engine::getScene() {
 	return *scene;
@@ -180,6 +183,10 @@ Net::NetClientManager& Engine::getNetManager() {
 }
 
 Voxel::ClientChunkManager& Engine::getChunkManager() {
+	return *chunkManager;
+}
+
+const Voxel::ClientChunkManager& Engine::getChunkManager() const {
 	return *chunkManager;
 }
 

@@ -5,7 +5,7 @@
 #include "client/systems/System.hpp"
 
 namespace DVZ::Systems {
-	class MovementSystem : public System {
+	class ClientPredictionSystem : public System {
 		void init(Engine& engine) override;
 		void gameTick(Engine& engine) override;
 	};

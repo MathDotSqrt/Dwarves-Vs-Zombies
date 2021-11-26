@@ -2,6 +2,7 @@
 set(HEADER_FILES 
 	"./include/client/ClientComponents.hpp"
 	"./include/client/engine.hpp"
+	"./include/client/predict_client.hpp"
 	"./include/client/window.hpp"
 
 	"./include/client/net/ClientSocket.hpp"
@@ -22,9 +23,9 @@ set(HEADER_FILES
 	"./include/client/graphics/VAO.hpp"
 	"./include/client/graphics/VBO.hpp"
 
+	"./include/client/systems/ClientPredictionSystem.hpp"
 	"./include/client/systems/System.hpp"
 	"./include/client/systems/InputSystem.hpp"
-	"./include/client/systems/MovementSystem.hpp"
 	"./include/client/systems/NetworkSystem.hpp"
 	"./include/client/systems/PhysicsSystem.hpp"
 	"./include/client/systems/RenderSystem.hpp"
@@ -47,6 +48,7 @@ set(HEADER_FILES
 set(SOURCE_FILES 
 	"./src/ClientComponents.cpp"
 	"./src/engine.cpp"
+	"./src/predict_client.cpp"
 	"./src/main.cpp"
 	"./src/window.cpp"
 
@@ -64,8 +66,8 @@ set(SOURCE_FILES
 	"./src/graphics/VAO.cpp"
 	"./src/graphics/VBO.cpp"
 
+	"./src/systems/ClientPredictionSystem.cpp"
 	"./src/systems/InputSystem.cpp"
-	"./src/systems/MovementSystem.cpp"
 	"./src/systems/NetworkSystem.cpp"
 	"./src/systems/PhysicsSystem.cpp"
 	"./src/systems/RenderSystem.cpp"

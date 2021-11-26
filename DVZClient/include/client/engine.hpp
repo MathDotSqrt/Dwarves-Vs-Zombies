@@ -49,12 +49,14 @@ namespace DVZ{
 		void render();
 		void signalStop();
 
-		entt::entity getPlayer();
+		entt::entity getPlayer() const;
 
 		entt::registry& getRegistry();
+		const entt::registry& getRegistry() const;
 		Graphics::Scene& getScene();
 		Net::NetClientManager& getNetManager();
 		Voxel::ClientChunkManager& getChunkManager();
+		const Voxel::ClientChunkManager& getChunkManager() const ;
 
 		void setSimulationTime(simulation_duration duration);
 		simulation_duration getServerSimulationTime() const;
