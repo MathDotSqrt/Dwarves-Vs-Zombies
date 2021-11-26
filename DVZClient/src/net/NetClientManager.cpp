@@ -55,12 +55,12 @@ bool NetClientManager::ackRequest(const glm::vec3& auth_pos, simulation_duration
 		return request.client_time == client_request_time;
 	});
 	
-	assert(iter != unackedRequestBuffer.end());
+	if (iter != unackedRequestBuffer.end()) {
+		const glm::vec3& predicted_pos = iter->pos;
+		bool is_prediction_correct = glm::distance2(predicted_pos, auth_pos) < .01f;
+		unackedRequestBuffer.erase(unackedRequestBuffer.begin(), iter + 1);
 
-	const glm::vec3& predicted_pos = iter->pos;
-	bool is_prediction_correct = glm::distance2(predicted_pos, auth_pos) < .01f;
-	unackedRequestBuffer.erase(unackedRequestBuffer.begin(), iter + 1);
-
-	return is_prediction_correct;
-	
+		return is_prediction_correct;
+	}
+	return true;
 }

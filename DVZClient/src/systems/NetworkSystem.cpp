@@ -116,9 +116,10 @@ void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
 		auto& manager = engine.getNetManager();
 
 		entt::entity player = engine.getPlayer();
-		auto& transform = registry.get<Transformation>(player);
-		transform.pos = packet.pos;
-
+		if (manager.ackRequest(packet.pos, packet.client_time) == false) {
+			auto& transform = registry.get<Transformation>(player);
+			transform.pos = packet.pos;
+		}
 	}
 }
 
