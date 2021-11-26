@@ -101,8 +101,8 @@ void Engine::initUpdateLoop() {
 	registry.emplace<VoxelCollider>(player, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 	registry.emplace<Network>(player);
 
-	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::InputSystem>();
+	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::MovementSystem>();
 	this->addSystem<Systems::PhysicsSystem>();
 

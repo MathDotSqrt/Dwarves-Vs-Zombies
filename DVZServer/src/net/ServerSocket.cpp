@@ -24,7 +24,7 @@ ServerSocket::ServerSocket(u16 port) {
 	if (!GameNetworkingSockets_Init(nullptr, errMsg))
 		spdlog::critical("GameNetworkingSockets_Init failed: {}", errMsg);
 
-	static i32 delay = 0;
+	static i32 delay = 100;
 	static float drop_rate = 0.f;
 	static float reorder_rate = 5.f;
 	static i32 reorder_delay = 12;
