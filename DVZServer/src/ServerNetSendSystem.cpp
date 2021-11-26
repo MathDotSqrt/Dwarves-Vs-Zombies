@@ -30,7 +30,7 @@ void ServerNetSendSystem::tick(Engine& engine) {
 		auto ack_number = netManager.shouldAckEntityInput(player);
 		if (ack_number) {
 			const auto& transform = view.get<Transformation>(player);
-			Net::CB_EntityPositionRotPacket packet{ player, transform.pos, transform.rot, ack_number.value() };
+			Net::CB_PlayerPositionAckPacket packet{ transform.pos, ack_number.value() };
 			netManager.sendMessage(packet, netManager.getConnectionHandle(player), false);
 		}
 	}

@@ -102,11 +102,11 @@ void Engine::initUpdateLoop() {
 	registry.emplace<Network>(player);
 
 	this->addSystem<Systems::InputSystem>();
-	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::MovementSystem>();
 	this->addSystem<Systems::PhysicsSystem>();
 
 	//this->addSystem<Systems::VoxelSystem>();
+	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::RenderSystem>();
 }
 

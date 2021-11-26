@@ -39,7 +39,9 @@ void NetworkSystem::gameTick(Engine& engine) {
 	packet.client_time = engine.getClientSimulationTime();
 	packet.rot = transform.rot;
 	
+	netManager.appendRequest(state, transform.pos, engine.getClientSimulationTime());
 	netManager.sendMessage(packet, false);
+
 }
 
 void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
@@ -62,6 +64,9 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 		break;
 	case PacketID::CB_EntityPositionVel:
 		onEntityPositionVel(engine, data);
+		break;
+	case PacketID::CB_PlayerPositionAck:
+		onPlayerPositionAck(engine, data);
 		break;
 	case PacketID::CB_PlayerJoin:
 		onPlayerJoin(engine, data);
@@ -100,7 +105,20 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		entt::entity entity = manager.getClientID(packet.entity);
 		auto& transform = registry.get<Transformation>(entity);
 		transform.pos = packet.pos;	
-		//transform.rot = packet.rot;
+		transform.rot = packet.rot;
+	}
+}
+
+void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
+	Net::CB_PlayerPositionAckPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& registry = engine.getRegistry();
+		auto& manager = engine.getNetManager();
+
+		entt::entity player = engine.getPlayer();
+		auto& transform = registry.get<Transformation>(player);
+		transform.pos = packet.pos;
+
 	}
 }
 
