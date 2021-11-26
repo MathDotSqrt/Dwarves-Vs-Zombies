@@ -119,12 +119,17 @@ void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
 		entt::entity player = engine.getPlayer();
 		if (manager.ackRequest(packet.pos, packet.client_time) == false) {
 
-			Transformation transform = manager.getUnackedRequests().front().transform;
-			transform.pos = packet.pos;	//set pos to authoritative pos
-			for (Net::Request& request : manager.getUnackedRequests()) {
-				ClientPlayerState player_state = DVZ::predict_client_player_state(engine, request.input, transform);
-				transform = player_state.transform;
-			}
+			//Transformation transform;
+			//transform.pos = packet.pos;	//set pos to authoritative pos
+			spdlog::info("Repredicting!");
+			//for (Net::Request& request : manager.getUnackedRequests()) {
+			//	transform.rot = request.transform.rot;
+			//	transform.scale = request.transform.scale;
+			//	ClientPlayerState player_state = DVZ::predict_client_player_state(engine, request.input, transform);
+			//	transform = player_state.transform;
+			//}
+
+			registry.get<Transformation>(player).pos = packet.pos;
 		}
 	}
 }
