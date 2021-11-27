@@ -22,8 +22,9 @@ namespace DVZ::Net {
 		void pollIncomingMessages(const std::function<void(std::string_view,HSteamNetConnection)>& func);
 		void sendMessage(std::string_view data, HSteamNetConnection client, bool reliable);
 		void sendToAllMessage(std::string_view data, HSteamNetConnection except, bool reliable);
-
 		
+		std::vector<HSteamNetConnection> getInvalidConnections() const;
+		void removeInvalidConnections();
 
 	private:
 		static ServerSocket* callbackInstance;

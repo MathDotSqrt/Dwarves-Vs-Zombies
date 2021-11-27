@@ -9,9 +9,21 @@ NetServerManager::NetServerManager() : socket(std::make_unique<Net::ServerSocket
 	
 } 
 
+void NetServerManager::update() {
+	
+}
+
 void NetServerManager::addEntityConnectionMapping(entt::entity entity, HSteamNetConnection connection) {
 	entityToConnectionMap[entity] = connection;
 	connectionToEntityMap[connection] = entity;
+}
+
+void NetServerManager::removeEntityConnectionMapping(HSteamNetConnection conn) {
+	size_t num_removed = connectionToEntityMap.erase(conn);
+	if (num_removed > 0) {
+		entt::entity entity = getEntity(conn);
+		entityToConnectionMap.erase(entity);
+	}
 }
 
 HSteamNetConnection NetServerManager::getConnectionHandle(entt::entity entity) const {

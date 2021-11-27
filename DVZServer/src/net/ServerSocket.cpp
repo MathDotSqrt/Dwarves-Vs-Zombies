@@ -110,6 +110,34 @@ void ServerSocket::sendToAllMessage(std::string_view data, HSteamNetConnection e
 	}
 }
 
+std::vector<HSteamNetConnection> ServerSocket::getInvalidConnections() const {
+	std::vector<HSteamNetConnection> invalid_connections;
+
+	for (const auto& [connection, state] : connections) {
+		if (state == ConnectionState::DISCONNECTED 
+			|| state == ConnectionState::INVALID) {
+			invalid_connections.push_back(connection);
+		}
+	}
+
+	return invalid_connections;
+}
+
+void ServerSocket::removeInvalidConnections() {
+	auto iter = connections.begin();
+	auto end = connections.end();
+	while (iter != end) {
+		const auto& [connection, state] = *iter;
+		if (state == ConnectionState::DISCONNECTED
+			|| state == ConnectionState::INVALID) {
+			iter = connections.erase(iter);
+		}
+		else{
+			++iter;
+		}
+	}
+}
+
 void ServerSocket::onConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
 	HSteamNetConnection connection = info->m_hConn;
 	ConnectionState state = ConnectionState::INVALID;

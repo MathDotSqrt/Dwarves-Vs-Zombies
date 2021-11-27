@@ -17,15 +17,18 @@ namespace DVZ::Net {
 
 	enum class PacketID : u8 {
 		SB_ClientJoin,				//Server Bound:	sends init info to the server
+		SB_ClientDisconnected,		//Server Bound: Not a real packet, just sent to net recv system when client connection dies
 		SB_PlayerPositionVel,		//Server Bound: position vel of client player
-		SB_PlayerInput,
-		
+		SB_PlayerInput,				//Server Bound: input from client to simulate on server
+
 		CB_AssignNetID,				//Client Bound: gives client its server assigned ID
 		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
 		CB_SpawnPosition,			//Client Bound: specifies spawn position of client player
 		CB_EntityPositionVel,		//Client Bound: position vel of entities/players 
 		CB_PlayerPositionAck,		//Client Bound: auth position ack back to client for reconsiliation
 		CB_PlayerJoin				//Client Bound: notifies client a new player joined
+
+
 	};
 
 	struct SB_ClientJoinPacket {

@@ -51,6 +51,9 @@ void ServerNetRecvSystem::onMessage(Engine& engine, std::string_view data, HStea
 	case PacketID::SB_ClientJoin:
 		onClientJoin(engine, data, connection);
 		break;
+	case PacketID::SB_ClientDisconnected:
+		onClientDisconnected(engine, data, connection);
+		break;
 	case PacketID::SB_PlayerPositionVel:
 		onPlayerPositionVel(engine, data, connection);
 		break;
@@ -86,6 +89,16 @@ void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HS
 		netManager.sendMessage(Net::CB_AssignNetIDPacket{player}, conn, true);
 		netManager.sendMessage(Net::CB_SpawnPositionPacket{spawn_pos}, conn, true);
 	}
+}
+
+void ServerNetRecvSystem::onClientDisconnected(Engine& engine, std::string_view, HSteamNetConnection conn) {
+	spdlog::info("Good Bye!");
+	auto& registry = engine.getRegistry();
+	auto& netManager = engine.getNetManager();
+
+	entt::entity player = netManager.getEntity(conn);
+	registry.destroy(player);
+	netManager.removeEntityConnectionMapping(conn);
 }
 
 void ServerNetRecvSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
