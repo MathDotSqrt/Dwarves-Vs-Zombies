@@ -24,10 +24,6 @@ void NetworkSystem::gameTick(Engine& engine) {
 
 	Net::NetClientManager& netManager = engine.getNetManager();
 
-	netManager.poll([&](std::string_view sv) {
-		this->onMessage(engine, sv);
-	});
-
 	auto& registry = engine.getRegistry();
 	entt::entity player = engine.getPlayer();
 
@@ -42,6 +38,10 @@ void NetworkSystem::gameTick(Engine& engine) {
 	
 	netManager.appendRequest(state, transform, engine.getClientSimulationTime());
 	netManager.sendMessage(packet, false);
+
+	netManager.poll([&](std::string_view sv) {
+		this->onMessage(engine, sv);
+	});
 
 }
 
@@ -118,19 +118,8 @@ void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
 
 		entt::entity player = engine.getPlayer();
 		if (manager.ackRequest(packet.pos, packet.client_time) == false) {
-
-			glm::vec3 last_position = packet.pos;
-			spdlog::info("Repredicting!");
-			for (Net::Request& request : manager.getUnackedRequests()) {
-				Transformation transform = request.transform;
-				transform.pos = last_position;
-
-				ClientPlayerState player_state = DVZ::predict_client_player_state(engine, request.input, transform);
-				request.transform.pos = player_state.transform.pos;
-				last_position = player_state.transform.pos;
-			}
-
-			registry.get<Transformation>(player) = manager.getUnackedRequests().back().transform;
+			auto& transform = registry.get<Transformation>(player);
+			transform.pos = packet.pos;
 		}
 	}
 }
