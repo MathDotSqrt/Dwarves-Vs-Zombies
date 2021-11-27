@@ -4,8 +4,8 @@
 using namespace DVZ;
 
 glm::quat DVZ::rotatePlayer(const glm::vec2& delta, const glm::quat& current_rot, const Direction& dir) {
-	constexpr float X_THETA = (1 / 110.0f) * 60 / TPS;
-	constexpr float Y_THETA = (1 / 140.0f) * 60 / TPS;
+	constexpr float X_THETA = (1 / 110.0f);
+	constexpr float Y_THETA = (1 / 140.0f);
 	
 	glm::quat q_yaw = glm::angleAxis(-delta.x * X_THETA, glm::vec3(0, 1, 0));
 	glm::quat q_pitch = glm::angleAxis(-delta.y * Y_THETA, glm::vec3(1, 0, 0));
@@ -22,7 +22,7 @@ glm::quat DVZ::rotatePlayer(const glm::vec2& delta, const glm::quat& current_rot
 }
 
 glm::vec3 DVZ::computePlayerVelocity(const MovementState& state, const glm::quat& rot, const Direction& dir) {
-	constexpr float SPEED = .4f * 60 / TPS;
+	constexpr float SPEED = .2f * 60 / TPS;
 	
 	glm::quat move_dir = Util::remove_pitch(rot);
 
