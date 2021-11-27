@@ -118,8 +118,18 @@ void NetworkSystem::onPlayerPositionAck(Engine& engine, std::string_view data) {
 
 		entt::entity player = engine.getPlayer();
 		if (manager.ackRequest(packet.pos, packet.client_time) == false) {
-			auto& transform = registry.get<Transformation>(player);
-			transform.pos = packet.pos;
+			spdlog::info("Missprediction!");
+			auto& player_transform = registry.get<Transformation>(player);
+			glm::vec3 last_pos = packet.pos;
+			for (Net::Request& request : manager.getUnackedRequests()) {
+				Transformation transform = request.transform;
+				transform.pos = last_pos;
+				auto [new_transform, vel] = DVZ::predict_client_player_state(engine, request.input, transform);
+				transform.pos = new_transform.pos;
+				last_pos = new_transform.pos;
+			}
+
+			player_transform.pos = last_pos;
 		}
 	}
 }
