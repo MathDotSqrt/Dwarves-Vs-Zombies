@@ -66,6 +66,10 @@ entt::registry& Engine::getRegistry(){
 	return *registry;
 }
 
+const entt::registry& Engine::getRegistry() const {
+	return *registry;
+}
+
 Net::NetServerManager& Engine::getNetManager() {
 	return *netManager;
 }

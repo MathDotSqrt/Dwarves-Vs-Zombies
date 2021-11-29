@@ -1,6 +1,9 @@
 #include "server/Engine.hpp"
 #include "server/net/ServerSocket.hpp"
 
+#include "core/net/EntitySnapshotDelta.hpp"
+#include "core/util/serialization.hpp"
+
 #include <spdlog/spdlog.h>
 
 #include <string>

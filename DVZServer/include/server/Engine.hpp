@@ -35,6 +35,7 @@ namespace DVZ {
 		void updateLoop();
 
 		entt::registry& getRegistry();
+		const entt::registry& getRegistry() const;
 		Net::NetServerManager& getNetManager();
 		Voxel::ServerChunkManager& getChunkManager();
 		simulation_duration getTimeElapsed() const;

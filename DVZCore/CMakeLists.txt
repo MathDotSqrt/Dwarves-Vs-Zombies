@@ -8,8 +8,10 @@ set(HEADER_FILES
 	"./include/core/collision/AABB.hpp"
 
 	"./include/core/net/ConnectionState.hpp"
+	"./include/core/net/EntitySnapshotDelta.hpp"
 	"./include/core/net/Packet.hpp"
 
+	"./include/core/util/serialization.hpp"
 	"./include/core/util/transform.hpp"
 	"./include/core/util/view_streambuf.hpp"
 
@@ -24,6 +26,7 @@ set(SOURCE_FILES
 
 	"./src/collision/AABB.cpp"
 
+	"./src/net/EntitySnapshotDelta.cpp"
 	"./src/net/Packet.cpp"
 
 	"./src/util/transform.cpp"

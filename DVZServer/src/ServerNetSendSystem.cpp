@@ -1,5 +1,6 @@
 #include "server/ServerNetSendSystem.hpp"
 #include "server/Engine.hpp"
+#include "server/net/EntitySnapshot.hpp"
 #include "server/net/NetServerManager.hpp"
 
 #include "server/ServerComponents.hpp"
