@@ -74,3 +74,44 @@ std::optional<simulation_duration> NetServerManager::shouldAckEntityInput(entt::
 	}
 	return {};
 }
+
+void NetServerManager::setEntitySnapshot(std::shared_ptr<EntitySnapshot> gamestate) {
+	this->masterGamestate = std::move(gamestate);
+
+	for (auto& [connection, gamestateBuffer] : clientSnapshots) {
+		gamestateBuffer.push_back(this->masterGamestate);
+	}
+}
+
+void NetServerManager::ackClientSnapshot(HSteamNetConnection client, simulation_duration ack_simulation_time) {
+	const auto iter = clientSnapshots.find(client);
+	if (iter != clientSnapshots.end()) {
+		auto& snapshotBuffer = iter->second;
+		const auto find_iter = std::find_if(snapshotBuffer.begin(), snapshotBuffer.end(), [&](const std::shared_ptr<EntitySnapshot>& snapshot) {
+			return snapshot->getSimulationTime() == ack_simulation_time;
+		});
+
+		assert(find_iter != snapshotBuffer.end());
+		
+		//Makes first element the last acked snapshot
+		snapshotBuffer.erase(snapshotBuffer.begin(), find_iter);
+	}
+}
+
+EntitySnapshotDelta NetServerManager::getClientSnapshotDelta(HSteamNetConnection client) const {
+	const auto iter = clientSnapshots.find(client);
+	if (iter != clientSnapshots.end()) {
+		const auto& snapshotBuffer = iter->second;
+		if (snapshotBuffer.size() == 1) {
+			return EntitySnapshot::computeDelta(zeroSnapshot, *snapshotBuffer.front());
+		}
+		else {
+			return EntitySnapshot::computeDelta(*snapshotBuffer.front(), *snapshotBuffer.back());
+		}
+	}
+
+	assert(false);
+	return {};
+}
+
+const EntitySnapshot NetServerManager::zeroSnapshot{};

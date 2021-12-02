@@ -24,6 +24,8 @@ void ServerNetSendSystem::tick(Engine& engine) {
 	auto& registry = engine.getRegistry();
 	auto& netManager = engine.getNetManager();
 	
+	netManager.setEntitySnapshot(std::make_shared<Net::EntitySnapshot>(engine));
+
 	auto view = registry.view<NetPlayer, Transformation>();
 
 	for (entt::entity player : view) {

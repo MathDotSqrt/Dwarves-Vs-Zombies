@@ -1,8 +1,11 @@
 #ifndef DVZ_NET_PLAYER_MANAGER_HPP
 #define DVZ_NET_PLAYER_MANAGER_HPP
 
-#include "steam/steamnetworkingtypes.h"
+
 #include "server/net/ServerSocket.hpp"
+#include "server/net/EntitySnapshot.hpp"
+
+#include <steam/steamnetworkingtypes.h>
 #include <memory>
 #include <string_view>
 #include <unordered_map>
@@ -59,6 +62,10 @@ namespace DVZ::Net {
 
 		bool setEntityInputTime(entt::entity entity, simulation_duration client_time);
 		std::optional<simulation_duration> shouldAckEntityInput(entt::entity entity);
+
+		void setEntitySnapshot(std::shared_ptr<EntitySnapshot> master);
+		void ackClientSnapshot(HSteamNetConnection client, simulation_duration ack_simulation_time);
+		EntitySnapshotDelta getClientSnapshotDelta(HSteamNetConnection client) const;
 	private: 
 		void update();
 
@@ -67,6 +74,11 @@ namespace DVZ::Net {
 		std::unordered_map<HSteamNetConnection, entt::entity> connectionToEntityMap;
 	
 		std::unordered_map<entt::entity, std::pair<simulation_duration, bool>> entityLastUpdateTime;
+
+		static const EntitySnapshot zeroSnapshot;
+		std::shared_ptr<EntitySnapshot> masterGamestate;
+
+		std::unordered_map<HSteamNetConnection, std::vector<std::shared_ptr<EntitySnapshot>>> clientSnapshots;
 	};
 }
 

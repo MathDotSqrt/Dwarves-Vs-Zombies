@@ -3,7 +3,8 @@
 
 
 #include "core/net/EntitySnapshotDelta.hpp"
-#include <map>
+#include "core/time.hpp"
+#include <unordered_map>
 namespace DVZ {
 	class Engine;
 }
@@ -11,13 +12,16 @@ namespace DVZ {
 namespace DVZ::Net {
 	class EntitySnapshot {
 	public:
+		EntitySnapshot();
 		EntitySnapshot(const Engine& engine);
 
-	private:
-		std::map<entt::entity, EntityState> entities;
-	};
+		static EntitySnapshotDelta computeDelta(const EntitySnapshot& t1, const EntitySnapshot& t2);
 
-	EntitySnapshotDelta computeDelta(const EntitySnapshot& t1, const EntitySnapshot& t2);
+		DVZ::simulation_duration getSimulationTime() const;
+	private:
+		DVZ::simulation_duration simulationTime;
+		std::unordered_map<entt::entity, EntityState> entities;
+	};
 }
 
 #endif 

@@ -14,6 +14,15 @@ bool EntityStateDelta::hasField(Field field) const {
 
 void EntityStateDelta::setField(std::initializer_list<Field> fields) {
 	for (Field field : fields) {
+		setField(field);
+	}
+}
+
+void EntityStateDelta::setField(Field field){
+	if (field == Field::Deleted) {
+		fieldbitset.reset();
+	}
+	else {
 		fieldbitset.set(static_cast<size_t>(field));
 	}
 }

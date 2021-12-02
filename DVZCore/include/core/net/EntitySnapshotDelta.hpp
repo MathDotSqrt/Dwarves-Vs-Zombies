@@ -31,6 +31,7 @@ namespace DVZ::Net {
 
 		bool hasField(Field field) const;
 		void setField(std::initializer_list<Field> fields);
+		void setField(Field field);
 
 		template <class Archive>
 		void serialize(Archive& ar) {
@@ -44,13 +45,7 @@ namespace DVZ::Net {
 		}
 	};
 
-	class EntitySnapshotDelta {
-	public:
-
-	
-	private:
-		std::vector<EntityStateDelta> deltas;
-	};
+	using EntitySnapshotDelta = std::vector<EntityStateDelta>;
 }
 
 #endif
