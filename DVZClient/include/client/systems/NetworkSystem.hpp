@@ -23,6 +23,7 @@ namespace DVZ::Systems {
 		void onAssignNetID(Engine& engine, std::string_view data);
 		void onSyncSimulationClock(Engine& engine, std::string_view data);
 		void onEntityPositionVel(Engine& engine, std::string_view data);
+		void onEntitySnapshotDelta(Engine& engine, std::string_view data);
 		void onPlayerPositionAck(Engine& engine, std::string_view data);
 		void onPlayerJoin(Engine& engine, std::string_view data);
 		void onSpawnPosition(Engine& engine, std::string_view data);

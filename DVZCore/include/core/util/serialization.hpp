@@ -8,6 +8,7 @@
 #include <cereal/types/chrono.hpp>
 #include <cereal/types/bitset.hpp>
 #include <cereal/types/variant.hpp>
+#include <cereal/types/vector.hpp>
 
 namespace DVZ {
 	template<typename ...T>

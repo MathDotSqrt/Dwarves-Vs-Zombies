@@ -29,13 +29,19 @@ void ServerNetSendSystem::tick(Engine& engine) {
 	auto view = registry.view<NetPlayer, Transformation>();
 
 	for (entt::entity player : view) {
+		HSteamNetConnection connection = netManager.getConnectionHandle(player);
 
 		auto ack_number = netManager.shouldAckEntityInput(player);
 		if (ack_number) {
 			const auto& transform = view.get<Transformation>(player);
 			Net::CB_PlayerPositionAckPacket packet{ transform.pos, ack_number.value() };
-			netManager.sendMessage(packet, netManager.getConnectionHandle(player), false);
+			netManager.sendMessage(packet, connection, false);
 		}
+
+		Net::CB_EntitySnapshotDeltaPacket deltaPacket;
+		deltaPacket.delta = netManager.getClientSnapshotDelta(connection);
+		deltaPacket.server_time = engine.getTimeElapsed();
+		netManager.sendMessage(deltaPacket, connection, false);
 	}
 	//TODO: after detecting user input, always send back the player position
 

@@ -7,7 +7,6 @@
 #include "server/voxel/ServerChunkManager.hpp"
 #include "core/time.hpp"
 
-
 #include <spdlog/spdlog.h>
 
 using namespace DVZ;
@@ -43,6 +42,8 @@ void Engine::tick() {
 
 void Engine::updateLoop() {
 	
+	init();
+
 	const auto start_time = std::chrono::steady_clock::now();
 	auto last_time = start_time;
 	duration accum{ 0 };

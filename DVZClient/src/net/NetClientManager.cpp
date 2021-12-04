@@ -37,6 +37,10 @@ void NetClientManager::addServerIDMap(entt::entity server, entt::entity client) 
 	serverIDMap[server] = client;
 }
 
+void NetClientManager::removeServerIDMap(entt::entity server) {
+	serverIDMap.erase(server);
+}
+
 entt::entity NetClientManager::getClientID(entt::entity server) const {
 	const auto iter = serverIDMap.find(server);
 	if (iter != serverIDMap.end()) {

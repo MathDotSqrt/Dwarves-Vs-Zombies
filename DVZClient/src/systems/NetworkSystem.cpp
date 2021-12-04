@@ -68,6 +68,9 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 	case PacketID::CB_EntityPositionVel:
 		onEntityPositionVel(engine, data);
 		break;
+	case PacketID::CB_EntitySnapshotDelta:
+		onEntitySnapshotDelta(engine, data);
+		break;
 	case PacketID::CB_PlayerPositionAck:
 		onPlayerPositionAck(engine, data);
 		break;
@@ -109,6 +112,55 @@ void NetworkSystem::onEntityPositionVel(Engine& engine, std::string_view data) {
 		auto& transform = registry.get<Transformation>(entity);
 		transform.pos = packet.pos;	
 		transform.rot = packet.rot;
+	}
+}
+
+void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data) {
+	
+	Net::CB_EntitySnapshotDeltaPacket packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& registry = engine.getRegistry();
+		auto& manager = engine.getNetManager();
+		entt::entity player = engine.getPlayer();
+
+		for (const Net::EntityStateDelta& stateDelta : packet.delta) {
+			using namespace Net;
+			using namespace entt;
+
+			entt::entity serverID = stateDelta.entity;
+			entt::entity clientID = manager.getClientID(serverID);
+			if (player == clientID) {
+				continue;
+			}
+
+			if (clientID == entt::null) {
+				assert(stateDelta.hasField(EntityStateDelta::Field::Deleted) == false);
+
+				clientID = registry.create();
+				manager.addServerIDMap(serverID, clientID);
+
+				registry.emplace<Transformation>(clientID, glm::vec3{ 0 });
+				registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
+				registry.emplace<Direction>(clientID);
+				registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
+				registry.emplace<Renderable>(clientID, "cube"_hs);
+				registry.emplace<InterpolateNetValues>(clientID);
+			}
+
+			if (stateDelta.hasField(EntityStateDelta::Field::Position)) {
+				auto& transform = registry.get<Transformation>(clientID);
+				transform.pos = stateDelta.state.pos;
+			}
+			if (stateDelta.hasField(EntityStateDelta::Field::Rot)) {
+				auto& transform = registry.get<Transformation>(clientID);
+				transform.rot = stateDelta.state.rot;
+			}
+			if (stateDelta.hasField(EntityStateDelta::Field::Deleted)) {
+				registry.destroy(clientID);
+				manager.removeServerIDMap(serverID);
+			}
+		}
+		
 	}
 }
 

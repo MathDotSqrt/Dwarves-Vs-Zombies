@@ -33,6 +33,7 @@ namespace DVZ::Net {
 		void connectTo(std::string_view ip);
 		bool hasServerID(entt::entity server) const;
 		void addServerIDMap(entt::entity server, entt::entity client);
+		void removeServerIDMap(entt::entity server);
 		entt::entity getClientID(entt::entity server) const;
 
 		void appendRequest(const MovementState& input, const Transformation& pos, simulation_duration client_time);

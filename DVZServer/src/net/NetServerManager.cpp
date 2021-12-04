@@ -16,10 +16,12 @@ void NetServerManager::update() {
 void NetServerManager::addEntityConnectionMapping(entt::entity entity, HSteamNetConnection connection) {
 	entityToConnectionMap[entity] = connection;
 	connectionToEntityMap[connection] = entity;
+	clientSnapshots[connection];
 }
 
 void NetServerManager::removeEntityConnectionMapping(HSteamNetConnection conn) {
 	size_t num_removed = connectionToEntityMap.erase(conn);
+	clientSnapshots.erase(conn);
 	if (num_removed > 0) {
 		entt::entity entity = getEntity(conn);
 		entityToConnectionMap.erase(entity);
@@ -91,10 +93,10 @@ void NetServerManager::ackClientSnapshot(HSteamNetConnection client, simulation_
 			return snapshot->getSimulationTime() == ack_simulation_time;
 		});
 
-		assert(find_iter != snapshotBuffer.end());
-		
-		//Makes first element the last acked snapshot
-		snapshotBuffer.erase(snapshotBuffer.begin(), find_iter);
+		if (find_iter != snapshotBuffer.end()) {
+			//Makes first element the last acked snapshot
+			snapshotBuffer.erase(snapshotBuffer.begin(), find_iter);
+		}
 	}
 }
 

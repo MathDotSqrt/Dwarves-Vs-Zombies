@@ -12,7 +12,7 @@ EntitySnapshot::EntitySnapshot() {
 EntitySnapshot::EntitySnapshot(const Engine& engine) {
 	const auto& registry = engine.getRegistry();
 	
-	auto view = registry.view<const NetPlayer, const Transformation>();
+	auto view = registry.view<const Network, const Transformation>();
 
 	for (entt::entity entity : view) {
 		const auto& transform = view.get<const Transformation>(entity);

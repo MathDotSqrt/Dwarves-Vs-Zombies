@@ -22,7 +22,7 @@ void ServerNetRecvSystem::init(Engine& engine){
 	registry.emplace<Transformation>(test, glm::vec3{ 0, 100, 0 });
 	registry.emplace<Velocity>(test);
 	registry.emplace<Debug>(test, 0.0f);
-	registry.emplace<NetPlayer>(test);
+	registry.emplace<Network>(test);
 }
 
 void ServerNetRecvSystem::tick(Engine& engine) {

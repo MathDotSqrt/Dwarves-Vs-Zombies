@@ -5,6 +5,8 @@
 #include "core/common.hpp"
 #include "core/time.hpp"
 
+#include "core/net/EntitySnapshotDelta.hpp"
+
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -25,6 +27,7 @@ namespace DVZ::Net {
 		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
 		CB_SpawnPosition,			//Client Bound: specifies spawn position of client player
 		CB_EntityPositionVel,		//Client Bound: position vel of entities/players 
+		CB_EntitySnapshotDelta,
 		CB_PlayerPositionAck,		//Client Bound: auth position ack back to client for reconsiliation
 		CB_PlayerJoin				//Client Bound: notifies client a new player joined
 
@@ -115,6 +118,17 @@ namespace DVZ::Net {
 		}
 	};
 
+	struct CB_EntitySnapshotDeltaPacket {
+		constexpr static PacketID packet = PacketID::CB_EntitySnapshotDelta;
+		EntitySnapshotDelta delta;
+		DVZ::simulation_duration server_time;
+
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(delta, server_time);
+		}
+	};
+
 	struct CB_PlayerPositionAckPacket{
 		constexpr static PacketID packet = PacketID::CB_PlayerPositionAck;
 		glm::vec3 pos;
@@ -150,6 +164,7 @@ namespace DVZ::Net {
 	std::vector<char> serializePacketData(const CB_SyncSimulationClockPacket& data);
 	std::vector<char> serializePacketData(const CB_SpawnPositionPacket& data);
 	std::vector<char> serializePacketData(const CB_EntityPositionRotPacket& data);
+	std::vector<char> serializePacketData(const CB_EntitySnapshotDeltaPacket& data);
 	std::vector<char> serializePacketData(const CB_PlayerPositionAckPacket&data);
 	std::vector<char> serializePacketData(const CB_PlayerJoinPacket& data);
 	
@@ -161,6 +176,7 @@ namespace DVZ::Net {
 	bool deserializePacketData(std::string_view, CB_SyncSimulationClockPacket& out);
 	bool deserializePacketData(std::string_view, CB_SpawnPositionPacket& out);
 	bool deserializePacketData(std::string_view, CB_EntityPositionRotPacket& out);
+	bool deserializePacketData(std::string_view, CB_EntitySnapshotDeltaPacket& out);
 	bool deserializePacketData(std::string_view, CB_PlayerPositionAckPacket& out);
 	bool deserializePacketData(std::string_view, CB_PlayerJoinPacket& out);
 	
