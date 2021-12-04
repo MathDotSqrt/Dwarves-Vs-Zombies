@@ -22,6 +22,7 @@ namespace DVZ::Net {
 		SB_ClientDisconnected,		//Server Bound: Not a real packet, just sent to net recv system when client connection dies
 		SB_PlayerPositionVel,		//Server Bound: position vel of client player
 		SB_PlayerInput,				//Server Bound: input from client to simulate on server
+		SB_AckEntitySnapshotDelta,	//Server Bound: ack entity snapshot delta
 
 		CB_AssignNetID,				//Client Bound: gives client its server assigned ID
 		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
@@ -68,6 +69,15 @@ namespace DVZ::Net {
 		template <class Archive>
 		void serialize(Archive& ar) {
 			ar(rot.x, rot.y, rot.z, rot.w, client_time, forward, strafe, fly);
+		}
+	};
+
+	struct SB_AckEntitySnapshoDelta {
+		constexpr static PacketID packet = PacketID::SB_AckEntitySnapshotDelta;
+		simulation_duration server_time;
+		template <class Archive>
+		void serialize(Archive& ar) {
+			ar(server_time);
 		}
 	};
 
@@ -159,6 +169,7 @@ namespace DVZ::Net {
 	std::vector<char> serializePacketData(const SB_ClientJoinPacket& data);
 	std::vector<char> serializePacketData(const SB_PlayerPositionRotPacket& data);
 	std::vector<char> serializePacketData(const SB_PlayerInput& data);
+	std::vector<char> serializePacketData(const SB_AckEntitySnapshoDelta& data);
 
 	std::vector<char> serializePacketData(const CB_AssignNetIDPacket& data);
 	std::vector<char> serializePacketData(const CB_SyncSimulationClockPacket& data);
@@ -171,6 +182,7 @@ namespace DVZ::Net {
 	bool deserializePacketData(std::string_view, SB_ClientJoinPacket& out);
 	bool deserializePacketData(std::string_view, SB_PlayerPositionRotPacket& out);
 	bool deserializePacketData(std::string_view, SB_PlayerInput& out);
+	bool deserializePacketData(std::string_view, SB_AckEntitySnapshoDelta& out);
 
 	bool deserializePacketData(std::string_view, CB_AssignNetIDPacket& out);
 	bool deserializePacketData(std::string_view, CB_SyncSimulationClockPacket& out);

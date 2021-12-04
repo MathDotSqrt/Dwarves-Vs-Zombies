@@ -60,6 +60,9 @@ void ServerNetRecvSystem::onMessage(Engine& engine, std::string_view data, HStea
 	case PacketID::SB_PlayerInput:
 		onPlayerInput(engine, data, connection);
 		break;
+	case PacketID::SB_AckEntitySnapshotDelta:
+		onAckEntityStateDelta(engine, data, connection);
+		break;
 	default:
 		spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
 		break;
@@ -124,6 +127,14 @@ void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, H
 			state.strafe = packet.strafe;
 			state.fly = packet.fly;
 		}
+	}
+}
+
+void ServerNetRecvSystem::onAckEntityStateDelta(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Net::SB_AckEntitySnapshoDelta packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& manager = engine.getNetManager();
+		manager.ackClientSnapshot(conn, packet.server_time);
 	}
 }
 

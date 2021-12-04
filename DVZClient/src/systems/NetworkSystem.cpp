@@ -161,6 +161,9 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 			}
 		}
 		
+		Net::SB_AckEntitySnapshoDelta ackPacket;
+		ackPacket.server_time = packet.server_time;
+		manager.sendMessage(ackPacket, false);
 	}
 }
 

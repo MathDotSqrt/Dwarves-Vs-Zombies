@@ -22,6 +22,7 @@ namespace DVZ {
 		void onClientDisconnected(Engine&, std::string_view sv, HSteamNetConnection connection);
 		void onPlayerPositionVel(Engine&, std::string_view sv, HSteamNetConnection connection);
 		void onPlayerInput(Engine&, std::string_view sv, HSteamNetConnection connection);
+		void onAckEntityStateDelta(Engine&, std::string_view sv, HSteamNetConnection connection);
 		//std::unique_ptr<Net::ServerSocket> socket;
 		//void onMessage(std::string_view sv, HSteamNetConnection connection);
 	};
