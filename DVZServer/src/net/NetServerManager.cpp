@@ -52,13 +52,13 @@ bool NetServerManager::setEntityInputTime(entt::entity entity, simulation_durati
 	const auto iter = entityLastUpdateTime.find(entity);
 	if (iter != entityLastUpdateTime.end()) {
 		auto& [last_client_time, updated] = iter->second;
-		if (last_client_time < client_time) {
-			last_client_time = client_time;
-			updated = true;
-			return true;
-		}
-		updated = false;
-		return false;
+		//if (last_client_time < client_time) {
+		//	last_client_time = client_time;
+		//	updated = true;
+		//	return true;
+		//}
+		updated = true;
+		return true;
 	}
 
 	entityLastUpdateTime[entity] = std::make_pair( client_time, true);
