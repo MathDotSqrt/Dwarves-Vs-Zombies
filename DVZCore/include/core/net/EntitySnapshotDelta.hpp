@@ -35,7 +35,7 @@ namespace DVZ::Net {
 
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(fieldbitset);
+			ar(entity, fieldbitset);
 			if (hasField(Field::Position)) {
 				ar(state.pos.x, state.pos.y, state.pos.z);
 			}

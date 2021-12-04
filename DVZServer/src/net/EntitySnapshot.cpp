@@ -33,12 +33,14 @@ EntitySnapshotDelta EntitySnapshot::computeDelta(const EntitySnapshot& t1, const
 	EntitySnapshotDelta snapshotDelta;
 
 	for (const auto& [t2_entity, t2_state] : t2.entities) {
+		bool update_entity = false;
+		EntityStateDelta delta;
+		delta.entity = t2_entity;
+
 		const auto iter = t1.entities.find(t2_entity);
 		if (iter != t1.entities.end()) {
-			bool update_entity = false;
-			EntityStateDelta delta;
 			const auto& [t1_entity, t1_state] = *iter;
-
+			delta.entity = t2_entity;
 			if (t1_state.pos != t2_state.pos) {
 				delta.setField(EntityStateDelta::Field::Position);
 				delta.state.pos = t2_state.pos;
@@ -50,15 +52,16 @@ EntitySnapshotDelta EntitySnapshot::computeDelta(const EntitySnapshot& t1, const
 				update_entity = true;
 			}
 
-			if (update_entity) {
-				snapshotDelta.push_back(delta);
-			}
+			
 		}
 		else {
-			EntityStateDelta& delta = snapshotDelta.emplace_back();
-
 			delta.setField({ EntityStateDelta::Field::Spawned, EntityStateDelta::Field::Position, EntityStateDelta::Field::Rot});
 			delta.state = t2_state;
+			update_entity = true;
+		}
+
+		if (update_entity) {
+			snapshotDelta.push_back(delta);
 		}
 	}
 
@@ -66,6 +69,7 @@ EntitySnapshotDelta EntitySnapshot::computeDelta(const EntitySnapshot& t1, const
 		const auto iter = t2.entities.find(t1_entity);
 		if (iter == t2.entities.end()) {
 			EntityStateDelta& delta = snapshotDelta.emplace_back();
+			delta.entity = t1_entity;
 			delta.setField(EntityStateDelta::Field::Deleted);
 		}
 	}
