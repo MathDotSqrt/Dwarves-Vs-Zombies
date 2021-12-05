@@ -11,24 +11,7 @@
 #include <entt/core/hashed_string.hpp>
 #include <optional>
 namespace DVZ {
-	struct PositionHistory {
-		glm::vec3 pos;
-		glm::quat rot;
-		simulation_duration server_time;
-	};
-
-	struct InterpolateNetValues {
-		constexpr static auto interpolation_offset = std::chrono::duration_cast<simulation_duration>(std::chrono::milliseconds(200));
-		std::vector<PositionHistory> buffer;
-
-		InterpolateNetValues();
-		InterpolateNetValues(glm::vec3, glm::quat, simulation_duration server_time);
-
-		std::optional<PositionHistory> computeInterpolation(simulation_duration client_time) const;
-		void appendHistory(const PositionHistory& entry, simulation_duration client_time);
-		const PositionHistory& getMostRecentHistory() const;
-	};
-
+	
 	struct Renderable {
 		entt::id_type mesh_id;
 		DVZ::ID instance_id = DVZ::NullID;

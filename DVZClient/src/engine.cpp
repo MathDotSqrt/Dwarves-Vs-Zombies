@@ -99,7 +99,7 @@ void Engine::initUpdateLoop() {
 	registry.emplace<Input>(player);
 	registry.emplace<Direction>(player);
 	registry.emplace<VoxelCollider>(player, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
-	registry.emplace<Network>(player);
+	//registry.emplace<Network>(player);
 
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::ClientPredictionSystem>();

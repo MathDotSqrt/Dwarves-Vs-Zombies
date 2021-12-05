@@ -6,6 +6,7 @@ set(HEADER_FILES
 	"./include/client/window.hpp"
 
 	"./include/client/net/ClientSocket.hpp"
+	"./include/client/net/InterpolateNetValues.hpp"
 	"./include/client/net/NetClientManager.hpp"
 	"./include/client/net/NetComponentUtil.hpp"
 
@@ -53,6 +54,7 @@ set(SOURCE_FILES
 	"./src/window.cpp"
 
 	"./src/net/ClientSocket.cpp"
+	"./src/net/InterpolateNetValues.cpp"
 	"./src/net/NetClientManager.cpp"
 	"./src/net/NetComponentUtil.cpp"
 

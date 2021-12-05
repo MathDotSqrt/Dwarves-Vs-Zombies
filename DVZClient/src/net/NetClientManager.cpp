@@ -35,9 +35,16 @@ bool NetClientManager::hasServerID(entt::entity server) const {
 
 void NetClientManager::addServerIDMap(entt::entity server, entt::entity client) {
 	serverIDMap[server] = client;
+	entityInterpolationMapBuffer[client];
+
 }
 
 void NetClientManager::removeServerIDMap(entt::entity server) {
+	const auto iter = serverIDMap.find(server);
+	if (iter != serverIDMap.end()) {
+		entt::entity clientID = iter->second;
+		entityInterpolationMapBuffer.erase(clientID);
+	}
 	serverIDMap.erase(server);
 }
 
@@ -72,4 +79,16 @@ bool NetClientManager::ackRequest(const glm::vec3& auth_pos, simulation_duration
 
 std::vector<Request>& NetClientManager::getUnackedRequests() {
 	return unackedRequestBuffer;
+}
+
+void NetClientManager::appendEntityPositionValues(entt::entity clientID, const PositionNetValues& values, simulation_duration client_time) {
+	entityInterpolationMapBuffer[clientID].appendHistory(values, client_time);;
+}
+
+std::optional<PositionNetValues> NetClientManager::getInterpolatedEntityValues(entt::entity clientID, simulation_duration client_time) const {
+	const auto iter = entityInterpolationMapBuffer.find(clientID);
+	if (iter != entityInterpolationMapBuffer.end()) {
+		return iter->second.computeInterpolation(client_time);
+	}
+	return {};
 }

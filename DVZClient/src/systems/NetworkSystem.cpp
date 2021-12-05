@@ -46,6 +46,18 @@ void NetworkSystem::gameTick(Engine& engine) {
 		this->onMessage(engine, sv);
 	});
 
+
+	auto network_view = registry.view<Transformation, Network>();
+	for (entt::entity clientID : network_view) {
+		simulation_duration client_time = engine.getClientSimulationTime();
+		std::optional<PositionNetValues> values = netManager.getInterpolatedEntityValues(clientID, client_time);
+
+		if (values) {
+			auto& transform = network_view.get<Transformation>(clientID);
+			transform.pos = values->pos;
+			transform.rot = values->rot;
+		}
+	}
 }
 
 void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
@@ -148,17 +160,21 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 				registry.emplace<InterpolateNetValues>(clientID);
 			}
 
+			auto& transform = registry.get<Transformation>(clientID);
+
 			if (stateDelta.hasField(EntityStateDelta::Field::Position)) {
-				auto& transform = registry.get<Transformation>(clientID);
 				transform.pos = stateDelta.state.pos;
 			}
 			if (stateDelta.hasField(EntityStateDelta::Field::Rot)) {
-				auto& transform = registry.get<Transformation>(clientID);
 				transform.rot = stateDelta.state.rot;
 			}
 			if (stateDelta.hasField(EntityStateDelta::Field::Deleted)) {
 				registry.destroy(clientID);
 				manager.removeServerIDMap(serverID);
+			}
+			else { 
+				simulation_duration client_time = engine.getClientSimulationTime();
+				manager.appendEntityPositionValues(serverID, { transform.pos, transform.rot }, client_time);
 			}
 		}
 		
@@ -209,7 +225,7 @@ void NetworkSystem::onPlayerJoin(Engine& engine, std::string_view data) {
 		registry.emplace<Direction>(clientID);
 		registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 		registry.emplace<Renderable>(clientID, "cube"_hs);
-		registry.emplace<InterpolateNetValues>(clientID);
+		//registry.emplace<InterpolateNetValues>(clientID);
 
 		manager.addServerIDMap(packet.server_id, clientID);
 	}
