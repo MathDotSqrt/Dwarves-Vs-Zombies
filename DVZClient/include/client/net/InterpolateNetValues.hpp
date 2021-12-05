@@ -22,7 +22,7 @@ namespace DVZ::Net {
 
 		struct PositionHistory {
 			PositionNetValues values;
-			simulation_duration server_time;
+			simulation_duration server_time;	//TODO: rename this variable
 		};
 
 		std::vector<PositionHistory> buffer;
@@ -31,6 +31,7 @@ namespace DVZ::Net {
 
 		void appendHistory(const PositionNetValues& entry, simulation_duration client_time);
 		std::optional<PositionNetValues> computeInterpolation(simulation_duration client_time) const;
+		std::optional<PositionNetValues> getLastBufferedValues() const;
 	};
 }
 

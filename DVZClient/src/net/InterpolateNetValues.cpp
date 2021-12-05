@@ -11,9 +11,9 @@ InterpolateNetValues::InterpolateNetValues() {
 
 }
 
-void InterpolateNetValues::appendHistory(const PositionNetValues& values, simulation_duration server_time) {
+void InterpolateNetValues::appendHistory(const PositionNetValues& values, simulation_duration client_time) {
 
-	PositionHistory new_entry{ values, server_time };
+	PositionHistory new_entry{ values, client_time };
 
 	const auto iter = std::find_if(buffer.begin(), buffer.end(), [&](const PositionHistory& entry) {
 		return new_entry.server_time > entry.server_time;
@@ -37,18 +37,21 @@ std::optional<PositionNetValues> InterpolateNetValues::computeInterpolation(simu
 		return {};
 	}
 
-	if (target_time > buffer[0].server_time) {
-		spdlog::info("out paced");
-		return buffer[0].values;
+	if (target_time > buffer.front().server_time) {
+		//spdlog::info("out paced");
+		return buffer.front().values;
 	}
 
 	for (size_t i = 0; i < buffer.size() - 1; i++) {
 		const auto& t1 = buffer[i];
 		const auto& t2 = buffer[i + 1];
 		if (t1.server_time >= target_time && target_time >= t2.server_time) {
-			const auto denom = t1.server_time - t2.server_time;
-			const auto num = target_time - t2.server_time;
-			const auto alpha = (float)num.count() / (float)denom.count();
+			//const auto delta = std::min(t1.server_time - t2.server_time, interpolation_offset);
+			const auto delta = t1.server_time - t2.server_time;
+
+			const auto denom = delta;
+			const auto num = target_time - (t1.server_time - delta);
+			const auto alpha = 0.0f;//(float)num.count() / (float)denom.count();
 
 			const auto interpolate_pos = glm::mix(t2.values.pos, t1.values.pos, alpha);
 			const auto interpolate_quat = glm::slerp(t2.values.rot, t1.values.rot, alpha);
@@ -60,4 +63,9 @@ std::optional<PositionNetValues> InterpolateNetValues::computeInterpolation(simu
 	return buffer.back().values;
 }
 
-
+std::optional<PositionNetValues> InterpolateNetValues::getLastBufferedValues() const {
+	if (buffer.size() > 0) {
+		return buffer[0].values;
+	}
+	return {};
+}

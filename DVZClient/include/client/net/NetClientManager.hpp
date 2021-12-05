@@ -40,8 +40,11 @@ namespace DVZ::Net {
 		void appendRequest(const MovementState& input, const Transformation& pos, simulation_duration client_time);
 		bool ackRequest(const glm::vec3& pos, simulation_duration client_request_time);
 
+		bool ackEntityStateDelta(simulation_duration server_time);
+
 		void appendEntityPositionValues(entt::entity clientID, const PositionNetValues& values, simulation_duration client_time);
 		std::optional<PositionNetValues> getInterpolatedEntityValues(entt::entity clientID, simulation_duration client_time) const;
+		std::optional<PositionNetValues> getLastBufferedValues(entt::entity clientID) const;
 
 		std::vector<Request>& getUnackedRequests();
 	private:
@@ -52,6 +55,7 @@ namespace DVZ::Net {
 		std::unordered_map<entt::entity, InterpolateNetValues> entityInterpolationMapBuffer;
 
 		std::vector<Request> unackedRequestBuffer;
+		simulation_duration lastAckEntityStateDelta{0};
 	};
 }
 

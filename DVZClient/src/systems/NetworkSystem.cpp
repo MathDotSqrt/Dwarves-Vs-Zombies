@@ -136,6 +136,10 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 		auto& manager = engine.getNetManager();
 		entt::entity player = engine.getPlayer();
 
+		if (manager.ackEntityStateDelta(packet.server_time) == false) {
+			return;
+		}
+
 		for (const Net::EntityStateDelta& stateDelta : packet.delta) {
 			using namespace Net;
 			using namespace entt;
@@ -147,7 +151,9 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 			}
 
 			if (clientID == entt::null) {
-				assert(stateDelta.hasField(EntityStateDelta::Field::Deleted) == false);
+				if (stateDelta.hasField(EntityStateDelta::Field::Deleted)) {
+					continue;
+				}
 
 				clientID = registry.create();
 				manager.addServerIDMap(serverID, clientID);
@@ -157,30 +163,29 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 				registry.emplace<Direction>(clientID);
 				registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 				registry.emplace<Renderable>(clientID, "cube"_hs);
-				registry.emplace<InterpolateNetValues>(clientID);
+				registry.emplace<Network>(clientID);
 			}
 
-			auto& transform = registry.get<Transformation>(clientID);
+			if (stateDelta.hasField(EntityStateDelta::Field::Deleted) == false) {
+				auto last_values = manager.getLastBufferedValues(clientID);
+				PositionNetValues values = last_values.value_or(PositionNetValues{ glm::vec3(0), glm::quat{1, 0, 0, 0} });
 
-			if (stateDelta.hasField(EntityStateDelta::Field::Position)) {
-				transform.pos = stateDelta.state.pos;
+				if (stateDelta.hasField(EntityStateDelta::Field::Position)) {
+					values.pos = stateDelta.state.pos;
+				}
+				if (stateDelta.hasField(EntityStateDelta::Field::Rot)) {
+					values.rot = stateDelta.state.rot;
+				}
+				simulation_duration client_time = engine.getClientSimulationTime();
+				manager.appendEntityPositionValues(clientID, values, client_time);
 			}
-			if (stateDelta.hasField(EntityStateDelta::Field::Rot)) {
-				transform.rot = stateDelta.state.rot;
-			}
-			if (stateDelta.hasField(EntityStateDelta::Field::Deleted)) {
+			else{
 				registry.destroy(clientID);
 				manager.removeServerIDMap(serverID);
 			}
-			else { 
-				simulation_duration client_time = engine.getClientSimulationTime();
-				manager.appendEntityPositionValues(serverID, { transform.pos, transform.rot }, client_time);
-			}
 		}
 		
-		Net::SB_AckEntitySnapshoDelta ackPacket;
-		ackPacket.server_time = packet.server_time;
-		manager.sendMessage(ackPacket, false);
+		
 	}
 }
 

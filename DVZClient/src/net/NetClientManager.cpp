@@ -81,6 +81,17 @@ std::vector<Request>& NetClientManager::getUnackedRequests() {
 	return unackedRequestBuffer;
 }
 
+bool NetClientManager::ackEntityStateDelta(simulation_duration server_time) {
+	if (server_time > lastAckEntityStateDelta) {
+		lastAckEntityStateDelta = server_time;
+		Net::SB_AckEntitySnapshoDelta ackPacket;
+		ackPacket.server_time = server_time;
+		sendMessage(ackPacket, false);
+		return true;
+	}
+	return false;
+}
+
 void NetClientManager::appendEntityPositionValues(entt::entity clientID, const PositionNetValues& values, simulation_duration client_time) {
 	entityInterpolationMapBuffer[clientID].appendHistory(values, client_time);;
 }
@@ -89,6 +100,14 @@ std::optional<PositionNetValues> NetClientManager::getInterpolatedEntityValues(e
 	const auto iter = entityInterpolationMapBuffer.find(clientID);
 	if (iter != entityInterpolationMapBuffer.end()) {
 		return iter->second.computeInterpolation(client_time);
+	}
+	return {};
+}
+
+std::optional<PositionNetValues> NetClientManager::getLastBufferedValues(entt::entity clientID) const {
+	const auto iter = entityInterpolationMapBuffer.find(clientID);
+	if (iter != entityInterpolationMapBuffer.end()) {
+		return iter->second.getLastBufferedValues();
 	}
 	return {};
 }
