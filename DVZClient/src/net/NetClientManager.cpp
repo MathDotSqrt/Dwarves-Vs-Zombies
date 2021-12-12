@@ -82,8 +82,8 @@ std::vector<Request>& NetClientManager::getUnackedRequests() {
 }
 
 bool NetClientManager::ackEntityStateDelta(simulation_duration server_time) {
-	if (server_time > lastAckEntityStateDelta) {
-		lastAckEntityStateDelta = server_time;
+	if (server_time > lastAckEntityStateServerTime) {
+		lastAckEntityStateServerTime = server_time;
 		Net::SB_AckEntitySnapshoDelta ackPacket;
 		ackPacket.server_time = server_time;
 		sendMessage(ackPacket, false);
@@ -92,22 +92,22 @@ bool NetClientManager::ackEntityStateDelta(simulation_duration server_time) {
 	return false;
 }
 
-void NetClientManager::appendEntityPositionValues(entt::entity clientID, const PositionNetValues& values, simulation_duration client_time) {
-	entityInterpolationMapBuffer[clientID].appendHistory(values, client_time);;
+void NetClientManager::updateAllEntityInterpolation(simulation_duration client_time) {
+	ackEntityStateBuffer.push_back(client_time);
+}
+
+PositionNetValues* NetClientManager::insertPositionNetValue(entt::entity clientID, simulation_duration client_time) {
+	const auto iter = entityInterpolationMapBuffer.find(clientID);
+	if (iter != entityInterpolationMapBuffer.end()) {
+		return iter->second.insertPositionNetValues(client_time);
+	}
+	return nullptr;
 }
 
 std::optional<PositionNetValues> NetClientManager::getInterpolatedEntityValues(entt::entity clientID, simulation_duration client_time) const {
 	const auto iter = entityInterpolationMapBuffer.find(clientID);
 	if (iter != entityInterpolationMapBuffer.end()) {
-		return iter->second.computeInterpolation(client_time);
-	}
-	return {};
-}
-
-std::optional<PositionNetValues> NetClientManager::getLastBufferedValues(entt::entity clientID) const {
-	const auto iter = entityInterpolationMapBuffer.find(clientID);
-	if (iter != entityInterpolationMapBuffer.end()) {
-		return iter->second.getLastBufferedValues();
+		return iter->second.computeInterpolation(client_time, ackEntityStateBuffer);
 	}
 	return {};
 }

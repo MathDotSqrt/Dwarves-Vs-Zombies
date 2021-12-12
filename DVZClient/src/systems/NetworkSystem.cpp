@@ -135,57 +135,48 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 		auto& registry = engine.getRegistry();
 		auto& manager = engine.getNetManager();
 		entt::entity player = engine.getPlayer();
+		simulation_duration client_time = engine.getClientSimulationTime();
+
 
 		if (manager.ackEntityStateDelta(packet.server_time) == false) {
 			return;
 		}
+		
+		manager.updateAllEntityInterpolation(client_time);
 
-		for (const Net::EntityStateDelta& stateDelta : packet.delta) {
+
+		for (const Net::EntityStateDelta& delta : packet.delta) {
 			using namespace Net;
-			using namespace entt;
 
-			entt::entity serverID = stateDelta.entity;
-			entt::entity clientID = manager.getClientID(serverID);
-			if (player == clientID) {
+			entt::entity clientID = manager.getClientID(delta.entity);
+			if (clientID == player) {
 				continue;
 			}
-
 			if (clientID == entt::null) {
-				if (stateDelta.hasField(EntityStateDelta::Field::Deleted)) {
-					continue;
-				}
+				using namespace entt;
 
 				clientID = registry.create();
-				manager.addServerIDMap(serverID, clientID);
-
-				registry.emplace<Transformation>(clientID, glm::vec3{ 0 });
-				registry.emplace<Velocity>(clientID, glm::vec3{ 0 });
+				registry.emplace<Transformation>(clientID, glm::vec3{0});
+				registry.emplace<Velocity>(clientID, glm::vec3{0});
+				registry.emplace<Renderable>(clientID, "cube"_hs);
+				registry.emplace<MovementState>(clientID);
 				registry.emplace<Direction>(clientID);
 				registry.emplace<VoxelCollider>(clientID, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
-				registry.emplace<Renderable>(clientID, "cube"_hs);
 				registry.emplace<Network>(clientID);
+				manager.addServerIDMap(delta.entity, clientID);
 			}
 
-			if (stateDelta.hasField(EntityStateDelta::Field::Deleted) == false) {
-				auto last_values = manager.getLastBufferedValues(clientID);
-				PositionNetValues values = last_values.value_or(PositionNetValues{ glm::vec3(0), glm::quat{1, 0, 0, 0} });
+			entt::entity entity = manager.getClientID(delta.entity);
+			Net::PositionNetValues* value = manager.insertPositionNetValue(entity, client_time);
 
-				if (stateDelta.hasField(EntityStateDelta::Field::Position)) {
-					values.pos = stateDelta.state.pos;
-				}
-				if (stateDelta.hasField(EntityStateDelta::Field::Rot)) {
-					values.rot = stateDelta.state.rot;
-				}
-				simulation_duration client_time = engine.getClientSimulationTime();
-				manager.appendEntityPositionValues(clientID, values, client_time);
+			if (delta.hasField(EntityStateDelta::Field::Position)) {
+				value->pos = delta.state.pos;
 			}
-			else{
-				registry.destroy(clientID);
-				manager.removeServerIDMap(serverID);
+			if (delta.hasField(EntityStateDelta::Field::Rot)) {
+				value->rot = delta.state.rot;
 			}
 		}
-		
-		
+
 	}
 }
 

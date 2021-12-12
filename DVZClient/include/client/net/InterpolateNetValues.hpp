@@ -29,9 +29,9 @@ namespace DVZ::Net {
 
 		InterpolateNetValues();
 
-		void appendHistory(const PositionNetValues& entry, simulation_duration client_time);
-		std::optional<PositionNetValues> computeInterpolation(simulation_duration client_time) const;
-		std::optional<PositionNetValues> getLastBufferedValues() const;
+		PositionNetValues* insertPositionNetValues(simulation_duration client_time);
+		std::optional<PositionNetValues> computeInterpolation(simulation_duration client_time, const std::vector<simulation_duration>& ackBuffer) const;
+		PositionNetValues* getLastBufferedValues();
 	};
 }
 
