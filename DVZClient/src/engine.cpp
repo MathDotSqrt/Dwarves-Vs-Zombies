@@ -103,7 +103,7 @@ void Engine::initUpdateLoop() {
 
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::ClientPredictionSystem>();
-	//this->addSystem<Systems::VoxelSystem>();
+	this->addSystem<Systems::VoxelSystem>();
 	this->addSystem<Systems::NetworkSystem>();
 	this->addSystem<Systems::RenderSystem>();
 }
