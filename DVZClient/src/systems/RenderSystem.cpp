@@ -2,10 +2,12 @@
 
 #include "client/engine.hpp"
 #include "client/ClientComponents.hpp"
-#include <spdlog/spdlog.h>
 #include "client/graphics/Scene.hpp"
 
 #include "core/CoreComponents.hpp"
+
+#include <spdlog/spdlog.h>
+
 
 #undef near
 #undef far
@@ -18,11 +20,20 @@ RenderSystem::RenderSystem() {
 
 void RenderSystem::init(Engine& engine) {
 	spdlog::info("Initalized [RenderSystem]");
+
+	auto& registry = engine.getRegistry();
+
+	registry.on_destroy<Renderable>().connect<&RenderSystem::onDeleteInstance>(this);
 }
 
 void RenderSystem::gameTick(Engine& engine) {
 	auto& registry = engine.getRegistry();
 	auto& scene = engine.getScene();
+
+	for (const auto& id : removeInstanceBuffer) {
+		scene.removeInstance(id);
+	}
+	removeInstanceBuffer.clear();
 
 	auto view = registry.view<Transformation, Renderable>();
 	for (const auto& e : view) {
@@ -50,7 +61,11 @@ void RenderSystem::gameTick(Engine& engine) {
 		playerSceneCamera.pos = transform.pos;
 		playerSceneCamera.rot = transform.rot;
 		playerSceneCamera.scale = transform.scale;
-		
 
 	});
+}
+
+void RenderSystem::onDeleteInstance(entt::registry& registry, entt::entity entity) {
+	const auto& renderable = registry.get<const Renderable>(entity);
+	removeInstanceBuffer.push_back(renderable.instance_id);
 }

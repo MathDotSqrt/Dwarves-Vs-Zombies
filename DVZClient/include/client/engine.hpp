@@ -58,8 +58,6 @@ namespace DVZ{
 		Voxel::ClientChunkManager& getChunkManager();
 		const Voxel::ClientChunkManager& getChunkManager() const ;
 
-		void setSimulationTime(simulation_duration duration);
-		simulation_duration getServerSimulationTime() const;
 		simulation_duration getClientSimulationTime() const;
 
 		void setIP(std::string_view sv);
@@ -74,9 +72,7 @@ namespace DVZ{
 		std::unique_ptr<Graphics::Scene> scene;
 		std::unique_ptr<Graphics::SceneManager> sceneManager;
 		std::unique_ptr<Graphics::BasicRenderer> renderer;
-
 		std::unique_ptr<Net::NetClientManager> netManager;
-
 		std::unique_ptr<Voxel::ClientChunkManager> chunkManager;
 		std::unique_ptr<Voxel::ChunkRenderDataManager> chunkRenderDataManager;
 		std::thread updateThread;
@@ -85,8 +81,8 @@ namespace DVZ{
 
 		bool pause = false;
 		bool desync = false;
-		simulation_duration last_server_time = simulation_duration{ 0 };
-		simulation_duration sync_offset = simulation_duration{ 0 };
+		//simulation_duration last_server_time = simulation_duration{ 0 };
+		//simulation_duration sync_offset = simulation_duration{ 0 };
 		simulation_duration client_simulation_time = simulation_duration{ 0 };
 
 		std::string ip = "127.0.0.1:50150";

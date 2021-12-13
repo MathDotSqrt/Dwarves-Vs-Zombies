@@ -44,7 +44,7 @@ std::optional<PositionNetValues> InterpolateNetValues::computeInterpolation(simu
 		return {};
 	}
 
-	if (target_time > buffer.front().server_time) {
+	if (target_time >= buffer.front().server_time) {
 		//spdlog::info("out paced");
 		return buffer.front().values;
 	}
@@ -56,21 +56,29 @@ std::optional<PositionNetValues> InterpolateNetValues::computeInterpolation(simu
 			//if ((t1.server_time - t2.server_time) == simulation_duration{1}) {
 			//	return t2.values;
 			//}
-			
+
 			const auto iter = std::find_if(ackBuffer.rbegin(), ackBuffer.rend(), [&](const simulation_duration& lastAck) {
 				return target_time >= lastAck;
 			});
-			
 
-			const auto delta = t1.server_time - *iter;
-			//TODO: this is very scuffed
-			if ((delta) == simulation_duration{ 0 }) {
-				return t1.values;
+			const simulation_duration t1_time = *(iter - 1);
+			const simulation_duration t2_time = *iter;
+
+			if (t1_time < t1.server_time) {
+				return t2.values;
 			}
 
+
+			const auto delta = t1_time - t2_time;
+
+
 			const auto denom = delta;
-			const auto num = target_time - (t1.server_time - delta);
+			const auto num = target_time - (t1_time - delta);
 			const auto alpha = (float)num.count() / (float)denom.count();
+			
+			if (alpha == 0) {
+				return t2.values;
+			}
 
 			const auto interpolate_pos = glm::mix(t2.values.pos, t1.values.pos, alpha);
 			const auto interpolate_quat = glm::slerp(t2.values.rot, t1.values.rot, alpha);
@@ -78,8 +86,8 @@ std::optional<PositionNetValues> InterpolateNetValues::computeInterpolation(simu
 		}
 	}
 
-	spdlog::error("Oh shit");
-	return buffer.back().values;
+	//spdlog::error("Oh shit");
+	return {};
 }
 
 PositionNetValues* InterpolateNetValues::getLastBufferedValues() {

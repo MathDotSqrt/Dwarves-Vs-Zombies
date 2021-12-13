@@ -58,6 +58,7 @@ namespace DVZ::Graphics {
 		friend SceneManager;
 
 		ID addInstance(entt::id_type meshID);
+		void removeInstance(DVZ::ID instanceID);
 
 		bool hasInstance(DVZ::ID instanceID) const;
 		Instance& getInstance(DVZ::ID meshID);

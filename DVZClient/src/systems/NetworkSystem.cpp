@@ -175,6 +175,11 @@ void NetworkSystem::onEntitySnapshotDelta(Engine& engine, std::string_view data)
 			if (delta.hasField(EntityStateDelta::Field::Rot)) {
 				value->rot = delta.state.rot;
 			}
+			if (delta.hasField(EntityStateDelta::Field::Deleted)) {
+				registry.destroy(clientID);
+				manager.removeServerIDMap(delta.entity);
+				spdlog::info("Goodbye {}", delta.entity);
+			}
 		}
 
 	}

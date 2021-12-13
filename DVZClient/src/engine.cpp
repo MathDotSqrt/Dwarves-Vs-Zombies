@@ -194,18 +194,6 @@ Voxel::ChunkRenderDataManager& Engine::getChunkRenderDataManager() {
 	return *chunkRenderDataManager;
 }
 
-void Engine::setSimulationTime(simulation_duration server_time) {
-	if (server_time > last_server_time && desync == false) {
-		last_server_time = server_time;
-		sync_offset = last_server_time - client_simulation_time;
-	}
-}
-
-
-simulation_duration Engine::getServerSimulationTime() const{
-	return client_simulation_time + sync_offset;
-}
-
 simulation_duration Engine::getClientSimulationTime() const {
 	return client_simulation_time;
 }

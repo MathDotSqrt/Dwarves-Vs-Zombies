@@ -42,6 +42,10 @@ ID Scene::addInstance(entt::id_type meshID) {
 	return instances.push_back(Instance{meshID});
 }
 
+void Scene::removeInstance(DVZ::ID instanceID){
+	instances.remove(instanceID);
+}
+
 bool Scene::hasInstance(DVZ::ID instanceID) const {
 	return instances.has(instanceID);
 }
