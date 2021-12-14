@@ -1,43 +1,54 @@
 ﻿{
-	"configurations": [
-		{
-			"name": "x64-Debug (default)",
-			"generator": "Ninja",
-			"configurationType": "Debug",
-			"inheritEnvironments": [ "msvc_x64_x64" ],
-			"buildRoot": "${projectDir}\\out\\build\\${name}",
-			"installRoot": "${projectDir}\\out\\install\\${name}",
-			"cmakeCommandArgs": "",
-			"buildCommandArgs": "",
-			"ctestCommandArgs": "",
-			"cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"variables": []
-		},
-		{
-			"name": "x64-Release",
-			"generator": "Ninja",
-			"configurationType": "Release",
-			"buildRoot": "${projectDir}\\out\\build\\${name}",
-			"installRoot": "${projectDir}\\out\\install\\${name}",
-			"cmakeCommandArgs": "",
-			"buildCommandArgs": "",
-			"ctestCommandArgs": "",
-			"cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"inheritEnvironments": [ "msvc_x64_x64" ],
-			"variables": []
-		},
-		{
-			"name": "x64-Release-Deb-Info",
-			"generator": "Ninja",
-			"configurationType": "RelWithDebInfo",
-			"buildRoot": "${projectDir}\\out\\build\\${name}",
-			"installRoot": "${projectDir}\\out\\install\\${name}",
-			"cmakeCommandArgs": "",
-			"buildCommandArgs": "",
-			"ctestCommandArgs": "",
-			"cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"inheritEnvironments": [ "msvc_x64_x64" ],
-			"variables": []
-		}
-	]
+  "configurations": [
+    {
+      "name": "x64-Debug (default)",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "variables": [
+        {
+          "name": "VCPKG_INSTALLED_DIR",
+          "value": "C:\\Users\\Chris\\Desktop\\DVZ\\Dwarves-Vs-Zombies\\out\\vcpkg_installed",
+          "type": "PATH"
+        }
+      ]
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "VCPKG_INSTALLED_DIR",
+          "value": "C:\\Users\\Chris\\Desktop\\DVZ\\Dwarves-Vs-Zombies\\out\\vcpkg_installed",
+          "type": "PATH"
+        }
+      ]
+    },
+    {
+      "name": "x64-Release-Deb-Info",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "${projectDir}/thirdparty/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "inheritEnvironments": [ "msvc_x64_x64" ]
+    }
+  ]
 }

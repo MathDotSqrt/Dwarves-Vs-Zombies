@@ -50,6 +50,7 @@ void ClientChunkManager::queueChunksToGenerate() {
 			auto iter = chunks.find(coords);
 			if (iter == chunks.end()) {
 				if (chunksPool.size() > 0) {
+					//TODO: generate chunk via thread
 					chunksPool.back().init(coords);
 					chunks.emplace(coords, std::move(chunksPool.back()));
 					chunksPool.pop_back();

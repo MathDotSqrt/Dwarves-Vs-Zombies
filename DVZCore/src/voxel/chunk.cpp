@@ -58,7 +58,7 @@ void Chunk::init(const ChunkCoords& coords) {
 		for (BlockIndex x = 0; x < CHUNK_X; x++) {
 			WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
 			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
-			float height = (glm::simplex(sample) + 1) * .5;
+			double height = (glm::simplex(sample) + 1) * .5;
 			
 			height = glm::pow(height, 2);
 
