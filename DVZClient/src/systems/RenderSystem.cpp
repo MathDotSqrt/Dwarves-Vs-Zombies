@@ -52,7 +52,7 @@ void RenderSystem::gameTick(Engine& engine) {
 
 	auto player_camera_view = registry.view<Transformation, Camera, Player>();
 	player_camera_view.each([&](Transformation& transform, Camera& camera) {
-		Graphics::PerspectiveCamera& playerSceneCamera = scene.getPlayerCamera();
+		Graphics::PerspectiveCamera playerSceneCamera;
 		playerSceneCamera.near = camera.near;
 		playerSceneCamera.far = camera.far;
 		playerSceneCamera.height = camera.height;
@@ -61,6 +61,8 @@ void RenderSystem::gameTick(Engine& engine) {
 		playerSceneCamera.pos = transform.pos;
 		playerSceneCamera.rot = transform.rot;
 		playerSceneCamera.scale = transform.scale;
+
+		scene.setPlayerCamera(playerSceneCamera);
 
 	});
 }

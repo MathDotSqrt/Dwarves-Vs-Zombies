@@ -28,6 +28,15 @@ PerspectiveCamera::PerspectiveCamera(float fov, float width, float height, float
 	this->far = far;
 }
 
+Frustum PerspectiveCamera::computeFrustum() const {
+	glm::mat4 transform = Util::to_transform(glm::vec3(100, 10, 0), glm::quat{1, 0, 0, 0}, glm::vec3(1));
+	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(0, 0, -1) + glm::vec3(0, 100, 0), glm::vec3(0, -1, 0));
+	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(-1, 100, 0), glm::vec3(0, -1, 0));
+	const auto& window = Window::getInstance();
+	glm::mat4 projection = glm::perspectiveFov<float>(fov, (float)window.getWidth(), (float)window.getHeight(), near, far);
+	return Frustum{(transform * projection)};
+}
+
 InterpolatedInstance::InterpolatedInstance(entt::id_type meshID, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale) {
 	this->meshID = meshID;
 	this->transform = DVZ::Util::to_transform(pos, rot, scale);
@@ -36,6 +45,10 @@ InterpolatedInstance::InterpolatedInstance(entt::id_type meshID, const glm::vec3
 InterpolatedInstance::InterpolatedInstance(const Instance& instance) 
 	: InterpolatedInstance(instance.meshID, instance.pos, instance.rot, instance.scale){
 
+}
+
+Scene::Scene() : view(playerCamera.computeFrustum()) {
+	
 }
 
 ID Scene::addInstance(entt::id_type meshID) {
@@ -60,12 +73,17 @@ const Instance& Scene::getInstance(DVZ::ID instanceID) const {
 	return instances[instanceID];
 }
 
-Graphics::PerspectiveCamera& Scene::getPlayerCamera() {
-	return playerCamera;
+void Scene::setPlayerCamera(const PerspectiveCamera& camera) {
+	playerCamera = camera;
+	view = playerCamera.computeFrustum();
 }
 
 const Graphics::PerspectiveCamera& Scene::getPlayerCamera() const {
 	return playerCamera;
+}
+
+const Frustum& Scene::getFrustum() const{
+	return view;
 }
 
 SceneManager::SceneManager() {

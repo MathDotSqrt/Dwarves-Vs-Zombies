@@ -131,7 +131,7 @@ void Engine::updateLoop() {
 				client_simulation_time += DT;
 			update();
 
-			chunkRenderDataManager->bufferDirtyChunks(*chunkManager);
+			chunkRenderDataManager->bufferDirtyChunks(scene->getFrustum(), *chunkManager);
 			sceneManager->bufferScene(*scene);
 			accum -= DT;
 

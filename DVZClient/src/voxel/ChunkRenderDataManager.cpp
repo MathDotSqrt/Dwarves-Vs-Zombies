@@ -3,12 +3,14 @@
 #include "client/voxel/ClientChunkManager.hpp"
 #include "client/util/util.hpp"
 
+#include "core/util/Frustum.hpp"
+
 #include <spdlog/spdlog.h>
 #include <algorithm>
 
 using namespace DVZ::Voxel;
 
-void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager) {
+void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const ClientChunkManager& manager) {
 	thread_local std::vector<ChunkCoords> coords;
 	std::lock_guard<std::mutex> g{queue_mutex};
 
@@ -18,7 +20,13 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 
 	coords.clear();
 	Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
-		coords.push_back(coord);
+		Collision::AABB aabb = Voxel::getChunkAABB(coord);
+		if (frustum.intersects(aabb)) {
+			coords.push_back(coord);
+		}
+		else {
+			//spdlog::info("failed");
+		}
 	});
 
 	std::sort(coords.begin(), coords.end(), [&](const ChunkCoords& left, const ChunkCoords& right) {
@@ -52,6 +60,7 @@ void ChunkRenderDataManager::bufferDirtyChunks(const ClientChunkManager& manager
 
 void ChunkRenderDataManager::update() {
 	std::lock_guard<std::mutex> g{ queue_mutex };
+
 
 	cullFarChunks();
 	meshChunks();

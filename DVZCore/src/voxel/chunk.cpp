@@ -170,3 +170,12 @@ WorldCoords DVZ::Voxel::toWorldCoords(const glm::vec3& coords) {
 WorldCoords DVZ::Voxel::toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords) {
 	return WorldCoords{chunkCoords.x * CHUNK_X + blockCoords.x, chunkCoords.y * CHUNK_Y + blockCoords.y, chunkCoords.z * CHUNK_Z + blockCoords.z };
 }
+
+DVZ::Collision::AABB DVZ::Voxel::getChunkAABB(const ChunkCoords& coords) {
+	glm::vec3 min{coords};
+	glm::vec3 delta{ CHUNK_X, CHUNK_Y, CHUNK_Z };
+
+	glm::vec3 max{min + (delta * BLOCK_WIDTH)};
+
+	return { min, max };
+}

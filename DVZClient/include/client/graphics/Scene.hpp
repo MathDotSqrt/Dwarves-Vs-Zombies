@@ -6,6 +6,7 @@
 #include "client/graphics/Mesh.hpp"
 #include "client/util/packedfreelist.hpp"
 #include "client/util/freelist.hpp"
+#include "core/util/Frustum.hpp"
 
 #include <vector>
 #include <glm/glm.hpp>
@@ -35,6 +36,8 @@ namespace DVZ::Graphics {
 
 		PerspectiveCamera();
 		PerspectiveCamera(float fov, float width, float height, float near, float far);
+
+		Frustum computeFrustum() const;
 	};
 
 	struct Instance {
@@ -57,6 +60,8 @@ namespace DVZ::Graphics {
 		friend BasicRenderer;
 		friend SceneManager;
 
+		Scene();
+
 		ID addInstance(entt::id_type meshID);
 		void removeInstance(DVZ::ID instanceID);
 
@@ -64,11 +69,14 @@ namespace DVZ::Graphics {
 		Instance& getInstance(DVZ::ID meshID);
 		const Instance& getInstance(DVZ::ID meshID) const;
 
-		PerspectiveCamera& getPlayerCamera();
+		void setPlayerCamera(const PerspectiveCamera& camera);
 		const PerspectiveCamera& getPlayerCamera() const;
+
+		const Frustum& getFrustum() const;
 	private:
 		PerspectiveCamera playerCamera;
 		DVZ::Util::freelist<Instance> instances;
+		Frustum view;
 	};
 
 	class InterpolatedScene {

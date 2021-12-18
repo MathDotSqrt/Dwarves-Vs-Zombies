@@ -3,6 +3,7 @@
 #define DVZ_CHUNK_HPP
 
 #include "core/voxel/block.hpp"
+#include "core/collision/AABB.hpp"
 
 #include <glm/glm.hpp>
 
@@ -12,9 +13,9 @@
 
 namespace DVZ::Voxel {
 	
-	constexpr int CHUNK_SHIFT_X = 4;
+	constexpr int CHUNK_SHIFT_X = 2;
 	constexpr int CHUNK_SHIFT_Y = 7;
-	constexpr int CHUNK_SHIFT_Z = 4;
+	constexpr int CHUNK_SHIFT_Z = 2;
 
 	constexpr int CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
 
@@ -81,6 +82,7 @@ namespace DVZ::Voxel {
 	WorldCoords toWorldCoords(const glm::vec3& coords);
 	WorldCoords toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords);
 
+	Collision::AABB getChunkAABB(const ChunkCoords& chunkCoords);
 }
 
 namespace std {

@@ -4,6 +4,7 @@
 
 #include "client/voxel/ChunkMesher.hpp"
 #include "client/voxel/ChunkRenderData.hpp"
+#include "core/util/Frustum.hpp"
 
 #include <vector>
 #include <mutex>
@@ -20,7 +21,7 @@ namespace DVZ::Voxel {
 
 	class ChunkRenderDataManager {
 	public:
-		void bufferDirtyChunks(const ClientChunkManager& chunkManager);
+		void bufferDirtyChunks(const Frustum& frustum, const ClientChunkManager& chunkManager);
 		void update();
 		void clearRenderData();
 
