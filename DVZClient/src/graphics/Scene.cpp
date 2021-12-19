@@ -33,8 +33,8 @@ Frustum PerspectiveCamera::computeFrustum() const {
 	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(0, 0, -1) + glm::vec3(0, 100, 0), glm::vec3(0, -1, 0));
 	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(-1, 100, 0), glm::vec3(0, -1, 0));
 	const auto& window = Window::getInstance();
-	glm::mat4 projection = glm::perspectiveFov<float>(fov, (float)window.getWidth(), (float)window.getHeight(), near, far);
-	return Frustum{(transform * projection)};
+	float aspect = (float)window.getHeight() / window.getWidth();
+	return Frustum{pos, rot, 80.0f, aspect, .1f, 1000.0f};
 }
 
 InterpolatedInstance::InterpolatedInstance(entt::id_type meshID, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale) {

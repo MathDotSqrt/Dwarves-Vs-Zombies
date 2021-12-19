@@ -3,6 +3,7 @@
 
 #include "core/collision/AABB.hpp"
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <array>
 
 namespace DVZ {
@@ -12,15 +13,20 @@ namespace DVZ {
 		POSITIVE = 1
 	};
 
-	using Plane = glm::vec4;
+	struct Plane {
+		Plane();
+		Plane(const glm::vec3& pos, const glm::vec3& norm);
 
-	Plane normalizePlane(const Plane& plane);
-	HalfSpace classifyPoint(const Plane& plane, const glm::vec3& pos);
+		glm::vec3 normal{0,1,0};
+		float distance = 0.0f;
+	};
+
+	float signedDistanceToPlane(const Plane& plane, const glm::vec3& pos);
 
 	class Frustum {
 	public:
-		Frustum(const glm::mat4& M);
-		void computeFrustum(const glm::mat4& M);
+		Frustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspec, float near, float far);
+		void computeFrustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspec, float near, float far);
 		bool intersects(const DVZ::Collision::AABB& aabb) const;
 	private:
 

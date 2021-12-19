@@ -6,87 +6,56 @@
 
 using namespace DVZ;
 
-Plane DVZ::normalizePlane(const Plane& plane) {
-	const auto mag = glm::length(glm::vec3(plane));
-	return plane / mag;
+Plane::Plane() : normal(glm::vec3(0, 1, 0)), distance(0.0f) {
+	
 }
 
-HalfSpace DVZ::classifyPoint(const Plane& plane, const glm::vec3& point) {
-	const auto d = glm::dot(glm::vec3(plane), point) + plane.w;
-	if (d < 0) return HalfSpace::NEGATIVE;
-	if (d > 0) return HalfSpace::POSITIVE;
-	return HalfSpace::ON_PLANE;
+Plane::Plane(const glm::vec3& pos, const glm::vec3& normal) 
+	: normal(glm::normalize(normal)), 
+	distance(glm::dot(normal, pos)) {
+
 }
 
-Frustum::Frustum(const glm::mat4& M) {
-	computeFrustum(M);
+float DVZ::signedDistanceToPlane(const Plane& plane, const glm::vec3& pos) {
+	return glm::dot(plane.normal, pos) - plane.distance;
 }
 
-void Frustum::computeFrustum(const glm::mat4& M) {
-	auto& left = planes[LEFT];
-	left.x = M[3][0] + M[0][0];
-	left.y = M[3][1] + M[0][1];
-	left.z = M[3][2] + M[0][2];
-	left.w = M[3][3] + M[0][3];
+Frustum::Frustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspect, float near, float far) {
+	computeFrustum(pos, rot, fov, aspect, near, far);
+}
 
-	auto& right = planes[RIGHT];
-	right.x = M[3][0] - M[0][0];
-	right.y = M[3][1] - M[0][1];
-	right.z = M[3][2] - M[0][2];
-	right.w = M[3][3] - M[0][3];
+void Frustum::computeFrustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspect, float near, float far) {
+	constexpr glm::vec3 FORWARD_DIR{ 0, 0, -1 };
+	constexpr glm::vec3 UP_DIR{ 0, 1, 0 };
+	constexpr glm::vec3 RIGHT_DIR{1, 0, 0};
+	
+	
+	const glm::vec3 forward = glm::normalize(rot * FORWARD_DIR);
+	const glm::vec3 right = glm::normalize(glm::cross(forward, UP_DIR));
+	const glm::vec3 up = glm::normalize(glm::cross(forward, right));
 
-	auto& top = planes[TOP];
-	top.x = M[3][0] - M[1][0];
-	top.y = M[3][1] - M[1][1];
-	top.z = M[3][2] - M[1][2];
-	top.w = M[3][3] - M[1][3];
+	const float halfVSide = far * glm::tan(fov * .5f);
+	const float halfHSide = halfVSide * aspect;
+	const glm::vec3 frontMultFar = far * forward;
 
-	auto& bottom = planes[BOTTOM];
-	bottom.x = M[3][0] + M[1][0];
-	bottom.y = M[3][1] + M[1][1];
-	bottom.z = M[3][2] + M[1][2];
-	bottom.w = M[3][3] + M[1][3];
+	planes[RIGHT] = Plane{ pos, glm::cross(up, frontMultFar + right * halfHSide) };
+	planes[LEFT] = Plane{pos, glm::cross(frontMultFar - right * halfHSide, up)};
+	
+	planes[TOP] = Plane{ pos, glm::cross(right, frontMultFar - up * halfVSide) };
+	planes[BOTTOM] = Plane{pos, glm::cross(frontMultFar + up * halfVSide, right)};
 
-	auto& near = planes[NEAR];
-	near.x = M[3][0] + M[2][0];
-	near.y = M[3][1] + M[2][1];
-	near.z = M[3][2] + M[2][2];
-	near.w = M[3][3] + M[2][3];
-
-	auto& far = planes[FAR];
-	far.x = M[3][0] - M[2][0];
-	far.y = M[3][1] - M[2][1];
-	far.z = M[3][2] - M[2][2];
-	far.w = M[3][3] - M[2][3];
-
-	left = normalizePlane(left);
-	right = normalizePlane(right);
-	top = normalizePlane(top);
-	bottom = normalizePlane(bottom);
-	near = normalizePlane(near);
-	far = normalizePlane(far);
+	planes[NEAR] = Plane{ pos + near * forward, forward };
+	planes[FAR] = Plane{ pos + frontMultFar, -forward};
 }
 
 bool Frustum::intersects(const DVZ::Collision::AABB& aabb) const {
-	std::array<glm::vec3, 8> points;
-	points[0] = glm::vec3{aabb.min.x, aabb.min.y, aabb.min.z};
-	points[1] = glm::vec3{ aabb.min.x, aabb.min.y, aabb.max.z };
-	points[2] = glm::vec3{ aabb.min.x, aabb.max.y, aabb.min.z };
-	points[3] = glm::vec3{ aabb.min.x, aabb.max.y, aabb.max.z };
+	const glm::vec3 center = (aabb.max + aabb.min) * .5f;
+	const glm::vec3 extents = (aabb.max - aabb.min) * .5f;
 
-	points[4] = glm::vec3{ aabb.max.x, aabb.min.y, aabb.min.z };
-	points[5] = glm::vec3{ aabb.max.x, aabb.min.y, aabb.max.z };
-	points[6] = glm::vec3{ aabb.max.x, aabb.max.y, aabb.min.z };
-	points[7] = glm::vec3{ aabb.max.x, aabb.max.y, aabb.max.z };
-
-
-	
-	const auto is_outside = [&](const Plane& plane) {
-		const auto is_negative = [&](const glm::vec3& point) {
-			return classifyPoint(plane, point) == HalfSpace::NEGATIVE;
-		};
-
-		return std::all_of(points.begin(), points.end(), is_negative);
+	const auto isOnOrForwardPlane = [&](const Plane& plane) {
+		const float r = glm::dot(extents, glm::abs(plane.normal));
+		return -r <= DVZ::signedDistanceToPlane(plane, center);
 	};
-	return !std::any_of(planes.begin(), planes.end(), is_outside);
+	
+	return std::all_of(planes.begin(), planes.end(), isOnOrForwardPlane);
 }
