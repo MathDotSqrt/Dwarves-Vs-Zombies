@@ -12,7 +12,7 @@ Plane::Plane() : normal(glm::vec3(0, 1, 0)), distance(0.0f) {
 
 Plane::Plane(const glm::vec3& pos, const glm::vec3& normal) 
 	: normal(glm::normalize(normal)), 
-	distance(glm::dot(normal, pos)) {
+	distance(glm::dot(glm::normalize(normal), pos)) {
 
 }
 
@@ -31,8 +31,8 @@ void Frustum::computeFrustum(const glm::vec3& pos, const glm::quat& rot, float f
 	
 	
 	const glm::vec3 forward = glm::normalize(rot * FORWARD_DIR);
-	const glm::vec3 right = glm::normalize(glm::cross(forward, UP_DIR));
-	const glm::vec3 up = glm::normalize(glm::cross(forward, right));
+	const glm::vec3 right = glm::normalize(rot * RIGHT_DIR);
+	const glm::vec3 up = glm::normalize(rot * UP_DIR);
 
 	const float halfVSide = far * glm::tan(fov * .5f);
 	const float halfHSide = halfVSide * aspect;
