@@ -84,7 +84,10 @@ void Chunk::init(const ChunkCoords& coords) {
 	//for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 	//	for (BlockIndex x = 0; x < CHUNK_X; x++) {
 	//		for (BlockIndex y = 0; y < CHUNK_Y; y++) {
-	//			data->setBlock(x, y, z, BlockType::AIR);
+	//			if (y < 10)
+	//				data->setBlock(x, y, z, ((coords.x + coords.z) % 2 == 0) ? BlockType::DIRT : BlockType::SAND);
+	//			else
+	//				data->setBlock(x, y, z, BlockType::AIR);
 	//		}
 	//	}
 	//}
@@ -172,10 +175,9 @@ WorldCoords DVZ::Voxel::toWorldCoords(const ChunkCoords& chunkCoords, const Bloc
 }
 
 DVZ::Collision::AABB DVZ::Voxel::getChunkAABB(const ChunkCoords& coords) {
-	glm::vec3 min{coords};
-	glm::vec3 delta{ CHUNK_X, CHUNK_Y, CHUNK_Z };
-
-	glm::vec3 max{min + (delta * BLOCK_WIDTH)};
-
+	glm::vec3 size{ CHUNK_X, CHUNK_Y, CHUNK_Z };
+	
+	glm::vec3 min = glm::vec3(coords) * size;
+	glm::vec3 max = min + size;
 	return { min, max };
 }

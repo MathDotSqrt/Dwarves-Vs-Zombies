@@ -41,10 +41,10 @@ void BasicRenderer::prerender(const PerspectiveCamera& camera) {
 	glCullFace(GL_CCW);
 	
 	const auto& window = DVZ::Window::getInstance();
-	P = glm::perspectiveFov<float>((float)camera.fov, (float)window.getWidth(), (float)window.getHeight(), camera.near, camera.far);
+	P = glm::perspectiveFov<float>((float)glm::radians(80.0f), (float)window.getWidth(), (float)window.getHeight(), camera.near, camera.far);
 
 
-	V = glm::lookAt(camera.pos, camera.rot * glm::vec3(0, 0, -1) + camera.pos, glm::vec3(0, -1, 0));
+	V = glm::lookAt(camera.pos, camera.rot * glm::vec3(0, 0, -1) + camera.pos, glm::vec3(0, 1, 0));
 
 	VP = P * V;
 }

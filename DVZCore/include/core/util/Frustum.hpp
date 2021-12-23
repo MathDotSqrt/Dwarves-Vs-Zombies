@@ -15,6 +15,7 @@ namespace DVZ {
 
 	struct Plane {
 		Plane();
+		Plane(float a, float b, float c, float d);
 		Plane(const glm::vec3& pos, const glm::vec3& norm);
 
 		glm::vec3 normal{0,1,0};
@@ -25,18 +26,20 @@ namespace DVZ {
 
 	class Frustum {
 	public:
-		Frustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspec, float near, float far);
-		void computeFrustum(const glm::vec3& pos, const glm::quat& rot, float fov, float aspec, float near, float far);
+		Frustum(const glm::mat4& M);
+		void computeFrustum(const glm::mat4& M);
 		bool intersects(const DVZ::Collision::AABB& aabb) const;
 	private:
+		enum FrustumSection {
+			NEAR = 0,
+			FAR,
+			LEFT,
+			RIGHT,
+			TOP,
+			BOTTOM
+		};
 
 		std::array<Plane, 6> planes;
-		constexpr static size_t LEFT = 0;
-		constexpr static size_t RIGHT = 1;
-		constexpr static size_t TOP = 2;
-		constexpr static size_t BOTTOM = 3;
-		constexpr static size_t NEAR = 4;
-		constexpr static size_t FAR = 5;
 	};
 
 }

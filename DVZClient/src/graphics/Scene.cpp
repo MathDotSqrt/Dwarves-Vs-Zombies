@@ -29,12 +29,14 @@ PerspectiveCamera::PerspectiveCamera(float fov, float width, float height, float
 }
 
 Frustum PerspectiveCamera::computeFrustum() const {
-	glm::mat4 transform = Util::to_transform(glm::vec3(100, 10, 0), glm::quat{1, 0, 0, 0}, glm::vec3(1));
 	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(0, 0, -1) + glm::vec3(0, 100, 0), glm::vec3(0, -1, 0));
 	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(-1, 100, 0), glm::vec3(0, -1, 0));
 	const auto& window = Window::getInstance();
 	float aspect = (float)window.getHeight() / window.getWidth();
-	return Frustum{pos, rot, 80.0f, aspect, .1f, 1000.0f};
+	glm::mat4 P = glm::perspective(glm::radians(110.f), aspect, near, far);
+
+	glm::mat4 V = glm::lookAt(pos, rot * glm::vec3(0, 0, -1) + pos, glm::vec3(0, 1, 0));
+	return Frustum{(P * V)};
 }
 
 InterpolatedInstance::InterpolatedInstance(entt::id_type meshID, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale) {

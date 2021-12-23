@@ -101,6 +101,10 @@ void Engine::initUpdateLoop() {
 	registry.emplace<VoxelCollider>(player, Collision::AABB{ glm::vec3(-.3, -1.5, -.3), glm::vec3(.3, .5, .3) });
 	//registry.emplace<Network>(player);
 
+	entt::entity test = registry.create();
+	registry.emplace<Transformation>(test, glm::vec3(0, 10, 0), glm::quat(1, 0, 0, 0), glm::vec3(.5));
+	registry.emplace<Renderable>(test, "cube"_hs);
+
 	this->addSystem<Systems::InputSystem>();
 	this->addSystem<Systems::ClientPredictionSystem>();
 	this->addSystem<Systems::VoxelSystem>();
