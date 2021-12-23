@@ -13,9 +13,9 @@
 
 namespace DVZ::Voxel {
 	
-	constexpr int CHUNK_SHIFT_X = 2;
+	constexpr int CHUNK_SHIFT_X = 4;
 	constexpr int CHUNK_SHIFT_Y = 7;
-	constexpr int CHUNK_SHIFT_Z = 2;
+	constexpr int CHUNK_SHIFT_Z = 4;
 
 	constexpr int CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
 

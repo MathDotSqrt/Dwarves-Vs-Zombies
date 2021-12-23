@@ -113,7 +113,7 @@ void ChunkRenderDataManager::launchMesherThreads() {
 
 void ChunkRenderDataManager::bufferMeshedChunks() {
 	auto iter = std::partition(futureChunkGeometries.begin(), futureChunkGeometries.end(), [](const std::future<ChunkMesher>& future) {
-		return !future.valid() || future.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
+		return future.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
 	});
 
 	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<ChunkMesher>& future) {

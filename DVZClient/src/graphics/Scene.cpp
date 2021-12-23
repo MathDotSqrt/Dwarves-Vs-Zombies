@@ -33,7 +33,7 @@ Frustum PerspectiveCamera::computeFrustum() const {
 	//glm::mat4 transform = glm::lookAt(glm::vec3(0, 100, 0), glm::vec3(-1, 100, 0), glm::vec3(0, -1, 0));
 	const auto& window = Window::getInstance();
 	float aspect = (float)window.getHeight() / window.getWidth();
-	glm::mat4 P = glm::perspective(glm::radians(110.f), aspect, near, far);
+	glm::mat4 P = glm::perspective(glm::radians(105.f), aspect, near, far);
 
 	glm::mat4 V = glm::lookAt(pos, rot * glm::vec3(0, 0, -1) + pos, glm::vec3(0, 1, 0));
 	return Frustum{(P * V)};
