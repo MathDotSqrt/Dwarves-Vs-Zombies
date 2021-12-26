@@ -5,6 +5,7 @@
 #include "core/voxel/chunk.hpp"
 #include "client/util/util.hpp"
 #include <vector>
+#include <optional>
 #include <unordered_map>
 
 namespace DVZ::Voxel {
@@ -16,6 +17,12 @@ namespace DVZ::Voxel {
 		const Chunk* pz = nullptr;
 		const Chunk* ny = nullptr;
 		const Chunk* py = nullptr;
+	};
+
+	struct VoxelRaycastResult {
+		WorldCoords coords;
+		glm::vec3 normal;
+		BlockType type;
 	};
 
 	class ClientChunkManager {
@@ -48,6 +55,9 @@ namespace DVZ::Voxel {
 
 		BlockType getBlock(const WorldCoords& coords) const;
 		bool setBlock(const WorldCoords& coords, BlockType block);
+
+		std::optional<VoxelRaycastResult> raycast(const glm::vec3& origin, const glm::vec3& dir, float radius) const;
+
 		//const std::vector<Chunk>& getChunks() const;
 	private:
 		void queueChunksToDelete();
@@ -59,7 +69,8 @@ namespace DVZ::Voxel {
 		std::unordered_map<ChunkCoords, Chunk> chunks;
 		std::vector<Chunk> chunksPool;
 
-
+		WorldCoords minBound;
+		WorldCoords maxBound;
 	};
 }
 

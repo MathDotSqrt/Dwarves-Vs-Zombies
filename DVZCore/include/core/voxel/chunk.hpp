@@ -32,6 +32,9 @@ namespace DVZ::Voxel {
 	using ChunkCoords = glm::vec<3, ChunkIndex>;
 	using WorldCoords = glm::vec<3, WorldIndex>;
 
+	constexpr BlockCoords MAX_BLOCK_COORDS{CHUNK_X - 1, CHUNK_Y  - 1, CHUNK_Z - 1};
+	constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
+
 	class ChunkData {
 	public:
 		BlockType getBlock(const BlockCoords& coords) const;

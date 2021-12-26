@@ -3,6 +3,7 @@
 #include "client/engine.hpp"
 #include "client/ClientComponents.hpp"
 #include "client/voxel/ClientChunkManager.hpp"
+#include "client/window.hpp"
 
 #include "core/CoreComponents.hpp"
 
@@ -20,11 +21,22 @@ void VoxelSystem::gameTick(Engine& engine) {
 	Voxel::ClientChunkManager& manager = engine.getChunkManager();
 	
 	entt::entity player = engine.getPlayer();
-	Transformation transform = registry.get<Transformation>(player);
+	const Transformation& transform = registry.get<Transformation>(player);
+	const Direction& dir = registry.get<Direction>(player);
 
 	manager.updatePlayerPosition(transform.pos);
 
 
+	const auto window = Window::getInstance();
 
+	bool is_break = window.isClick(Window::Mouse::LEFT_CLICK);
+	if (is_break) {
+		glm::vec3 origin = transform.pos;
+		glm::vec3 forward = transform.rot * dir.forward;
 
+		const auto result = manager.raycast(origin, forward, 100.0f);
+		if (result) {
+			manager.setBlock(result->coords, Voxel::BlockType::AIR);
+		}
+	}
 }

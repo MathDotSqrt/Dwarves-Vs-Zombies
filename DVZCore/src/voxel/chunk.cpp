@@ -91,7 +91,6 @@ void Chunk::init(const ChunkCoords& coords) {
 	//		}
 	//	}
 	//}
-
 	updateCount = 1;
 
 }
