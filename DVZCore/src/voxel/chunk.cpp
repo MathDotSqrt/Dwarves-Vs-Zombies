@@ -106,19 +106,23 @@ BlockType Chunk::getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
 void Chunk::setBlock(const BlockCoords& coords, BlockType block) {
 	bool isupdate = data->setBlock(coords, block);
 	if (isupdate) {
-		updateCount += 1;
+		incrementUpdateCount();
 	}
 }
 
 void Chunk::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
 	bool isupdate = data->setBlock(bx, by, bz, block);
 	if (isupdate) {
-		updateCount += 1;
+		incrementUpdateCount();
 	}
 }
 
 const ChunkCoords& Chunk::getChunkCoords() const {
 	return coords;
+}
+
+void Chunk::incrementUpdateCount() {
+	updateCount += 1;
 }
 
 int Chunk::getUpdateCount() const {

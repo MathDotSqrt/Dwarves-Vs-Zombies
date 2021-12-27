@@ -60,6 +60,8 @@ namespace DVZ::Voxel {
 
 		//const std::vector<Chunk>& getChunks() const;
 	private:
+		bool setBlockInternal(const WorldCoords& coords, BlockType block);
+
 		void queueChunksToDelete();
 		void queueChunksToGenerate();
 

@@ -64,6 +64,7 @@ namespace DVZ::Voxel {
 		void setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
 
 		const ChunkCoords& getChunkCoords() const;
+		void incrementUpdateCount();
 		int getUpdateCount() const;
 	private:
 		ChunkCoords coords;

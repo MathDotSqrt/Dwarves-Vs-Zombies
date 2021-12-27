@@ -126,13 +126,58 @@ BlockType ClientChunkManager::getBlock(const WorldCoords& coords) const {
 }
 
 bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
+	constexpr WorldCoords X{ 1, 0, 0 };
+	constexpr WorldCoords Y{ 0, 1, 0 };
+	constexpr WorldCoords Z{ 0, 0, 1 };
+	
+	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+	BlockCoords block_coords = Voxel::toBlockCoords(coords);
+
+	const auto update_chunk = [this](const WorldCoords& coords) {
+		ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+		Chunk* chunk = getChunk(chunk_coords);
+		if (chunk) {
+			chunk->incrementUpdateCount();
+		}
+	};
+
+	if (setBlockInternal(coords, block)) {
+		if (block_coords.x == MIN_BLOCK_COORDS.x) {
+			update_chunk(coords - X);
+		}
+		else if (block_coords.x == MAX_BLOCK_COORDS.x) {
+			update_chunk(coords + X);
+		}
+
+		if (block_coords.y == MIN_BLOCK_COORDS.y) {
+			update_chunk(coords - Y);
+		}
+		else if (block_coords.y == MAX_BLOCK_COORDS.y) {
+			update_chunk(coords + Y);
+		}
+
+		if (block_coords.z == MIN_BLOCK_COORDS.z) {
+			update_chunk(coords - Z);
+		}
+		else if (block_coords.z == MAX_BLOCK_COORDS.z) {
+			update_chunk(coords + Z);
+		}
+
+		return true;
+	}
+	return false;
+}
+
+
+bool ClientChunkManager::setBlockInternal(const WorldCoords& coords, BlockType block) {
 	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
 	Chunk* chunk = getChunk(chunk_coords);
 	if (chunk == nullptr) {
 		return false;
 	}
 
-	chunk->setBlock(Voxel::toBlockCoords(coords), block);
+	BlockCoords block_coords = Voxel::toBlockCoords(coords);
+	chunk->setBlock(block_coords, block);
 	return true;
 }
 
