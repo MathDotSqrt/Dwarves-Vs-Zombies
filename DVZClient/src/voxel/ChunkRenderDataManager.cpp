@@ -102,8 +102,24 @@ void ChunkRenderDataManager::cullFarChunks() {
 }
 
 void ChunkRenderDataManager::meshChunks() {
+	meshChunksOnThread();
 	launchMesherThreads();
 	bufferMeshedChunks();
+}
+
+void ChunkRenderDataManager::meshChunksOnThread() {
+	const auto min = std::min(queuedChunks.size(), MIN_CHUNK_MESH);
+
+	std::for_each(queuedChunks.rbegin(), queuedChunks.rbegin() + min, [&](ChunkMesher& mesher) {
+		mesher.meshChunk();
+		if (mesher.getGeometry().size() > 0) {
+			const auto [iter, _] = renderableChunks.emplace(mesher.getCoords(), mesher.getCoords());
+			iter->second.bufferGeometry(mesher.getGeometry());
+		}
+	});
+
+	std::move(queuedChunks.rbegin(), queuedChunks.rbegin() + min, std::back_inserter(mesherPool));
+	queuedChunks.erase(queuedChunks.end() - min, queuedChunks.end());
 }
 
 void ChunkRenderDataManager::launchMesherThreads() {

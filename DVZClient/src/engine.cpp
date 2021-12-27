@@ -120,11 +120,11 @@ void Engine::updateLoop() {
 	initUpdateLoop();
 	spdlog::info("Engine: launched update loop with ticks per second: [{}]", TPS);
 
-	std::chrono::time_point start_time = std::chrono::steady_clock::now();
+	std::chrono::time_point start_time = std::chrono::high_resolution_clock::now();
 	std::chrono::time_point current_time = start_time;
 	duration accum{0};
 	while (!shouldStop) {
-		std::chrono::time_point new_time = std::chrono::steady_clock::now();
+		std::chrono::time_point new_time = std::chrono::high_resolution_clock::now();
 		//TODO: clamp frametime?? https://gafferongames.com/post/fix_your_timestep/
 		duration frame_time = new_time - current_time;
 		current_time = new_time;

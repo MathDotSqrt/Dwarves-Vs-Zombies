@@ -33,10 +33,11 @@ namespace DVZ::Voxel {
 		constexpr static size_t MAX_THREADS = 8;
 #endif
 		constexpr static size_t MAX_CHUNK_MESH_QUEUE = MAX_THREADS * 2;
-
+		constexpr static size_t MIN_CHUNK_MESH = 4;
 
 		void cullFarChunks();
 		void meshChunks();
+		void meshChunksOnThread();
 		void launchMesherThreads();
 		void bufferMeshedChunks();
 		ChunkMesher meshChunkAsync(ChunkMesher &&);
