@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
 
 		while (!window.shouldClose()) {
-			window.update();
+			window.swapBuffers();
 			engine.render();
 			
 		}

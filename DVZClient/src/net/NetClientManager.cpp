@@ -17,7 +17,7 @@ void NetClientManager::update() {
 	static bool sent = false;
 
 	if (netclient->getConnectionState() == ConnectionState::CONNECTION_FAILED) {
-		spdlog::info("Lets try that again");
+		//spdlog::info("Lets try that again");
 		//netclient->connectToServer("54.85.202.121:50150");
 		//netclient->connectToServer("127.0.0.1:50150");
 	}

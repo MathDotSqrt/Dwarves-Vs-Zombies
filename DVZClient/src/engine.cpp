@@ -49,6 +49,8 @@ Engine::~Engine() {
 
 void Engine::update() {
 	auto& window = Window::getInstance();
+	window.update();
+
 	if (window.isDown('1')) {
 		spdlog::set_level(spdlog::level::debug);
 	}

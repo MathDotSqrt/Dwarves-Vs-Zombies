@@ -29,11 +29,12 @@ void VoxelSystem::gameTick(Engine& engine) {
 
 	const auto window = Window::getInstance();
 
-	bool is_break = window.isClick(Window::Mouse::LEFT_CLICK);
-	bool is_place = window.isClick(Window::Mouse::RIGHT_CLICK);
+	bool is_break = window.isPressed(Window::Mouse::LEFT_CLICK);
+	bool is_place = window.isPressed(Window::Mouse::RIGHT_CLICK);
 
 	glm::vec3 origin = transform.pos;
 	glm::vec3 forward = transform.rot * dir.forward;
+
 	if (is_place) {
 		const auto result = manager.raycast(origin, forward, 100.0f);
 		if (result) {

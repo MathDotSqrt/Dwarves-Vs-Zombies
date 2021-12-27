@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <spdlog/spdlog.h>
 using namespace DVZ;
 
 Window* Window::singleton = nullptr;
@@ -90,19 +91,31 @@ Window::Window(int width, int height, std::string title) : width(width), height(
 
     glfwSwapInterval(1);
 
+    std::fill(key_pressed.begin(), key_pressed.end(), false);
+    std::fill(last_key_pressed.begin(), last_key_pressed.end(), false);
+
+}
+
+void Window::swapBuffers() {
+    glfwSwapBuffers(window);
+    glfwPollEvents();
 }
 
 void Window::update() {
     scrollDelta = 0;
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-    std::swap(key_pressed, last_key_pressed);
+    last_key_pressed = key_pressed;
     for (char c = 'a'; c <= 'z'; c++) {
         key_pressed[c] = isDown(c);
     }
+
+    last_left_mouse_pressed = left_mouse_pressed;
+    last_right_mouse_pressed = right_mouse_pressed;
+
+    left_mouse_pressed = isDown(Mouse::LEFT_CLICK);
+    right_mouse_pressed = isDown(Mouse::RIGHT_CLICK);
 }
 
-bool Window::isPressed(char c) {
+bool Window::isPressed(char c) const {
     return key_pressed[c] && !last_key_pressed[c];
 }
 
@@ -124,7 +137,18 @@ bool Window::isDown(Keys key) const {
     }
 }
 
-bool Window::isClick(Mouse mouse) const {
+bool Window::isPressed(Mouse mouse) const {
+    switch (mouse) {
+    case Mouse::LEFT_CLICK:
+        return left_mouse_pressed && !last_left_mouse_pressed;;
+    case Mouse::RIGHT_CLICK:
+        return right_mouse_pressed && !last_right_mouse_pressed;
+    default:
+        return false;
+    }
+}
+
+bool Window::isDown(Mouse mouse) const {
     switch (mouse) {
     case Mouse::LEFT_CLICK:
         return GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);

@@ -126,12 +126,6 @@ BlockType ClientChunkManager::getBlock(const WorldCoords& coords) const {
 }
 
 bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
-	constexpr WorldCoords X{ 1, 0, 0 };
-	constexpr WorldCoords Y{ 0, 1, 0 };
-	constexpr WorldCoords Z{ 0, 0, 1 };
-	
-	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
-	BlockCoords block_coords = Voxel::toBlockCoords(coords);
 
 	const auto update_chunk = [this](const WorldCoords& coords) {
 		ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
@@ -142,6 +136,13 @@ bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
 	};
 
 	if (setBlockInternal(coords, block)) {
+		constexpr WorldCoords X{ 1, 0, 0 };
+		constexpr WorldCoords Y{ 0, 1, 0 };
+		constexpr WorldCoords Z{ 0, 0, 1 };
+
+		ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+		BlockCoords block_coords = Voxel::toBlockCoords(coords);
+
 		if (block_coords.x == MIN_BLOCK_COORDS.x) {
 			update_chunk(coords - X);
 		}

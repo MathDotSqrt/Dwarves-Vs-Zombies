@@ -35,12 +35,16 @@ namespace DVZ {
 		static Window& getInstance();
 		static void destroyInstance();
 
+		void swapBuffers();
 		void update();
 
-		bool isPressed(char c);
+		bool isPressed(char c) const;
+		bool isPressed(Mouse mouse) const;
+
+
 		bool isDown(char c) const;
 		bool isDown(Keys keys) const;
-		bool isClick(Mouse mouse) const;
+		bool isDown(Mouse mouse) const;
 		bool shouldClose() const;
 
 		glm::vec2 getMousePos() const;
@@ -64,7 +68,12 @@ namespace DVZ {
 		bool hasFocus = true;
 		bool isMouseDisabled;
 		std::array<bool, 127> last_key_pressed;
+		bool last_left_mouse_pressed = false;
+		bool last_right_mouse_pressed = false;
+
 		std::array<bool, 127> key_pressed;
+		bool left_mouse_pressed = false;
+		bool right_mouse_pressed = false;
 
 		Window(int width, int height, std::string title);
 
