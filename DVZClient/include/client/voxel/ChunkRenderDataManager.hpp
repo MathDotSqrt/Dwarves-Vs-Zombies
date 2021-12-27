@@ -25,7 +25,7 @@ namespace DVZ::Voxel {
 		void update();
 		void clearRenderData();
 
-		const std::vector<ChunkRenderData>& getRenderableChunks() const;
+		const std::unordered_map<ChunkCoords, ChunkRenderData>& getRenderableChunks() const;
 	private:
 #ifdef DVZ_CLIENT_DEBUG
 		constexpr static size_t MAX_THREADS = 1;
@@ -48,7 +48,8 @@ namespace DVZ::Voxel {
 		std::vector<ChunkMesher> queuedChunks;
 		std::vector<ChunkMesher> mesherPool;
 
-		std::vector<ChunkRenderData> renderableChunks;
+		std::unordered_map<ChunkCoords, ChunkRenderData> renderableChunks;
+
 		std::unordered_map<ChunkCoords, int> chunkMeshUpdateCountMap;
 		std::vector<std::future<ChunkMesher>> futureChunkGeometries;
 	};

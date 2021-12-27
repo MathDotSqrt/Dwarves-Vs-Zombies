@@ -4,6 +4,8 @@
 #include "client/util/util.hpp"
 
 #include "core/util/Frustum.hpp"
+#include "core/util/util.hpp"
+
 
 #include <spdlog/spdlog.h>
 #include <algorithm>
@@ -12,6 +14,8 @@ using namespace DVZ::Voxel;
 
 void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const ClientChunkManager& manager) {
 	thread_local std::vector<ChunkCoords> coords;
+
+	//TODO: move this lock guard down to when it is strictly necessary
 	std::lock_guard<std::mutex> g{queue_mutex};
 
 	playerCoords = manager.getPlayerChunkCoords();
@@ -23,9 +27,6 @@ void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const Cli
 		Collision::AABB aabb = Voxel::getChunkAABB(coord);
 		if (frustum.intersects(aabb)) {
 			coords.push_back(coord);
-		}
-		else {
-			//spdlog::info("failed");
 		}
 	});
 
@@ -49,9 +50,8 @@ void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const Cli
 			}
 			else {
 				queuedChunks.emplace_back();
-
 			}
-			assert(queuedChunks.size() > 0);
+
 			queuedChunks.back().loadChunkData(neighbors);
 			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 		}
@@ -83,16 +83,22 @@ void ChunkRenderDataManager::cullFarChunks() {
 	//queuedChunks.erase(iter, queuedChunks.end());
 
 	//Removing all ChunkRenderData if out of render distance
-	auto iterRender = std::partition(renderableChunks.begin(), renderableChunks.end(), [&](const ChunkRenderData& chunk) {
-		return chunkDistance(chunk.getCoords()) <= (ClientChunkManager::RENDER_RADIUS - 1);
-	});
 
 
+	const auto should_remove = [&](const ChunkCoords& coord) {
+		return chunkDistance(coord) > (ClientChunkManager::RENDER_RADIUS - 1);
+	};
 
-	std::for_each(iterRender, renderableChunks.end(), [&](const ChunkRenderData& data) {
-		chunkMeshUpdateCountMap.erase(data.getCoords());
-	});
-	renderableChunks.erase(iterRender, renderableChunks.end());
+	const auto remove_chunk = [&](const ChunkCoords& coord, const ChunkRenderData& data) {
+		if (should_remove(coord)) {
+			chunkMeshUpdateCountMap.erase(coord);
+			return true;
+		}
+
+		return false;
+	};
+
+	DVZ::remove_if(renderableChunks, remove_chunk);
 }
 
 void ChunkRenderDataManager::meshChunks() {
@@ -121,8 +127,8 @@ void ChunkRenderDataManager::bufferMeshedChunks() {
 		ChunkMesher mesher = future.get();
 
 		if (mesher.getGeometry().size() > 0) {
-			renderableChunks.emplace_back(mesher.getCoords());
-			renderableChunks.back().bufferGeometry(mesher.getGeometry());
+			const auto [iter, _] = renderableChunks.emplace(mesher.getCoords(), mesher.getCoords());
+			iter->second.bufferGeometry(mesher.getGeometry());
 		}
 		mesherPool.emplace_back(std::move(mesher));
 	});
@@ -140,6 +146,6 @@ int ChunkRenderDataManager::chunkDistance(const ChunkCoords& coords) const {
 	return glm::max(delta.x, delta.z);
 }
 
-const std::vector<ChunkRenderData>& ChunkRenderDataManager::getRenderableChunks() const {
+const std::unordered_map<ChunkCoords, ChunkRenderData>& ChunkRenderDataManager::getRenderableChunks() const {
 	return renderableChunks;
 }

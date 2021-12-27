@@ -30,10 +30,18 @@ void VoxelSystem::gameTick(Engine& engine) {
 	const auto window = Window::getInstance();
 
 	bool is_break = window.isClick(Window::Mouse::LEFT_CLICK);
-	if (is_break) {
-		glm::vec3 origin = transform.pos;
-		glm::vec3 forward = transform.rot * dir.forward;
+	bool is_place = window.isClick(Window::Mouse::RIGHT_CLICK);
 
+	glm::vec3 origin = transform.pos;
+	glm::vec3 forward = transform.rot * dir.forward;
+	if (is_place) {
+		const auto result = manager.raycast(origin, forward, 100.0f);
+		if (result) {
+			Voxel::WorldCoords new_coord = result->coords + Voxel::WorldCoords{ result->normal };
+			manager.setBlock(new_coord, Voxel::BlockType::SAND);
+		}
+	}
+	else if (is_break) {
 		const auto result = manager.raycast(origin, forward, 100.0f);
 		if (result) {
 			manager.setBlock(result->coords, Voxel::BlockType::AIR);

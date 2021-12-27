@@ -5,7 +5,6 @@
 #include "client/window.hpp"
 #include "core/util/transform.hpp"
 
-
 #include <GL/glew.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -84,8 +83,7 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 	terrain->bindActiveTexture(0);
 	auto chunk_shader = ss.get("chunk"_hs);
 	chunk_shader->start();
-	for (const Voxel::ChunkRenderData& chunk : chunkManager.getRenderableChunks()) {
-		const Voxel::ChunkCoords& coords = chunk.getCoords();
+	for (const auto& [coords, chunk] : chunkManager.getRenderableChunks()) {
 		const Graphics::VAO& vao = chunk.getVAO();
 		const Graphics::VBO& ebo = chunk.getEBO();
 
