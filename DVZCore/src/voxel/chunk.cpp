@@ -80,6 +80,22 @@ void Chunk::init(const ChunkCoords& coords) {
 			}
 		}
 	}
+	
+	
+	const auto octave_noise = [](const WorldCoords& world_pos){
+		const auto sample_0 = glm::vec2{world_pos.x, world_pos.z} / 100.0f;
+
+		return glm::simplex(sample_0);
+
+	};
+
+	for(BlockIndex z = 0; z < CHUNK_Z; z++){
+		for(BlockIndex x = 0; x < CHUNK_X; x++){
+
+
+
+		}
+	}
 
 	//for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 	//	for (BlockIndex x = 0; x < CHUNK_X; x++) {

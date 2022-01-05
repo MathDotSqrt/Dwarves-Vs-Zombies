@@ -27,7 +27,7 @@ void VoxelSystem::gameTick(Engine& engine) {
 	manager.updatePlayerPosition(transform.pos);
 
 
-	const auto window = Window::getInstance();
+	const auto& window = Window::getInstance();
 
 	bool is_break = window.isPressed(Window::Mouse::LEFT_CLICK);
 	bool is_place = window.isPressed(Window::Mouse::RIGHT_CLICK);

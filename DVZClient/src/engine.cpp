@@ -157,7 +157,7 @@ void Engine::render() {
 	//spdlog::debug("{}", alpha.load());
 	sceneManager->computeInterpolate(alpha.load());
 
-	if (Window::getInstance().isDown('c'))
+	if (Window::getInstance().isPressed('c'))
 		chunkRenderDataManager->clearRenderData();
 	chunkRenderDataManager->update();
 	renderer->render(sceneManager->getInterpolatedScene(), *chunkRenderDataManager);

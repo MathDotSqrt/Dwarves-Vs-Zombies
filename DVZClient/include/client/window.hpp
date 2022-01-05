@@ -5,6 +5,9 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <array>
+#include <bitset>
+#include <mutex>
+#include <vector>
 
 struct GLFWwindow;
 
@@ -35,7 +38,7 @@ namespace DVZ {
 		static Window& getInstance();
 		static void destroyInstance();
 
-		void swapBuffers();
+		void pollWindow();
 		void update();
 
 		bool isPressed(char c) const;
@@ -60,6 +63,16 @@ namespace DVZ {
 		friend void internal_scroll_callback(GLFWwindow*, double, double);
 
 	private:
+
+		struct WindowInputState{
+			std::bitset<127> pressed_keys;
+			std::bitset<127> down_keys;
+			bool pressed_left_mouse = false;
+			bool down_left_mouse = false;
+			bool pressed_right_mouse = false;
+			bool down_right_mouse = false;
+		};
+
 		static Window* singleton;
 		GLFWwindow* window;
 		int width;
@@ -67,13 +80,13 @@ namespace DVZ {
 		float scrollDelta = 0;
 		bool hasFocus = true;
 		bool isMouseDisabled;
-		std::array<bool, 127> last_key_pressed;
-		bool last_left_mouse_pressed = false;
-		bool last_right_mouse_pressed = false;
+		WindowInputState gameloop_input_state;
 
-		std::array<bool, 127> key_pressed;
-		bool left_mouse_pressed = false;
-		bool right_mouse_pressed = false;
+		WindowInputState prev_renderloop_input_state;
+		WindowInputState renderloop_input_state;
+		std::vector<WindowInputState> input_buffer;
+		std::mutex input_buffer_mutex;
+		std::thread::id render_thread_id = std::this_thread::get_id();
 
 		Window(int width, int height, std::string title);
 

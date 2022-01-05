@@ -90,73 +90,111 @@ Window::Window(int width, int height, std::string title) : width(width), height(
     isMouseDisabled = true;
 
     glfwSwapInterval(1);
-
-    std::fill(key_pressed.begin(), key_pressed.end(), false);
-    std::fill(last_key_pressed.begin(), last_key_pressed.end(), false);
-
 }
 
-void Window::swapBuffers() {
-    glfwSwapBuffers(window);
+void Window::pollWindow() {
+    prev_renderloop_input_state = renderloop_input_state;
+
+	glfwSwapBuffers(window);
     glfwPollEvents();
+	
+
+	renderloop_input_state = WindowInputState{};
+
+    for (char c = 'a'; c <= 'z'; c++) {
+        renderloop_input_state.down_keys[c] = isDown(c);
+    }
+
+	renderloop_input_state.down_keys[' '] = isDown(' ');
+
+    renderloop_input_state.down_left_mouse = isDown(Mouse::LEFT_CLICK);
+    renderloop_input_state.down_right_mouse = isDown(Mouse::RIGHT_CLICK);
+
+	const auto& last_input = prev_renderloop_input_state;
+	renderloop_input_state.pressed_keys = renderloop_input_state.down_keys & ~(last_input.down_keys);
+	renderloop_input_state.pressed_left_mouse = renderloop_input_state.down_left_mouse & !(last_input.down_left_mouse);
+	renderloop_input_state.pressed_right_mouse = renderloop_input_state.down_right_mouse & !(last_input.down_right_mouse);
+
+	std::lock_guard<std::mutex> g{input_buffer_mutex};
+	input_buffer.push_back(renderloop_input_state);
 }
 
 void Window::update() {
     scrollDelta = 0;
-    last_key_pressed = key_pressed;
-    for (char c = 'a'; c <= 'z'; c++) {
-        key_pressed[c] = isDown(c);
-    }
+	gameloop_input_state = WindowInputState{};
 
-    last_left_mouse_pressed = left_mouse_pressed;
-    last_right_mouse_pressed = right_mouse_pressed;
+	std::lock_guard<std::mutex> g{input_buffer_mutex};
 
-    left_mouse_pressed = isDown(Mouse::LEFT_CLICK);
-    right_mouse_pressed = isDown(Mouse::RIGHT_CLICK);
+	for(const auto& buffered_state : input_buffer){
+		gameloop_input_state.down_keys |= buffered_state.down_keys;
+		gameloop_input_state.pressed_keys |= buffered_state.pressed_keys;
+		gameloop_input_state.down_left_mouse |= buffered_state.down_left_mouse;
+		gameloop_input_state.pressed_left_mouse |= buffered_state.pressed_left_mouse;
+		gameloop_input_state.down_right_mouse |= buffered_state.down_right_mouse;
+		gameloop_input_state.pressed_right_mouse |= buffered_state.pressed_right_mouse;
+	}
+	input_buffer.clear();
 }
 
 bool Window::isPressed(char c) const {
-    return key_pressed[c] && !last_key_pressed[c];
+	thread_local const auto thread_id = std::this_thread::get_id();
+	if(thread_id == render_thread_id){
+		return renderloop_input_state.pressed_keys[c];
+	}
+	return gameloop_input_state.pressed_keys[c];
 }
 
 bool Window::isDown(char c) const {
-    return GLFW_PRESS == glfwGetKey(window, toupper(c));
+	thread_local const auto thread_id = std::this_thread::get_id();
+	if(thread_id == render_thread_id){
+		return GLFW_PRESS == glfwGetKey(window, toupper(c));
+	}
+
+	return gameloop_input_state.down_keys[c];
 }
 
 bool Window::isDown(Keys key) const {
-
-    switch (key) {
-    case Keys::LEFT_SHIFT:
-        return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
-    case Keys::LEFT_CTRL:
-        return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
-    case Keys::ESC:
-        return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE);
-    default:
-        return false;
-    }
+	thread_local const auto thread_id = std::this_thread::get_id();
+	
+	//if(thread_id == render_thread_id){
+		switch (key) {
+		case Keys::LEFT_SHIFT:
+			return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
+		case Keys::LEFT_CTRL:
+			return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+		case Keys::ESC:
+			return GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE);
+		default:
+			return false;
+		}
+	//}
+	//return false;
 }
 
 bool Window::isPressed(Mouse mouse) const {
     switch (mouse) {
     case Mouse::LEFT_CLICK:
-        return left_mouse_pressed && !last_left_mouse_pressed;;
+		return gameloop_input_state.pressed_right_mouse;
     case Mouse::RIGHT_CLICK:
-        return right_mouse_pressed && !last_right_mouse_pressed;
+		return gameloop_input_state.pressed_left_mouse;
     default:
         return false;
     }
 }
 
 bool Window::isDown(Mouse mouse) const {
-    switch (mouse) {
-    case Mouse::LEFT_CLICK:
-        return GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-    case Mouse::RIGHT_CLICK:
-        return GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
-    default:
-        return false;
-    }
+	thread_local const auto thread_id = std::this_thread::get_id();
+	if(thread_id == render_thread_id){
+		switch (mouse) {
+		case Mouse::LEFT_CLICK:
+			return GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		case Mouse::RIGHT_CLICK:
+			return GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+		default:
+			return false;
+		}
+	}
+	return false;
 }
 
 bool Window::shouldClose() const {
@@ -185,3 +223,4 @@ int Window::getHeight() const {
     glfwGetWindowSize(window, &width, &height);
     return height;
 }
+

@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
 
 		while (!window.shouldClose()) {
-			window.swapBuffers();
+			window.pollWindow();
 			engine.render();
 			
 		}

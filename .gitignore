@@ -351,3 +351,6 @@ MigrationBackup/
 
 # Ignore cmake out folder
 out/
+
+# CMake generated compile commands for coc-clangd
+compile_commands.json
