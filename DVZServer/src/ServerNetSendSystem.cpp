@@ -2,6 +2,7 @@
 #include "server/Engine.hpp"
 #include "server/net/EntitySnapshot.hpp"
 #include "server/net/NetServerManager.hpp"
+#include "server/voxel/ServerChunkManager.hpp"
 
 #include "server/ServerComponents.hpp"
 
@@ -44,5 +45,7 @@ void ServerNetSendSystem::tick(Engine& engine) {
 		netManager.sendMessage(deltaPacket, connection, false);
 	}
 	//TODO: after detecting user input, always send back the player position
+	
+	const auto& chunkManager = engine.getChunkManager();
 
 }

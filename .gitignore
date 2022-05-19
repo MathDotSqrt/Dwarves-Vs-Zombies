@@ -354,3 +354,6 @@ out/
 
 # CMake generated compile commands for coc-clangd
 compile_commands.json
+
+# Ignore CTags output
+tags

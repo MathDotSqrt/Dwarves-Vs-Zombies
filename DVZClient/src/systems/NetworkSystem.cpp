@@ -11,6 +11,14 @@
 
 using namespace DVZ::Systems;
 
+
+template<>
+struct fmt::formatter<entt::entity> : formatter<size_t>{
+	auto format(entt::entity c, format_context& ctx){
+		return formatter<size_t>::format((size_t)c, ctx);
+	}
+};
+
 NetworkSystem::NetworkSystem() {
 	
 }
@@ -101,7 +109,7 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 void NetworkSystem::onAssignNetID(Engine& engine, std::string_view data) {
 	Net::CB_AssignNetIDPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
-		spdlog::info("Assigned Net ID: [{}]", packet.id);
+		spdlog::info("Assigned Net ID: [{}]", (size_t)packet.id);
 		auto& manager = engine.getNetManager();
 		entt::entity internal_id = engine.getPlayer();
 		manager.addServerIDMap(packet.id, internal_id);

@@ -4,7 +4,6 @@
 
 #include "core/common.hpp"
 #include "core/net/ConnectionState.hpp"
-#include "core/net/Packet.hpp"
 
 #include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
 #include <string_view>

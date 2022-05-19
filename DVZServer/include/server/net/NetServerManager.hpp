@@ -5,6 +5,8 @@
 #include "server/net/ServerSocket.hpp"
 #include "server/net/EntitySnapshot.hpp"
 
+#include "core/net/Packet.hpp"
+
 #include <steam/steamnetworkingtypes.h>
 #include <memory>
 #include <string_view>

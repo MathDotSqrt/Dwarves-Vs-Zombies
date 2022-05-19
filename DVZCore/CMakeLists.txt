@@ -22,6 +22,7 @@ set(HEADER_FILES
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"
+	"./include/core/voxel/voxel_compression.hpp"
 )
 
 set(SOURCE_FILES 
@@ -38,6 +39,7 @@ set(SOURCE_FILES
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"
 	"./src/voxel/VoxelCollision.cpp"
+	"./src/voxel/voxel_compression.cpp"
 )
 
 add_library(DVZCore ${HEADER_FILES} ${SOURCE_FILES})

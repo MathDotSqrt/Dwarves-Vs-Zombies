@@ -4,8 +4,10 @@
 
 #include "core/common.hpp"
 #include "core/time.hpp"
+#include "core/util/serialization.hpp"
 
 #include "core/net/EntitySnapshotDelta.hpp"
+#include "core/voxel/chunk.hpp"
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -17,6 +19,7 @@
 
 namespace DVZ::Net {
 
+	//TODO: make seperate enum for clientbound vs serverbound packets
 	enum class PacketID : u8 {
 		SB_ClientJoin,				//Server Bound:	sends init info to the server
 		SB_ClientDisconnected,		//Server Bound: Not a real packet, just sent to net recv system when client connection dies
@@ -28,9 +31,10 @@ namespace DVZ::Net {
 		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
 		CB_SpawnPosition,			//Client Bound: specifies spawn position of client player
 		CB_EntityPositionVel,		//Client Bound: position vel of entities/players 
-		CB_EntitySnapshotDelta,
+		CB_EntitySnapshotDelta,     //Client Bound: sends game state delta from last ack number
 		CB_PlayerPositionAck,		//Client Bound: auth position ack back to client for reconsiliation
-		CB_PlayerJoin				//Client Bound: notifies client a new player joined
+		CB_PlayerJoin,				//Client Bound: notifies client a new player joined
+		CB_ChunkData 				//Client Bound: compressed chunk data
 
 
 	};
@@ -161,37 +165,32 @@ namespace DVZ::Net {
 		}
 	};
 
+	struct CB_ChunkData{
+		constexpr static PacketID packet = PacketID::CB_ChunkData;
+
+		Voxel::ChunkCoords coords;
+		std::vector<Voxel::BlockType> compressed;
+
+		template<class Archive>
+		void serialize(Archive& ar){
+			ar(coords.x, coords.y, coords.z, compressed);
+		}
+	};
+
 	template<typename T>
 	PacketID getPacketID() {
 		return T::packet;
 	}
-
-	std::vector<char> serializePacketData(const SB_ClientJoinPacket& data);
-	std::vector<char> serializePacketData(const SB_PlayerPositionRotPacket& data);
-	std::vector<char> serializePacketData(const SB_PlayerInput& data);
-	std::vector<char> serializePacketData(const SB_AckEntitySnapshoDelta& data);
-
-	std::vector<char> serializePacketData(const CB_AssignNetIDPacket& data);
-	std::vector<char> serializePacketData(const CB_SyncSimulationClockPacket& data);
-	std::vector<char> serializePacketData(const CB_SpawnPositionPacket& data);
-	std::vector<char> serializePacketData(const CB_EntityPositionRotPacket& data);
-	std::vector<char> serializePacketData(const CB_EntitySnapshotDeltaPacket& data);
-	std::vector<char> serializePacketData(const CB_PlayerPositionAckPacket&data);
-	std::vector<char> serializePacketData(const CB_PlayerJoinPacket& data);
 	
-	bool deserializePacketData(std::string_view, SB_ClientJoinPacket& out);
-	bool deserializePacketData(std::string_view, SB_PlayerPositionRotPacket& out);
-	bool deserializePacketData(std::string_view, SB_PlayerInput& out);
-	bool deserializePacketData(std::string_view, SB_AckEntitySnapshoDelta& out);
+	template<typename Packet>
+	std::vector<char> serializePacketData(const Packet& data) {
+		return serialize<>(data.packet, data);
+	}
 
-	bool deserializePacketData(std::string_view, CB_AssignNetIDPacket& out);
-	bool deserializePacketData(std::string_view, CB_SyncSimulationClockPacket& out);
-	bool deserializePacketData(std::string_view, CB_SpawnPositionPacket& out);
-	bool deserializePacketData(std::string_view, CB_EntityPositionRotPacket& out);
-	bool deserializePacketData(std::string_view, CB_EntitySnapshotDeltaPacket& out);
-	bool deserializePacketData(std::string_view, CB_PlayerPositionAckPacket& out);
-	bool deserializePacketData(std::string_view, CB_PlayerJoinPacket& out);
-	
+	template<typename Packet>
+	bool deserializePacketData(std::string_view sv, Packet& out) {
+		return deserialize<>(sv, out);
+	}
 }
 
 #endif
