@@ -10,6 +10,7 @@
 #include "core/net/Packet.hpp"
 
 #include <entt/entt.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace DVZ;
 

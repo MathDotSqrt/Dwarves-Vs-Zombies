@@ -57,6 +57,7 @@ bool NetServerManager::setEntityInputTime(entt::entity entity, simulation_durati
 		//	updated = true;
 		//	return true;
 		//}
+		last_client_time = std::max(last_client_time, client_time);
 		updated = true;
 		return true;
 	}

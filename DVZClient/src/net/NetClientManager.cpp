@@ -65,7 +65,7 @@ bool NetClientManager::ackRequest(const glm::vec3& auth_pos, simulation_duration
 	const auto iter = std::find_if(unackedRequestBuffer.begin(), unackedRequestBuffer.end(), [&](const Request& request) {
 		return request.client_time == client_request_time;
 	});
-	
+
 	if (iter != unackedRequestBuffer.end()) {
 		const glm::vec3& predicted_pos = iter->transform.pos;
 		bool is_prediction_correct = glm::distance2(predicted_pos, auth_pos) < .01f;
