@@ -15,6 +15,7 @@ ClientChunkManager::ClientChunkManager() {
 		}
 	}
 
+
 	ChunkCoords minChunk{-RENDER_RADIUS, 0, -RENDER_RADIUS};
 	ChunkCoords maxChunk{ RENDER_RADIUS, 0, RENDER_RADIUS };
 	

@@ -6,26 +6,30 @@
 
 using namespace DVZ::Voxel;
 
+ChunkData::ChunkData() : block_data(std::make_unique<std::array<BlockType, CHUNK_SIZE>>()) {
+
+}
+
 BlockType ChunkData::getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
-	return block_data[toIndex(bx, by, bz)];
+	return (*block_data)[toIndex(bx, by, bz)];
 }
 
 BlockType ChunkData::getBlock(const BlockCoords& coords) const {
-	return block_data[toIndex(coords)];
+	return (*block_data)[toIndex(coords)];
 }
 
 bool ChunkData::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
 	auto index = toIndex(bx, by, bz);
-	BlockType prev = block_data[index];
-	block_data[index] = block;
+	BlockType prev = (*block_data)[index];
+	(*block_data)[index] = block;
 
 	return block != prev;
 }
 
 bool ChunkData::setBlock(const BlockCoords& coords, BlockType block) {
 	auto index = toIndex(coords);
-	BlockType prev = block_data[index];
-	block_data[index] = block;
+	BlockType prev = (*block_data)[index];
+	(*block_data)[index] = block;
 
 	return block != prev;
 }
@@ -43,11 +47,36 @@ int ChunkData::toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
 	return index;
 }
 
+std::vector<u8> ChunkData::compressData() const {
+	std::vector<u8> compressed_data;
+
+	BlockType last_block = block_data->front();
+	u8 length = 0;
+	for (const BlockType& data : *block_data) {
+		if (data == last_block && length < std::numeric_limits<u8>::max()) {
+			++length;
+		}
+		else{
+			u8 lo = static_cast<u8>(length);
+			u8 hi = static_cast<u8>(length >> 8);
+
+			compressed_data.push_back(static_cast<u8>(lo));
+			//compressed_data.push_back(static_cast<u8>(hi));
+			compressed_data.push_back(static_cast<u8>(data));
+
+			last_block = data;
+			length = 1;
+		}
+	}
+
+	return compressed_data;
+}
+
 Chunk::Chunk(const ChunkCoords& coords) : Chunk(coords.x, coords.y, coords.z) {
 	
 }
 
-Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : data(std::make_unique<ChunkData>()){
+Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) {
 	init(ChunkCoords{ cx, cy, cz });
 }
 
@@ -66,16 +95,16 @@ void Chunk::init(const ChunkCoords& coords) {
 
 			for (BlockIndex y = 0; y < CHUNK_Y; y++) {
 				if (y < 3) {
-					data->setBlock(x, y, z, BlockType::SAND);
+					data.setBlock(x, y, z, BlockType::SAND);
 				}
 				else if (y < (worldHeight - 1)) {
-					data->setBlock(x, y, z, BlockType::DIRT);
+					data.setBlock(x, y, z, BlockType::DIRT);
 				}
 				else if (y == (worldHeight - 1)) {
-					data->setBlock(x, y, z, BlockType::GRASS);
+					data.setBlock(x, y, z, BlockType::GRASS);
 				}
 				else {
-					data->setBlock(x, y, z, BlockType::AIR);
+					data.setBlock(x, y, z, BlockType::AIR);
 				}
 			}
 		}
@@ -112,22 +141,22 @@ void Chunk::init(const ChunkCoords& coords) {
 }
 
 BlockType Chunk::getBlock(const BlockCoords& coords) const {
-	return data->getBlock(coords);
+	return data.getBlock(coords);
 }
 
 BlockType Chunk::getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const {
-	return data->getBlock(bx, by, bz);
+	return data.getBlock(bx, by, bz);
 }
 
 void Chunk::setBlock(const BlockCoords& coords, BlockType block) {
-	bool isupdate = data->setBlock(coords, block);
+	bool isupdate = data.setBlock(coords, block);
 	if (isupdate) {
 		incrementUpdateCount();
 	}
 }
 
 void Chunk::setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block) {
-	bool isupdate = data->setBlock(bx, by, bz, block);
+	bool isupdate = data.setBlock(bx, by, bz, block);
 	if (isupdate) {
 		incrementUpdateCount();
 	}
@@ -143,6 +172,11 @@ void Chunk::incrementUpdateCount() {
 
 int Chunk::getUpdateCount() const {
 	return updateCount;
+}
+
+CompressedChunk Chunk::compressChunk() const {
+	CompressedChunk compressed{coords, data.compressData()};
+	return compressed;
 }
 
 BlockIndex DVZ::Voxel::toBlockXIndex(WorldIndex index) {

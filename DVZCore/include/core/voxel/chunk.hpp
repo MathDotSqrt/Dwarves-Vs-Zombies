@@ -9,6 +9,7 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
 
 namespace DVZ::Voxel {
@@ -35,18 +36,26 @@ namespace DVZ::Voxel {
 	constexpr BlockCoords MAX_BLOCK_COORDS{CHUNK_X - 1, CHUNK_Y  - 1, CHUNK_Z - 1};
 	constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
 
+	struct CompressedChunk {
+		ChunkCoords coords;
+		std::vector<u8> data;
+	};
+
 	class ChunkData {
 	public:
+		ChunkData();
 		BlockType getBlock(const BlockCoords& coords) const;
 		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
 
 		bool setBlock(const BlockCoords& coords, BlockType block);
 		bool setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
+
+		std::vector<u8> compressData() const;
 	private:
 		int toIndex(const BlockCoords& coords) const;
 		int toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
 
-		std::array<BlockType, CHUNK_SIZE> block_data;
+		std::unique_ptr<std::array<BlockType, CHUNK_SIZE>> block_data;
 
 	};
 	
@@ -66,11 +75,13 @@ namespace DVZ::Voxel {
 		const ChunkCoords& getChunkCoords() const;
 		void incrementUpdateCount();
 		int getUpdateCount() const;
+
+		CompressedChunk compressChunk() const;
 	private:
 		ChunkCoords coords;
 		int updateCount = 0;
 
-		std::unique_ptr<ChunkData> data;
+		ChunkData data;
 	};
 
 	BlockIndex toBlockXIndex(WorldIndex index);
