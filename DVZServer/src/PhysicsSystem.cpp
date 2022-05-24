@@ -19,13 +19,17 @@ void PhysicsSystem::init(Engine& engine) {
 void PhysicsSystem::tick(Engine& engine) {
 	auto& registry = engine.getRegistry();
 	
+	/* User Input */
 	auto movement_view = registry.view<MovementState, Velocity, Transformation, Direction>();
 	movement_view.each([](MovementState& state, Velocity& vel, Transformation& transform, Direction& dir) {
 		vel = computePlayerVelocity(state, transform.rot, dir);
+		state.forward = 0;
+		state.strafe = 0;
+		state.fly = 0;
 	});
 
-	Voxel::ServerChunkManager& manager = engine.getChunkManager();
-	auto getBlockFunc = [&manager](const Voxel::WorldCoords& coords) -> Voxel::BlockType {
+	auto getBlockFunc = [&](const Voxel::WorldCoords& coords) -> Voxel::BlockType {
+		Voxel::ServerChunkManager& manager = engine.getChunkManager();
 		return manager.getBlock(coords);
 	};
 
@@ -55,9 +59,4 @@ void PhysicsSystem::tick(Engine& engine) {
 		transform.pos = transform.pos + vel;
 	});
 
-	movement_view.each([](MovementState& state, Velocity& vel, Transformation& transform, Direction& dir) {
-		state.forward = 0;
-		state.strafe = 0;
-		state.fly = 0;
-	});
 }

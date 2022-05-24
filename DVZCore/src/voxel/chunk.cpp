@@ -175,7 +175,7 @@ int Chunk::getUpdateCount() const {
 }
 
 CompressedChunk Chunk::compressChunk() const {
-	CompressedChunk compressed{coords, data.compressData()};
+	CompressedChunk compressed{coords, getUpdateCount(), data.compressData()};
 	return compressed;
 }
 

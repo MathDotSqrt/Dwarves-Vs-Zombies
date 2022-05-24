@@ -27,6 +27,7 @@ namespace DVZ::Systems {
 		void onPlayerPositionAck(Engine& engine, std::string_view data);
 		void onPlayerJoin(Engine& engine, std::string_view data);
 		void onSpawnPosition(Engine& engine, std::string_view data);
+		void onChunkData(Engine& engine, std::string_view data);
 
 		//std::unique_ptr<Net::ClientSocket> netclient = nullptr;
 	};

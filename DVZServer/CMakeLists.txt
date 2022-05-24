@@ -4,6 +4,7 @@ set(HEADER_FILES
 	"./include/server/ServerNetSendSystem.hpp"
 	"./include/server/PhysicsSystem.hpp"
 	"./include/server/ServerComponents.hpp"
+	"./include/server/ServerVoxelSystem.hpp"
 
 	"./include/server/net/EntitySnapshot.hpp"
 	"./include/server/net/NetServerManager.hpp"
@@ -19,6 +20,7 @@ set(SOURCE_FILES
 	"./src/ServerNetRecvSystem.cpp"
 	"./src/ServerNetSendSystem.cpp"
 	"./src/PhysicsSystem.cpp"
+	"./src/ServerVoxelSystem.cpp"
 
 	"./src/net/EntitySnapshot.cpp"
 	"./src/net/NetServerManager.cpp"

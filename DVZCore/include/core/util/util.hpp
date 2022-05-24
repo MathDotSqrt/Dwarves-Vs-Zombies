@@ -1,8 +1,9 @@
 #ifndef DVZ_UTIL_GENERAL_HPP
 #define DVZ_UTIL_GENERAL_HPP
 
-
+#include <algorithm>
 #include <unordered_map>
+#include <vector>
 
 namespace DVZ {
 	template<typename KEY, typename VALUE, typename FUNC>
@@ -17,6 +18,12 @@ namespace DVZ {
 				++iter;
 			}
 		}
+	}
+
+	template<typename KEY, typename VALUE>
+	bool contains(const std::unordered_map<KEY, VALUE>& map, const KEY& key) {
+		const auto iter = map.find(key);
+		return iter != map.end();
 	}
 }
 

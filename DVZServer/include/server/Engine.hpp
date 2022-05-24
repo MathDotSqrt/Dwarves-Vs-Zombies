@@ -23,6 +23,8 @@ namespace DVZ {
 	class ServerNetRecvSystem;
 	class ServerNetSendSystem;
 	class PhysicsSystem;
+	class ServerVoxelSystem;
+
 	using duration = std::chrono::duration<float>;
 
 	class Engine {
@@ -49,6 +51,7 @@ namespace DVZ {
 		std::unique_ptr<ServerNetRecvSystem> netRecvSystem;
 		std::unique_ptr<ServerNetSendSystem> netSendSystem;
 		std::unique_ptr<PhysicsSystem> physicsSystem;
+		std::unique_ptr<ServerVoxelSystem> voxelSystem;
 
 		std::unique_ptr<Net::NetServerManager> netManager;
 		std::unique_ptr<Voxel::ServerChunkManager> chunkManager;

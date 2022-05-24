@@ -101,6 +101,9 @@ void NetworkSystem::onMessage(Engine& engine, std::string_view data) {
 	case PacketID::CB_SpawnPosition:
 		onSpawnPosition(engine, data);
 		break;
+	case PacketID::CB_ChunkData:
+		onChunkData(engine, data);
+		break;
 	default:
 		break;
 	}
@@ -247,5 +250,12 @@ void NetworkSystem::onSpawnPosition(Engine& engine, std::string_view data) {
 		entt::entity player = engine.getPlayer();
 		auto& transform = registry.get<Transformation>(player);
 		transform.pos = packet.pos;
+	}
+}
+
+void NetworkSystem::onChunkData(Engine& engine, std::string_view data) {
+	Net::CB_ChunkData packet;
+	if (Net::deserializePacketData(data, packet)) {
+		const auto data = packet.compressed;
 	}
 }

@@ -2,6 +2,7 @@
 #include "server/ServerNetRecvSystem.hpp"
 #include "server/ServerNetSendSystem.hpp"
 #include "server/PhysicsSystem.hpp"
+#include "server/ServerVoxelSystem.hpp"
 #include "server/net/NetServerManager.hpp"
 #include "server/net/ServerSocket.hpp"
 #include "server/voxel/ServerChunkManager.hpp"
@@ -19,6 +20,7 @@ Engine::Engine() :
 	netRecvSystem(std::make_unique<DVZ::ServerNetRecvSystem>()),
 	netSendSystem(std::make_unique<DVZ::ServerNetSendSystem>()),
 	physicsSystem(std::make_unique<DVZ::PhysicsSystem>()),
+	voxelSystem(std::make_unique<DVZ::ServerVoxelSystem>()),
 	updateThread(&Engine::updateLoop, this) {
 
 }
@@ -31,12 +33,14 @@ Engine::~Engine() {
 void Engine::init() {
 	netRecvSystem->init(*this);
 	physicsSystem->init(*this);
+	voxelSystem->init(*this);
 	netSendSystem->init(*this);
 }
 
 void Engine::tick() {
 	netRecvSystem->tick(*this);
 	physicsSystem->tick(*this);
+	voxelSystem->tick(*this);
 	netSendSystem->tick(*this);
 }
 

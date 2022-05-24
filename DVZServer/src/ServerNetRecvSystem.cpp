@@ -2,6 +2,7 @@
 #include "server/net/NetServerManager.hpp"
 #include "server/Engine.hpp"
 #include "server/ServerComponents.hpp"
+#include "server/voxel/ServerChunkManager.hpp"
 
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
@@ -75,10 +76,9 @@ void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HS
 		spdlog::info("Welcome: {}", packet.name);
 		auto& registry = engine.getRegistry();
 		auto& netManager = engine.getNetManager();
-		
-		entt::entity player = registry.create();
+		auto& chunkManager = engine.getChunkManager();
 
-		netManager.addEntityConnectionMapping(player, conn);
+		entt::entity player = registry.create();
 
 		glm::vec3 spawn_pos{0, 100, 0};
 		registry.emplace<Transformation>(player, spawn_pos);
@@ -89,6 +89,9 @@ void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HS
 		registry.emplace<Network>(player);
 		registry.emplace<NetPlayer>(player);
 
+		chunkManager.addPlayer(player, spawn_pos);
+
+		netManager.addEntityConnectionMapping(player, conn);
 		netManager.sendMessage(Net::CB_AssignNetIDPacket{player}, conn, true);
 		netManager.sendMessage(Net::CB_SpawnPositionPacket{spawn_pos}, conn, true);
 	}
@@ -98,10 +101,13 @@ void ServerNetRecvSystem::onClientDisconnected(Engine& engine, std::string_view,
 	spdlog::info("Good Bye!");
 	auto& registry = engine.getRegistry();
 	auto& netManager = engine.getNetManager();
+	auto& chunkManager = engine.getChunkManager();
 
 	entt::entity player = netManager.getEntity(conn);
-	registry.destroy(player);
+
 	netManager.removeEntityConnectionMapping(conn);
+	chunkManager.removePlayer(player);
+	registry.destroy(player);
 }
 
 void ServerNetRecvSystem::onPlayerPositionVel(Engine& engine, std::string_view data, HSteamNetConnection conn) {
@@ -127,6 +133,7 @@ void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, H
 			state.strafe = packet.strafe;
 			state.fly = packet.fly;
 		}
+
 	}
 }
 

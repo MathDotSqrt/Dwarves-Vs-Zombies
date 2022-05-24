@@ -38,6 +38,7 @@ namespace DVZ::Voxel {
 
 	struct CompressedChunk {
 		ChunkCoords coords;
+		int updateCount = 0;
 		std::vector<u8> data;
 	};
 

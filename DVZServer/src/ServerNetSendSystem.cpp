@@ -25,12 +25,14 @@ void ServerNetSendSystem::init(Engine& engine) {
 void ServerNetSendSystem::tick(Engine& engine) {
 	auto& registry = engine.getRegistry();
 	auto& netManager = engine.getNetManager();
+	auto& chunkManager = engine.getChunkManager();
 	
 	netManager.setEntitySnapshot(std::make_shared<Net::EntitySnapshot>(engine));
 
 	auto view = registry.view<NetPlayer, Transformation>();
 
 	for (entt::entity player : view) {
+
 		HSteamNetConnection connection = netManager.getConnectionHandle(player);
 
 		auto ack_number = netManager.shouldAckEntityInput(player);
@@ -44,9 +46,22 @@ void ServerNetSendSystem::tick(Engine& engine) {
 		deltaPacket.delta = netManager.getClientSnapshotDelta(connection);
 		deltaPacket.server_time = engine.getTimeElapsed();
 		netManager.sendMessage(deltaPacket, connection, false);
+
+
+
+		auto& netPlayer = view.get<NetPlayer>(player);
+		const Voxel::ChunkCoords& coords = netPlayer.unackedChunks.back();
+		const Voxel::Chunk* chunk = chunkManager.getChunk(coords);
+		if (chunk) {
+			Net::CB_ChunkData data;
+			data.compressed = chunk->compressChunk();
+			netManager.sendMessage(data, connection, true);
+		}
+		netPlayer.unackedChunks.pop_back();
+
+
 	}
 	//TODO: after detecting user input, always send back the player position
 	
-	const auto& chunkManager = engine.getChunkManager();
 
 }

@@ -168,12 +168,11 @@ namespace DVZ::Net {
 	struct CB_ChunkData{
 		constexpr static PacketID packet = PacketID::CB_ChunkData;
 
-		Voxel::ChunkCoords coords;
-		std::vector<Voxel::BlockType> compressed;
+		Voxel::CompressedChunk compressed;
 
 		template<class Archive>
 		void serialize(Archive& ar){
-			ar(coords.x, coords.y, coords.z, compressed);
+			ar(compressed.coords.x, compressed.coords.y, compressed.coords.z, compressed.data);
 		}
 	};
 
