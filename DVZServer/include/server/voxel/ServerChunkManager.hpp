@@ -34,6 +34,9 @@ namespace DVZ::Voxel {
 		void updatePlayerNetChunkState(NetChunkState& state);
 
 		std::unordered_map<ChunkCoords, Chunk> chunks;
+
+		std::unordered_map<ChunkCoords, CompressedChunk> compressedChunksCache;
+
 		std::unordered_map<entt::entity, NetChunkState> playerChunks;
 	};
 }

@@ -1,9 +1,12 @@
 #include "server/voxel/ServerChunkManager.hpp"
 
 #include "core/util/util.hpp"
+#include "core/util/SpiralIter.hpp"
+
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 using namespace DVZ;
 using namespace DVZ::Voxel;
@@ -40,6 +43,12 @@ BlockType ServerChunkManager::getBlock(const WorldCoords& coords) const {
 void ServerChunkManager::updatePlayer(entt::entity id, const glm::vec3& world_pos) {
 	ChunkCoords coords = toChunkCoords(world_pos);
 	coords.y = 0;
+	
+	SpiralRange<ChunkIndex> range{coords, 2};
+
+	for (const auto& vec : range) {
+		spdlog::info("<{},{}>", vec.x, vec.y);
+	}
 
 	const auto iter = playerChunks.find(id);
 	if (iter != playerChunks.end()) {

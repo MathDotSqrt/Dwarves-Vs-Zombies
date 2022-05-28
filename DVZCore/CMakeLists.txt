@@ -14,6 +14,7 @@ set(HEADER_FILES
 	"./include/core/util/Frustum.hpp"
 	"./include/core/util/math.hpp"
 	"./include/core/util/serialization.hpp"
+	"./include/core/util/SpiralIter.hpp"
 	"./include/core/util/transform.hpp"
 	"./include/core/util/util.hpp"
 	"./include/core/util/view_streambuf.hpp"
