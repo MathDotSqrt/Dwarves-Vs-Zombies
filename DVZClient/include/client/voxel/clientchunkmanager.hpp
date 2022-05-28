@@ -58,10 +58,15 @@ namespace DVZ::Voxel {
 
 		std::optional<VoxelRaycastResult> raycast(const glm::vec3& origin, const glm::vec3& dir, float radius) const;
 
+		void addCompressedChunk(CompressedChunk&& compressed_chunk);
 		//const std::vector<Chunk>& getChunks() const;
 	private:
-		bool setBlockInternal(const WorldCoords& coords, BlockType block);
+		Chunk allocateChunk(const ChunkCoords& coords);
+		void deallocateChunk(Chunk&& chunk);
 
+		bool setBlockInternal(const WorldCoords& coords, BlockType block);
+		
+		void decompressChunks();
 		void queueChunksToDelete();
 		void queueChunksToGenerate();
 
@@ -69,6 +74,7 @@ namespace DVZ::Voxel {
 		bool hasChanged = true;
 
 		std::unordered_map<ChunkCoords, Chunk> chunks;
+		std::unordered_map<ChunkCoords, CompressedChunk> compressedChunks;
 		std::vector<Chunk> chunksPool;
 
 		WorldCoords minBound;

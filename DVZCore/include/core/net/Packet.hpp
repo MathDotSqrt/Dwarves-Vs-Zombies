@@ -135,7 +135,7 @@ namespace DVZ::Net {
 	struct CB_EntitySnapshotDeltaPacket {
 		constexpr static PacketID packet = PacketID::CB_EntitySnapshotDelta;
 		EntitySnapshotDelta delta;
-		DVZ::simulation_duration server_time;
+		DVZ::simulation_duration server_time = DVZ::simulation_duration{0};
 
 		template <class Archive>
 		void serialize(Archive& ar) {
@@ -172,7 +172,7 @@ namespace DVZ::Net {
 
 		template<class Archive>
 		void serialize(Archive& ar){
-			ar(compressed.coords.x, compressed.coords.y, compressed.coords.z, compressed.data);
+			ar(compressed.coords.x, compressed.coords.y, compressed.coords.z, compressed.data, compressed.updateCount);
 		}
 	};
 

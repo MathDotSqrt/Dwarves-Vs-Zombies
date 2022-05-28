@@ -30,45 +30,11 @@ void ClientChunkManager::updatePlayerPosition(const glm::vec3& playerCoords) {
 	if (hasChanged) {
 		playerChunkCoords = newChunkCoords;
 		spdlog::debug("Player Chunk Coord <{}, {}, {}>", playerChunkCoords.x, playerChunkCoords.y, playerChunkCoords.z);
-		queueChunksToDelete();
-		queueChunksToGenerate();
+		//queueChunksToDelete();
+		//queueChunksToGenerate();
 	}
-}
+	decompressChunks();
 
-void ClientChunkManager::queueChunksToDelete() {
-	auto iter = chunks.begin();
-	const auto end = chunks.end();
-	while (iter != end) {
-		auto& [coords, chunk] = *iter;
-		ChunkCoords delta = glm::abs(playerChunkCoords - coords);
-		if (delta.x > RENDER_RADIUS || delta.z > RENDER_RADIUS) {
-			chunksPool.emplace_back(std::move(chunk));
-			iter = chunks.erase(iter);
-		}
-		else {
-			++iter;
-		}
-	}
-}
-
-void ClientChunkManager::queueChunksToGenerate() {
-	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
-		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
-			ChunkCoords coords = playerChunkCoords + ChunkCoords{ cx, 0, cz };
-			auto iter = chunks.find(coords);
-			if (iter == chunks.end()) {
-				if (chunksPool.size() > 0) {
-					//TODO: generate chunk via thread
-					chunksPool.back().init(coords);
-					chunks.emplace(coords, std::move(chunksPool.back()));
-					chunksPool.pop_back();
-				}
-				else {
-					chunks.emplace(coords, coords);
-				}
-			}
-		}
-	}
 }
 
 const Chunk* ClientChunkManager::getChunk(const ChunkCoords& coords) const {
@@ -170,19 +136,6 @@ bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
 	return false;
 }
 
-
-bool ClientChunkManager::setBlockInternal(const WorldCoords& coords, BlockType block) {
-	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
-	Chunk* chunk = getChunk(chunk_coords);
-	if (chunk == nullptr) {
-		return false;
-	}
-
-	BlockCoords block_coords = Voxel::toBlockCoords(coords);
-	chunk->setBlock(block_coords, block);
-	return true;
-}
-
 float intbound(float s, float ds) {
 	if (ds < 0) {
 		s = -s;
@@ -244,4 +197,85 @@ std::optional<VoxelRaycastResult> ClientChunkManager::raycast(const glm::vec3& o
 	}
 
 	return {};
+}
+
+bool ClientChunkManager::setBlockInternal(const WorldCoords& coords, BlockType block) {
+	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
+	Chunk* chunk = getChunk(chunk_coords);
+	if (chunk == nullptr) {
+		return false;
+	}
+
+	BlockCoords block_coords = Voxel::toBlockCoords(coords);
+	chunk->setBlock(block_coords, block);
+	return true;
+}
+
+void ClientChunkManager::addCompressedChunk(CompressedChunk&& new_compressed_chunk) {
+	auto& compressed_chunk = compressedChunks[new_compressed_chunk.coords];
+	if (compressed_chunk.updateCount < new_compressed_chunk.updateCount) {
+		compressed_chunk = std::move(new_compressed_chunk);
+	}
+}
+
+void ClientChunkManager::decompressChunks() {
+	for (const auto& [coords, compressed] : compressedChunks) {
+		Chunk* chunk = getChunk(coords);
+		if (chunk->getUpdateCount() < compressed.updateCount) {
+			if (!chunk->decompressChunk(compressed)) {
+				spdlog::warn("Failed to decompress chunk: <{},{},{}>", coords.x, coords.y, coords.z);
+			}
+		}
+	}
+
+	compressedChunks.clear();
+}
+
+Chunk ClientChunkManager::allocateChunk(const ChunkCoords& coords) {
+	if (chunksPool.size() == 0) {
+		return Chunk{ coords };
+	}
+	Chunk chunk = std::move(chunksPool.back());
+	chunksPool.pop_back();
+	return chunk;
+}
+
+void ClientChunkManager::deallocateChunk(Chunk&& chunk) {
+	chunksPool.emplace_back(std::move(chunk));
+}
+
+void ClientChunkManager::queueChunksToDelete() {
+	auto iter = chunks.begin();
+	const auto end = chunks.end();
+	while (iter != end) {
+		auto& [coords, chunk] = *iter;
+		ChunkCoords delta = glm::abs(playerChunkCoords - coords);
+		if (delta.x > RENDER_RADIUS || delta.z > RENDER_RADIUS) {
+			chunksPool.emplace_back(std::move(chunk));
+			iter = chunks.erase(iter);
+		}
+		else {
+			++iter;
+		}
+	}
+}
+
+void ClientChunkManager::queueChunksToGenerate() {
+	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
+		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
+			ChunkCoords coords = playerChunkCoords + ChunkCoords{ cx, 0, cz };
+			auto iter = chunks.find(coords);
+			if (iter == chunks.end()) {
+				if (chunksPool.size() > 0) {
+					//TODO: generate chunk via thread
+					chunksPool.back().init(coords);
+					chunks.emplace(coords, std::move(chunksPool.back()));
+					chunksPool.pop_back();
+				}
+				else {
+					chunks.emplace(coords, coords);
+				}
+			}
+		}
+	}
 }

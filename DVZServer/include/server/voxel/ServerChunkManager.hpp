@@ -28,6 +28,7 @@ namespace DVZ::Voxel {
 
 		std::vector<ChunkCoords> popPlayerUnackedChunks(entt::entity id, i32 max_count=8);
 	private:
+		constexpr static ChunkIndex WORLD_RADIUS = 30;
 		constexpr static ChunkIndex RENDER_RADIUS = 5;
 
 		void updatePlayerNetChunkState(NetChunkState& state);

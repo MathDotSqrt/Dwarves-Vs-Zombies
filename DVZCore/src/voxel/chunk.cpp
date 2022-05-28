@@ -58,11 +58,11 @@ std::vector<u8> ChunkData::compressData() const {
 		}
 		else{
 			u8 lo = static_cast<u8>(length);
-			u8 hi = static_cast<u8>(length >> 8);
+			//u8 hi = static_cast<u8>(length >> 8);
 
 			compressed_data.push_back(static_cast<u8>(lo));
 			//compressed_data.push_back(static_cast<u8>(hi));
-			compressed_data.push_back(static_cast<u8>(data));
+			compressed_data.push_back(static_cast<u8>(last_block));
 
 			last_block = data;
 			length = 1;
@@ -70,6 +70,34 @@ std::vector<u8> ChunkData::compressData() const {
 	}
 
 	return compressed_data;
+}
+
+bool ChunkData::decompressData(const std::vector<u8>& compressed_data) {
+	constexpr u8 NUM_BLOCK_TYPES = static_cast<u8>(BlockType::NUM_BLOCKS);
+
+	if ((compressed_data.size() & 0b1) == 0b1) {
+		return false;
+	}
+
+	size_t block_data_index = 0;
+
+	for (size_t index = 0; index < compressed_data.size(); index += 2) {
+		u8 count = compressed_data[index];
+		u8 value = compressed_data[index + 1];
+
+		if (value >= NUM_BLOCK_TYPES) {
+			return false;
+		}
+		if ((block_data_index + count) >= block_data->size()) {
+			return false;
+		}
+
+		BlockType block = static_cast<BlockType>(value);
+		std::fill_n(block_data->begin() + block_data_index, count, block);
+		block_data_index += count;
+	}
+
+	return true;
 }
 
 Chunk::Chunk(const ChunkCoords& coords) : Chunk(coords.x, coords.y, coords.z) {
@@ -82,13 +110,17 @@ Chunk::Chunk(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) {
 
 void Chunk::init(const ChunkCoords& coords) {
 	this->coords = coords;
+	this->updateCount = 0;
+}
 
+void Chunk::generate(const ChunkCoords& coords) {
+	init(coords);
 	for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 		for (BlockIndex x = 0; x < CHUNK_X; x++) {
 			WorldCoords worldCoords = toWorldCoords(coords, BlockCoords(x, 0, z));
-			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f};
+			glm::vec2 sample{ worldCoords.x / 100.0f, worldCoords.z / 100.0f };
 			double height = (glm::simplex(sample) + 1) * .5;
-			
+
 			height = glm::pow(height, 2);
 
 			int worldHeight = glm::clamp((int)(height * CHUNK_Y), 3, CHUNK_Y);
@@ -107,25 +139,28 @@ void Chunk::init(const ChunkCoords& coords) {
 					data.setBlock(x, y, z, BlockType::AIR);
 				}
 			}
+
+
 		}
 	}
-	
-	
-	const auto octave_noise = [](const WorldCoords& world_pos){
-		const auto sample_0 = glm::vec2{world_pos.x, world_pos.z} / 100.0f;
+
+
+	const auto octave_noise = [](const WorldCoords& world_pos) {
+		const auto sample_0 = glm::vec2{ world_pos.x, world_pos.z } / 100.0f;
 
 		return glm::simplex(sample_0);
 
 	};
 
-	for(BlockIndex z = 0; z < CHUNK_Z; z++){
-		for(BlockIndex x = 0; x < CHUNK_X; x++){
+	for (BlockIndex z = 0; z < CHUNK_Z; z++) {
+		for (BlockIndex x = 0; x < CHUNK_X; x++) {
 
 
 
 		}
 	}
 
+	updateCount += 1;
 	//for (BlockIndex z = 0; z < CHUNK_Z; z++) {
 	//	for (BlockIndex x = 0; x < CHUNK_X; x++) {
 	//		for (BlockIndex y = 0; y < CHUNK_Y; y++) {
@@ -136,8 +171,6 @@ void Chunk::init(const ChunkCoords& coords) {
 	//		}
 	//	}
 	//}
-	updateCount = 1;
-
 }
 
 BlockType Chunk::getBlock(const BlockCoords& coords) const {
@@ -177,6 +210,12 @@ int Chunk::getUpdateCount() const {
 CompressedChunk Chunk::compressChunk() const {
 	CompressedChunk compressed{coords, getUpdateCount(), data.compressData()};
 	return compressed;
+}
+
+bool Chunk::decompressChunk(const CompressedChunk& compressed_data) {
+	coords = compressed_data.coords;
+	updateCount = compressed_data.updateCount;
+	return data.decompressData(compressed_data.data);
 }
 
 BlockIndex DVZ::Voxel::toBlockXIndex(WorldIndex index) {

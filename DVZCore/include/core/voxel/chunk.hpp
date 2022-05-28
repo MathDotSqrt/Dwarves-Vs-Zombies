@@ -37,7 +37,7 @@ namespace DVZ::Voxel {
 	constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
 
 	struct CompressedChunk {
-		ChunkCoords coords;
+		ChunkCoords coords = ChunkCoords{0};
 		int updateCount = 0;
 		std::vector<u8> data;
 	};
@@ -52,6 +52,7 @@ namespace DVZ::Voxel {
 		bool setBlock(BlockIndex bx, BlockIndex by, BlockIndex bz, BlockType block);
 
 		std::vector<u8> compressData() const;
+		bool decompressData(const std::vector<u8>& data);
 	private:
 		int toIndex(const BlockCoords& coords) const;
 		int toIndex(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
@@ -66,6 +67,7 @@ namespace DVZ::Voxel {
 		Chunk(ChunkIndex x=0, ChunkIndex y=0, ChunkIndex z=0);
 
 		void init(const ChunkCoords& coords);
+		void generate(const ChunkCoords& coords);
 
 		BlockType getBlock(const BlockCoords& coords) const;
 		BlockType getBlock(BlockIndex bx, BlockIndex by, BlockIndex bz) const;
@@ -78,6 +80,7 @@ namespace DVZ::Voxel {
 		int getUpdateCount() const;
 
 		CompressedChunk compressChunk() const;
+		bool decompressChunk(const CompressedChunk& data);
 	private:
 		ChunkCoords coords;
 		int updateCount = 0;

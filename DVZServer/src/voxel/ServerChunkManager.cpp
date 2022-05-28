@@ -9,9 +9,10 @@ using namespace DVZ;
 using namespace DVZ::Voxel;
 
 ServerChunkManager::ServerChunkManager() {
-	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
-		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
+	for (ChunkIndex cx = -WORLD_RADIUS; cx <= WORLD_RADIUS; cx++) {
+		for (ChunkIndex cz = -WORLD_RADIUS; cz <= WORLD_RADIUS; cz++) {
 			chunks[ChunkCoords{ cx, 0, cz }] = Chunk{ cx, 0, cz };
+			chunks[ChunkCoords{ cx, 0, cz }].generate(ChunkCoords{cx, 0, cz});
 		}
 	}
 }

@@ -3,6 +3,7 @@
 #include "client/ClientComponents.hpp"
 #include "client/net/NetClientManager.hpp"
 #include "client/predict_client.hpp"
+#include "client/voxel/ClientChunkManager.hpp"
 
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
@@ -256,6 +257,7 @@ void NetworkSystem::onSpawnPosition(Engine& engine, std::string_view data) {
 void NetworkSystem::onChunkData(Engine& engine, std::string_view data) {
 	Net::CB_ChunkData packet;
 	if (Net::deserializePacketData(data, packet)) {
-		const auto data = packet.compressed;
+		Voxel::ClientChunkManager& manager = engine.getChunkManager();
+		manager.addCompressedChunk(std::move(packet.compressed));
 	}
 }
