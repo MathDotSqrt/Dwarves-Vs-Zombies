@@ -24,6 +24,7 @@ namespace DVZ {
 	class ServerNetSendSystem;
 	class PhysicsSystem;
 	class ServerVoxelSystem;
+	class RootTimer;
 
 	using duration = std::chrono::duration<float>;
 
@@ -35,6 +36,7 @@ namespace DVZ {
 		void init();
 		void tick();
 		void updateLoop();
+		void enablePerfPrint();
 
 		entt::registry& getRegistry();
 		const entt::registry& getRegistry() const;
@@ -45,6 +47,7 @@ namespace DVZ {
 	private:
 		std::thread updateThread;
 		std::atomic<bool> shouldRun;
+		std::atomic<bool> shouldPrintPerf;
 
 		std::unique_ptr<entt::registry> registry;
 

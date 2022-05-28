@@ -1,6 +1,7 @@
 #include "client/graphics/Scene.hpp"
 #include "client/window.hpp"
 #include "core/util/transform.hpp"
+#include "core/util/Timer.hpp"
 
 #include <iterator>
 #include <spdlog/spdlog.h>
@@ -143,6 +144,7 @@ void SceneManager::computeInterpolate(float alpha) {
 }
 
 void SceneManager::bufferScene(const Scene& scene) {
+	Timer timer{"SceneManager::BufferScene"};
 	std::lock_guard<std::mutex> g{m};
 	prev = current;
 	current = scene;

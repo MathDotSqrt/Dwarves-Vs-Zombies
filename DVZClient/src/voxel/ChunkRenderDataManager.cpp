@@ -5,7 +5,8 @@
 
 #include "core/util/Frustum.hpp"
 #include "core/util/util.hpp"
-
+#include "core/util/Timer.hpp"
+#include "core/util/SpiralIter.hpp"
 
 #include <spdlog/spdlog.h>
 #include <algorithm>
@@ -13,6 +14,8 @@
 using namespace DVZ::Voxel;
 
 void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const ClientChunkManager& manager) {
+	Timer timer{"ChunkRenderDataManager::bufferDirtyChunks"};
+
 	thread_local std::vector<ChunkCoords> coords;
 
 	//TODO: move this lock guard down to when it is strictly necessary

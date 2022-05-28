@@ -23,6 +23,8 @@
 #include "core/util/transform.hpp"
 #include "core/CoreComponents.hpp"
 
+#include "core/util/Timer.hpp"
+
 #include <chrono>
 #include <spdlog/spdlog.h>
 
@@ -48,6 +50,8 @@ Engine::~Engine() {
 }
 
 void Engine::update() {
+	Timer timer{"GameTick"};
+
 	auto& window = Window::getInstance();
 	window.update();
 
@@ -132,6 +136,7 @@ void Engine::updateLoop() {
 		accum += frame_time;
 
 		while (accum >= DT) {
+			DVZ::RootTimer root{"UpdateThread"};
 			//last_update = std::chrono::steady_clock::now();
 			if(pause == false)
 				client_simulation_time += DT;
@@ -143,13 +148,19 @@ void Engine::updateLoop() {
 
 			//This is a bug, it is possible for alpha to be larger than 1
 			this->alpha = accum / DT;
+
+			if (Window::getInstance().isPressed('m')) {
+				root.enablePrint();
+			}
 		}
 
+		
 		this->alpha = accum / DT;
 	}
 }
 
 void Engine::render() {
+	Timer timer{"Render"};
 	//std::chrono::time_point last = last_update.load();
 	//std::chrono::time_point now = std::chrono::steady_clock::now();
 	//duration delta = now - last;

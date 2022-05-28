@@ -6,6 +6,7 @@
 
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
+#include "core/util/Timer.hpp"
 
 #include <glm/gtx/norm.hpp>
 #include <spdlog/spdlog.h>
@@ -28,6 +29,8 @@ void ServerNetRecvSystem::init(Engine& engine){
 
 void ServerNetRecvSystem::tick(Engine& engine) {
 	using namespace Net;
+
+	Timer timer{"ServerNetRecvSystem::tick"};
 
 	Net::NetServerManager& netManager = engine.getNetManager();
 	netManager.poll([&](std::string_view data, HSteamNetConnection connection) {

@@ -3,6 +3,7 @@
 #include "server/voxel/ServerChunkManager.hpp"
 
 #include "core/CoreComponents.hpp"
+#include "core/util/Timer.hpp"
 #include "server/ServerComponents.hpp"
 
 using namespace DVZ;
@@ -12,6 +13,8 @@ void ServerVoxelSystem::init(Engine& engine) {
 }
 
 void ServerVoxelSystem::tick(Engine& engine){
+	Timer timer{"ServerVoxelSystem::tick"};
+
 	auto& registry = engine.getRegistry();
 	auto& manager = engine.getChunkManager();
 	

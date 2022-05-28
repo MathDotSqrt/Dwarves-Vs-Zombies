@@ -3,6 +3,7 @@
 
 #include "core/net/EntitySnapshotDelta.hpp"
 #include "core/util/serialization.hpp"
+#include "core/util/Timer.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -18,7 +19,6 @@ int main() {
 		DVZ::Engine engine;
 
 		while (true) {
-			//std::cout << "[Enter Command]>" << std::flush;
 			std::string line;
 			std::getline(std::cin, line);
 			if (line.size() == 0) {
@@ -26,6 +26,9 @@ int main() {
 			}
 			else {
 				spdlog::info("Command: {}", line);
+				if (line == "perf") {
+					engine.enablePerfPrint();
+				}
 			}
 		}
 		spdlog::info("Shutting down...");

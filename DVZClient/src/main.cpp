@@ -3,6 +3,8 @@
 #include <spdlog/spdlog.h>
 #include <iostream>
 
+#include "core/util/Timer.hpp"
+
 #include "client/engine.hpp"
 #include "client/window.hpp"
 
@@ -53,9 +55,13 @@ int main(int argc, char* argv[]) {
 
 
 		while (!window.shouldClose()) {
+			DVZ::RootTimer root{ "RenderThread" };
 			window.pollWindow();
 			engine.render();
-			
+
+			if (window.getInstance().isPressed('n')) {
+				root.enablePrint();
+			}
 		}
 	}
 

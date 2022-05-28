@@ -8,6 +8,7 @@
 
 #include "core/CoreComponents.hpp"
 #include "core/net/Packet.hpp"
+#include "core/util/Timer.hpp"
 
 #include <entt/entt.hpp>
 #include <spdlog/spdlog.h>
@@ -23,6 +24,8 @@ void ServerNetSendSystem::init(Engine& engine) {
 }
 
 void ServerNetSendSystem::tick(Engine& engine) {
+	Timer timer{ "ServerNetSendSystem::tick" };
+
 	auto& registry = engine.getRegistry();
 	auto& netManager = engine.getNetManager();
 	auto& chunkManager = engine.getChunkManager();

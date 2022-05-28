@@ -1,6 +1,7 @@
 #include "client/voxel/ChunkMesher.hpp"
 #include "client/voxel/ClientChunkManager.hpp"
 
+#include "core/util/Timer.hpp"
 
 using namespace DVZ::Voxel;
 
@@ -10,6 +11,7 @@ ChunkMesher::ChunkMesher() : blocks(std::make_unique<ChunkMesher::BlockStorage>(
 
 void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 	assert(blocks);
+	Timer timer{"ChunkMesher::loadChunkData"};
 
 	std::fill(blocks->begin(), blocks->end(), BlockType::AIR);
 	assert(n.center);

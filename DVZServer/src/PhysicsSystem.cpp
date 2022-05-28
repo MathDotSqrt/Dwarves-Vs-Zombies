@@ -5,6 +5,7 @@
 #include "server/ServerComponents.hpp"
 #include "server/voxel/ServerChunkManager.hpp"
 #include "core/voxel/VoxelCollision.hpp"
+#include "core/util/Timer.hpp"
 
 using namespace DVZ;
 
@@ -17,6 +18,9 @@ void PhysicsSystem::init(Engine& engine) {
 }
 
 void PhysicsSystem::tick(Engine& engine) {
+
+	Timer timer{"PhysicsSystem::tick"};
+
 	auto& registry = engine.getRegistry();
 	
 	/* User Input */

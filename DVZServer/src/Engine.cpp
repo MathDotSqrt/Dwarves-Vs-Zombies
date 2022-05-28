@@ -8,6 +8,8 @@
 #include "server/voxel/ServerChunkManager.hpp"
 #include "core/time.hpp"
 
+#include "core/util/Timer.hpp"
+
 #include <spdlog/spdlog.h>
 
 using namespace DVZ;
@@ -52,6 +54,7 @@ void Engine::updateLoop() {
 	auto last_time = start_time;
 	duration accum{ 0 };
 	while (shouldRun.load()) {
+
 		std::chrono::time_point new_time = std::chrono::steady_clock::now();
 		duration frame_time = new_time - last_time;
 		last_time = new_time;
@@ -59,12 +62,22 @@ void Engine::updateLoop() {
 		accum += frame_time;
 
 		while (accum >= DT) {
+			RootTimer root{ "ServerUpdate" };
 			//last_update = std::chrono::steady_clock::now();
 			total_time += DT;
 			tick();
 			accum -= DT;
+
+			if (shouldPrintPerf) {
+				root.enablePrint();
+				shouldPrintPerf = false;
+			}
 		}
 	}
+}
+
+void Engine::enablePerfPrint() {
+	shouldPrintPerf = true;
 }
 
 entt::registry& Engine::getRegistry(){
