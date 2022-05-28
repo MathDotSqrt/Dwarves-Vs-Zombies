@@ -14,7 +14,9 @@ namespace DVZ {
 	};
 
 	struct NetPlayer {
+		constexpr static size_t MAX_BUFFER = 8;
 		std::vector<Voxel::ChunkCoords> unackedChunks;
+		bool shouldSend = false;
 	};
 }
 

@@ -9,10 +9,15 @@ using namespace DVZ::Voxel;
 ClientChunkManager::ClientChunkManager() {
 	playerChunkCoords = glm::vec3{0};
 
-	for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
-		for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
-			chunks[ChunkCoords{ cx, 0, cz }] = Chunk{cx, 0, cz};
-		}
+	//for (ChunkIndex cx = -RENDER_RADIUS; cx <= RENDER_RADIUS; cx++) {
+	//	for (ChunkIndex cz = -RENDER_RADIUS; cz <= RENDER_RADIUS; cz++) {
+	//		chunks[ChunkCoords{ cx, 0, cz }] = Chunk{cx, 0, cz};
+	//	}
+	//}
+
+	chunksPool.reserve(30 * 30);
+	for (int i = 0; i < 30 * 30; i++) {
+		chunksPool.emplace_back(ChunkCoords{ 0 });
 	}
 
 
@@ -70,8 +75,8 @@ ChunkNeighbors ClientChunkManager::getChunkNeighbors(const ChunkCoords& coords) 
 	n.center = getChunk(coords);
 	n.nx = getChunk(coords - X);
 	n.px = getChunk(coords + X);
-	n.ny = getChunk(coords - Y);
-	n.py = getChunk(coords + Y);
+	n.ny = nullptr;//getChunk(coords - Y);
+	n.py = nullptr;//getChunk(coords + Y);
 	n.nz = getChunk(coords - Z);
 	n.pz = getChunk(coords + Z);
 
@@ -211,16 +216,18 @@ bool ClientChunkManager::setBlockInternal(const WorldCoords& coords, BlockType b
 	return true;
 }
 
-void ClientChunkManager::addCompressedChunk(CompressedChunk&& new_compressed_chunk) {
+bool ClientChunkManager::addCompressedChunk(CompressedChunk&& new_compressed_chunk) {
 	auto& compressed_chunk = compressedChunks[new_compressed_chunk.coords];
 	if (compressed_chunk.updateCount < new_compressed_chunk.updateCount) {
 		compressed_chunk = std::move(new_compressed_chunk);
+		return true;
 	}
+	return false;
 }
 
 void ClientChunkManager::decompressChunks() {
 	for (const auto& [coords, compressed] : compressedChunks) {
-		Chunk* chunk = getChunk(coords);
+		Chunk* chunk = getChunkOrAllocate(coords);
 		if (chunk->getUpdateCount() < compressed.updateCount) {
 			if (!chunk->decompressChunk(compressed)) {
 				spdlog::warn("Failed to decompress chunk: <{},{},{}>", coords.x, coords.y, coords.z);
@@ -229,6 +236,17 @@ void ClientChunkManager::decompressChunks() {
 	}
 
 	compressedChunks.clear();
+}
+
+Chunk* ClientChunkManager::getChunkOrAllocate(const ChunkCoords& coords) {
+	const auto iter = chunks.find(coords);
+	if (iter != chunks.end()) {
+		return &(iter->second);
+	}
+	else {
+		const auto& [iter, _] = chunks.emplace(coords, allocateChunk(coords));
+		return &(iter->second);
+	}
 }
 
 Chunk ClientChunkManager::allocateChunk(const ChunkCoords& coords) {

@@ -17,6 +17,14 @@ namespace DVZ::Voxel {
 		const Chunk* pz = nullptr;
 		const Chunk* ny = nullptr;
 		const Chunk* py = nullptr;
+
+		inline bool isSurrounded() const {
+			return center != nullptr
+				&& px != nullptr
+				&& nx != nullptr
+				&& pz != nullptr
+				&& nz != nullptr;
+		}
 	};
 
 	struct VoxelRaycastResult {
@@ -32,6 +40,7 @@ namespace DVZ::Voxel {
 #else
 		constexpr static const ChunkIndex RENDER_RADIUS = 20;
 #endif
+
 		ClientChunkManager();
 
 
@@ -58,9 +67,11 @@ namespace DVZ::Voxel {
 
 		std::optional<VoxelRaycastResult> raycast(const glm::vec3& origin, const glm::vec3& dir, float radius) const;
 
-		void addCompressedChunk(CompressedChunk&& compressed_chunk);
+		bool addCompressedChunk(CompressedChunk&& compressed_chunk);
 		//const std::vector<Chunk>& getChunks() const;
 	private:
+		Chunk* getChunkOrAllocate(const ChunkCoords& coords);
+
 		Chunk allocateChunk(const ChunkCoords& coords);
 		void deallocateChunk(Chunk&& chunk);
 

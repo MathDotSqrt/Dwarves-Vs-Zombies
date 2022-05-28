@@ -257,7 +257,13 @@ void NetworkSystem::onSpawnPosition(Engine& engine, std::string_view data) {
 void NetworkSystem::onChunkData(Engine& engine, std::string_view data) {
 	Net::CB_ChunkData packet;
 	if (Net::deserializePacketData(data, packet)) {
+		auto& netManager = engine.getNetManager();
 		Voxel::ClientChunkManager& manager = engine.getChunkManager();
-		manager.addCompressedChunk(std::move(packet.compressed));
+		if (manager.addCompressedChunk(std::move(packet.compressed))) {
+			Net::SB_AckChunkData ackPacket;
+			ackPacket.coords = packet.compressed.coords;
+			ackPacket.updateCount = packet.compressed.updateCount;
+			netManager.sendMessage(ackPacket, true);
+		}
 	}
 }

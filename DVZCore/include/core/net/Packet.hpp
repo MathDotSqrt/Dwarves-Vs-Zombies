@@ -26,6 +26,7 @@ namespace DVZ::Net {
 		SB_PlayerPositionVel,		//Server Bound: position vel of client player
 		SB_PlayerInput,				//Server Bound: input from client to simulate on server
 		SB_AckEntitySnapshotDelta,	//Server Bound: ack entity snapshot delta
+		SB_AckChunkData,			//Server Bound: ack chunk data
 
 		CB_AssignNetID,				//Client Bound: gives client its server assigned ID
 		CB_SyncSimulationClock,		//Client Bound: send server simulation time to client
@@ -78,10 +79,21 @@ namespace DVZ::Net {
 
 	struct SB_AckEntitySnapshoDelta {
 		constexpr static PacketID packet = PacketID::SB_AckEntitySnapshotDelta;
-		simulation_duration server_time;
+		simulation_duration server_time = simulation_duration{0};
 		template <class Archive>
 		void serialize(Archive& ar) {
 			ar(server_time);
+		}
+	};
+
+	struct SB_AckChunkData {
+		constexpr static PacketID packet = PacketID::SB_AckChunkData;
+		Voxel::ChunkCoords coords;
+		int updateCount = 0;
+
+		template<class Archive>
+		void serialize(Archive& ar) {
+			ar(coords.x, coords.y, coords.z, updateCount);
 		}
 	};
 

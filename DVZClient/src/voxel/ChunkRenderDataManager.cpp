@@ -41,19 +41,20 @@ void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const Cli
 		const Chunk* chunk = manager.getChunk(coord);
 		if (chunk && chunkMeshUpdateCountMap[coord] != chunk->getUpdateCount()) {
 			ChunkNeighbors neighbors = manager.getChunkNeighbors(coord);
+			if (neighbors.isSurrounded()) {
+				if (mesherPool.size() > 0) {
+					auto& newMesher = mesherPool.back();
+					queuedChunks.emplace_back(std::move(newMesher));
 
-			if (mesherPool.size() > 0) {
-				auto& newMesher = mesherPool.back();
-				queuedChunks.emplace_back(std::move(newMesher));
+					mesherPool.pop_back();
+				}
+				else {
+					queuedChunks.emplace_back();
+				}
 
-				mesherPool.pop_back();
+				queuedChunks.back().loadChunkData(neighbors);
+				chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 			}
-			else {
-				queuedChunks.emplace_back();
-			}
-
-			queuedChunks.back().loadChunkData(neighbors);
-			chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 		}
 	}
 }

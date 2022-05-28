@@ -50,19 +50,15 @@ void ServerNetSendSystem::tick(Engine& engine) {
 
 
 		auto& netPlayer = view.get<NetPlayer>(player);
-		if (netPlayer.unackedChunks.size() > 0) {
-			const Voxel::ChunkCoords& coords = netPlayer.unackedChunks.back();
-			const Voxel::Chunk* chunk = chunkManager.getChunk(coords);
-			if (chunk) {
-				Net::CB_ChunkData data;
-				data.compressed = chunk->compressChunk();
-				netManager.sendMessage(data, connection, true);
+		if (netPlayer.shouldSend) {
+			for (const Voxel::ChunkCoords& coords : netPlayer.unackedChunks) {
+				const Voxel::CompressedChunk* compressed = chunkManager.getCompressedChunk(coords);
+				if (compressed) {
+					netManager.sendMessage(Net::CB_ChunkData{ *compressed }, connection, true);
+				}
 			}
-			netPlayer.unackedChunks.pop_back();
-
+			netPlayer.shouldSend = false;
 		}
-		
-
 	}
 	//TODO: after detecting user input, always send back the player position
 	

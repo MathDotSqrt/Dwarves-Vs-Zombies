@@ -21,9 +21,10 @@ void ServerVoxelSystem::tick(Engine& engine){
 		const auto& transform = player_chunk_view.get<Transformation>(id);
 		auto& netPlayer = player_chunk_view.get<NetPlayer>(id);
 
-		manager.updatePlayer(id, transform.pos);
-		
-		auto chunks = manager.popPlayerUnackedChunks(id, 8 - netPlayer.unackedChunks.size());
-		netPlayer.unackedChunks.insert(netPlayer.unackedChunks.end(), chunks.rbegin(), chunks.rend());
+		if (netPlayer.unackedChunks.size() == 0) {
+			std::vector<Voxel::ChunkCoords> newUnackedChunks = manager.getUnackedChunks(id, transform.pos, NetPlayer::MAX_BUFFER);
+			netPlayer.unackedChunks.insert(netPlayer.unackedChunks.end(), newUnackedChunks.begin(), newUnackedChunks.end());
+			netPlayer.shouldSend = true;
+		}
 	}
 }

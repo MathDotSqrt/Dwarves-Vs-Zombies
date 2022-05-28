@@ -64,6 +64,9 @@ void ServerNetRecvSystem::onMessage(Engine& engine, std::string_view data, HStea
 	case PacketID::SB_AckEntitySnapshotDelta:
 		onAckEntityStateDelta(engine, data, connection);
 		break;
+	case PacketID::SB_AckChunkData:
+		onAckChunkData(engine, data, connection);
+		break;
 	default:
 		spdlog::error("Message with invalid ID [{}] from [{}]", static_cast<std::byte>(data[0]), connection);
 		break;
@@ -145,3 +148,18 @@ void ServerNetRecvSystem::onAckEntityStateDelta(Engine& engine, std::string_view
 	}
 }
 
+void ServerNetRecvSystem::onAckChunkData(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Net::SB_AckChunkData packet;
+	if (Net::deserializePacketData(data, packet)) {
+		auto& netManager = engine.getNetManager();
+		auto& chunkManager = engine.getChunkManager();
+		auto& registry = engine.getRegistry();
+
+		entt::entity playerID = netManager.getEntity(conn);
+		chunkManager.ackChunk(playerID, packet.coords, packet.updateCount);
+
+		auto& netPlayer = registry.get<NetPlayer>(playerID);
+		const auto iter = std::find(netPlayer.unackedChunks.begin(), netPlayer.unackedChunks.end(), packet.coords);
+		netPlayer.unackedChunks.erase(iter);
+	}
+}

@@ -25,6 +25,15 @@ namespace DVZ {
 		const auto iter = map.find(key);
 		return iter != map.end();
 	}
+
+	template<typename KEY, typename VALUE>
+	VALUE find_with_default(const std::unordered_map<KEY, VALUE>& map, const KEY& key, const VALUE& default_value) {
+		const auto iter = map.find(key);
+		if (iter != map.end()) {
+			return iter->second;
+		}
+		return default_value;
+	}
 }
 
 #endif

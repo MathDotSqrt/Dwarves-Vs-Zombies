@@ -8,11 +8,7 @@
 namespace DVZ::Voxel {
 
 	struct NetChunkState {
-		ChunkCoords lastPlayerChunkCoord = ChunkCoords{0, 0, 0};
 		std::unordered_map<const Chunk*, int> chunkAckMap;
-
-		using node_ptr = std::unordered_map<const Chunk*, int>::pointer;
-		std::vector<const Chunk*> unackedChunks;
 	};
 
 	class ServerChunkManager {
@@ -22,16 +18,17 @@ namespace DVZ::Voxel {
 		const Chunk* getChunk(const ChunkCoords& coords) const;
 		BlockType getBlock(const WorldCoords& coords) const;
 
-		void updatePlayer(entt::entity id, const glm::vec3& world_position);
+
 		void addPlayer(entt::entity id, const glm::vec3& world_position);
 		void removePlayer(entt::entity id);
+		void ackChunk(entt::entity id, ChunkCoords coord, int ack);
+		std::vector<ChunkCoords> getUnackedChunks(entt::entity id, const glm::vec3& world_position, int N) const;
+		const CompressedChunk* getCompressedChunk(const ChunkCoords& coords);
 
-		std::vector<ChunkCoords> popPlayerUnackedChunks(entt::entity id, i32 max_count=8);
 	private:
 		constexpr static ChunkIndex WORLD_RADIUS = 30;
-		constexpr static ChunkIndex RENDER_RADIUS = 5;
+		constexpr static ChunkIndex RENDER_RADIUS = 15;
 
-		void updatePlayerNetChunkState(NetChunkState& state);
 
 		std::unordered_map<ChunkCoords, Chunk> chunks;
 
