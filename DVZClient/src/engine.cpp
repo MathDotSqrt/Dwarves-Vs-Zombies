@@ -160,7 +160,7 @@ void Engine::updateLoop() {
 }
 
 void Engine::render() {
-	Timer timer{"Render"};
+	Timer timer{"Engine::Render"};
 	//std::chrono::time_point last = last_update.load();
 	//std::chrono::time_point now = std::chrono::steady_clock::now();
 	//duration delta = now - last;

@@ -16,6 +16,7 @@
 #include <string_view>
 #include <cstddef>
 #include <variant>
+#include <bitset>
 
 namespace DVZ::Net {
 
@@ -65,15 +66,77 @@ namespace DVZ::Net {
 
 	struct SB_PlayerInput {
 		constexpr static PacketID packet = PacketID::SB_PlayerInput;
+		constexpr static size_t POS_FORWARD = 0;
+		constexpr static size_t NEG_FORWARD = 1;
+		constexpr static size_t POS_STRAFE = 2;
+		constexpr static size_t NEG_STRAFE = 3;
+		constexpr static size_t POS_FLY = 4;
+		constexpr static size_t NEG_FLY = 5;
+		constexpr static size_t LEFT_CLICK = 6;
+		constexpr static size_t RIGHT_CLICK = 7;
+
+		SB_PlayerInput() {};
+		SB_PlayerInput(const glm::quat& rot, simulation_duration time, float forward, float strafe, float fly, bool left, bool right) {
+			this->rot = rot;
+			this->client_time = time;
+			set[POS_FORWARD] = forward > 0;
+			set[NEG_FORWARD] = forward < 0;
+
+			set[POS_STRAFE] = strafe > 0;
+			set[NEG_STRAFE] = strafe < 0;
+
+			set[POS_FLY] = fly > 0;
+			set[NEG_FLY] = fly < 0;
+
+			set[LEFT_CLICK] = left;
+			set[RIGHT_CLICK] = right;
+		}
+
 		glm::quat rot;
 		simulation_duration client_time;
+		std::bitset<8> set;
 
-		i8 forward;
-		i8 strafe;
-		i8 fly;
+		inline float getForward() const {
+			if (set[POS_FORWARD]) {
+				return 1;
+			}
+			if (set[NEG_FORWARD]) {
+				return -1;
+			}
+			return 0;
+		}
+
+		inline float getStrafe() const {
+			if (set[POS_STRAFE]) {
+				return 1;
+			}
+			if (set[POS_STRAFE]) {
+				return -1;
+			}
+			return 0;
+		}
+
+		inline float getFly() const {
+			if (set[POS_FLY]) {
+				return 1;
+			}
+			if (set[NEG_FLY]) {
+				return -1;
+			}
+			return 0;
+		}
+
+		inline bool getLeftClick() const {
+			return set[LEFT_CLICK];
+		}
+
+		inline bool getRightClick() const {
+			return set[RIGHT_CLICK];
+		}
+
 		template <class Archive>
 		void serialize(Archive& ar) {
-			ar(rot.x, rot.y, rot.z, rot.w, client_time, forward, strafe, fly);
+			ar(rot.x, rot.y, rot.z, rot.w, client_time, set);
 		}
 	};
 

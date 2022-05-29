@@ -94,6 +94,8 @@ SceneManager::SceneManager() {
 }
 
 void SceneManager::computeInterpolate(float alpha) {
+	Timer timer{"SceneManager::computeInterpolation"};
+
 	std::lock_guard<std::mutex> g{m};
 	interpolatedScene.instances.clear();
 	//spdlog::debug("{}", alpha);

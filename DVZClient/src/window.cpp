@@ -1,4 +1,7 @@
 #include "client/window.hpp"
+
+#include "core/util/Timer.hpp"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -93,6 +96,8 @@ Window::Window(int width, int height, std::string title) : width(width), height(
 }
 
 void Window::pollWindow() {
+    Timer timer{"Window::pollWindow"};
+
     prev_renderloop_input_state = renderloop_input_state;
 
 	glfwSwapBuffers(window);
@@ -112,8 +117,8 @@ void Window::pollWindow() {
 
 	const auto& last_input = prev_renderloop_input_state;
 	renderloop_input_state.pressed_keys = renderloop_input_state.down_keys & ~(last_input.down_keys);
-	renderloop_input_state.pressed_left_mouse = renderloop_input_state.down_left_mouse & !(last_input.down_left_mouse);
-	renderloop_input_state.pressed_right_mouse = renderloop_input_state.down_right_mouse & !(last_input.down_right_mouse);
+	renderloop_input_state.pressed_left_mouse = renderloop_input_state.down_left_mouse && !(last_input.down_left_mouse);
+	renderloop_input_state.pressed_right_mouse = renderloop_input_state.down_right_mouse && !(last_input.down_right_mouse);
 
 	std::lock_guard<std::mutex> g{input_buffer_mutex};
 	input_buffer.push_back(renderloop_input_state);

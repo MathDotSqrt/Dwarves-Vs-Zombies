@@ -135,11 +135,10 @@ void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, H
 			auto& state = registry.get<MovementState>(player);
 
 			transform.rot = packet.rot;
-			state.forward = packet.forward;
-			state.strafe = packet.strafe;
-			state.fly = packet.fly;
+			state.forward = packet.getForward();
+			state.strafe = packet.getStrafe();
+			state.fly = packet.getFly();
 		}
-
 	}
 }
 

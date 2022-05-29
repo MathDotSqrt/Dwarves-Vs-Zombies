@@ -39,13 +39,12 @@ void NetworkSystem::gameTick(Engine& engine) {
 	const auto& transform = registry.get<Transformation>(player);
 	const auto& state = registry.get<MovementState>(player);
 	const auto& input = registry.get<Input>(player);
-	Net::SB_PlayerInput packet;
-	packet.forward = (i8)state.forward;
-	packet.strafe = (i8)state.strafe;
-	packet.fly = (i8)state.fly;
-	packet.client_time = engine.getClientSimulationTime();
-	packet.rot = transform.rot;
+
+
+	auto client_time = engine.getClientSimulationTime();
+	Net::SB_PlayerInput packet{transform.rot, client_time, state.forward, state.strafe, state.fly, false, false};
 	
+
 	netManager.appendRequest(state, transform, engine.getClientSimulationTime());
 	if (state.fly != 0 || state.forward != 0 || state.strafe != 0 || input.current_cursor_pos != input.last_cursor_pos) {
 		netManager.sendMessage(packet, false);
