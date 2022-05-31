@@ -20,6 +20,8 @@ namespace DVZ {
 	struct Input {
 		glm::vec2 current_cursor_pos = glm::vec2{ 0 };
 		glm::vec2 last_cursor_pos = glm::vec2{ 0 };
+		bool left_click = false;
+		bool right_click = false;
 	};
 
 	struct Camera {

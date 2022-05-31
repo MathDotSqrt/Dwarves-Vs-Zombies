@@ -15,6 +15,9 @@ namespace DVZ::Voxel {
 	public:
 		ServerChunkManager();
 
+
+		bool setBlock(const WorldCoords& coords, BlockType block);
+		Chunk* getChunk(const ChunkCoords& coords);
 		const Chunk* getChunk(const ChunkCoords& coords) const;
 		BlockType getBlock(const WorldCoords& coords) const;
 

@@ -7,6 +7,8 @@
 #include "core/voxel/VoxelCollision.hpp"
 #include "core/util/Timer.hpp"
 
+#include <random>
+
 using namespace DVZ;
 
 PhysicsSystem::PhysicsSystem() {
@@ -18,6 +20,8 @@ void PhysicsSystem::init(Engine& engine) {
 }
 
 void PhysicsSystem::tick(Engine& engine) {
+
+	static std::mt19937 rng{123};
 
 	Timer timer{"PhysicsSystem::tick"};
 
@@ -49,6 +53,15 @@ void PhysicsSystem::tick(Engine& engine) {
 		vel = new_vel;
 		//vel.y = 0;
 	});
+
+	for (int i = 0; i < 5; i++) {
+		std::uniform_int_distribution<Voxel::WorldIndex> U(0, Voxel::CHUNK_X);
+		std::uniform_int_distribution<Voxel::WorldIndex> U2(0, Voxel::CHUNK_Y);
+
+		Voxel::WorldCoords coords{U(rng), U2(rng), U(rng)};
+		engine.getChunkManager().setBlock(coords, Voxel::BlockType::AIR);
+
+	}
 
 	auto debug_view = registry.view<Velocity, Debug>();
 

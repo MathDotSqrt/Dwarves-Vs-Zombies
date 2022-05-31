@@ -23,6 +23,29 @@ ServerChunkManager::ServerChunkManager() {
 
 }
 
+bool ServerChunkManager::setBlock(const WorldCoords& coords, BlockType type) {
+	ChunkCoords chunk_coords = toChunkCoords(coords);
+	Chunk* chunk = getChunk(chunk_coords);
+	if (chunk != nullptr) {
+		compressedChunksCache.erase(chunk_coords);
+		BlockCoords block_coords = toBlockCoords(coords);
+		chunk->setBlock(block_coords, type);
+		return true;
+	}
+
+	return false;
+}
+
+Chunk* ServerChunkManager::getChunk(const ChunkCoords& coords) {
+	auto iter = chunks.find(coords);
+	if (iter != chunks.end()) {
+		return &(iter->second);
+	}
+	else {
+		return nullptr;
+	}
+}
+
 const Chunk* ServerChunkManager::getChunk(const ChunkCoords& coords) const {
 	auto iter = chunks.find(coords);
 	if (iter != chunks.end()) {

@@ -92,8 +92,8 @@ namespace DVZ::Net {
 			set[RIGHT_CLICK] = right;
 		}
 
-		glm::quat rot;
-		simulation_duration client_time;
+		glm::quat rot = glm::quat{1, 0, 0, 0};
+		simulation_duration client_time = simulation_duration{0};
 		std::bitset<8> set;
 
 		inline float getForward() const {
@@ -110,7 +110,7 @@ namespace DVZ::Net {
 			if (set[POS_STRAFE]) {
 				return 1;
 			}
-			if (set[POS_STRAFE]) {
+			if (set[NEG_STRAFE]) {
 				return -1;
 			}
 			return 0;

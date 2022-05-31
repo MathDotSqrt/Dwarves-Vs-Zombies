@@ -22,14 +22,14 @@ Engine::Engine() :
 	netRecvSystem(std::make_unique<DVZ::ServerNetRecvSystem>()),
 	netSendSystem(std::make_unique<DVZ::ServerNetSendSystem>()),
 	physicsSystem(std::make_unique<DVZ::PhysicsSystem>()),
-	voxelSystem(std::make_unique<DVZ::ServerVoxelSystem>()),
-	updateThread(&Engine::updateLoop, this) {
+	voxelSystem(std::make_unique<DVZ::ServerVoxelSystem>()) {
 
+	updateThread = std::make_unique<std::thread>(&Engine::updateLoop, this);
 }
 
 Engine::~Engine() {
 	shouldRun = false;
-	updateThread.join();
+	updateThread->join();
 }
 
 void Engine::init() {

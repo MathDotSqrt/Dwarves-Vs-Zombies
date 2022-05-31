@@ -45,7 +45,8 @@ namespace DVZ {
 		simulation_duration getTimeElapsed() const;
 
 	private:
-		std::thread updateThread;
+		std::unique_ptr<std::thread> updateThread;
+
 		std::atomic<bool> shouldRun;
 		std::atomic<bool> shouldPrintPerf;
 

@@ -17,7 +17,6 @@ void InputSystem::gameTick(Engine& engine) {
 	auto& window = Window::getInstance();
 	auto& registry = engine.getRegistry();
 
-	glm::vec2 pos = window.getMousePos();
 
 	auto view = registry.view<Input, MovementState>();
 	for (auto entity : view) {
@@ -50,8 +49,10 @@ void InputSystem::gameTick(Engine& engine) {
 	}
 
 	auto input_view = registry.view<Input>();
-	input_view.each([pos](Input& input) {
+	input_view.each([&](Input& input) {
 		input.last_cursor_pos = input.current_cursor_pos;
-		input.current_cursor_pos = pos;
+		input.current_cursor_pos = window.getMousePos();
+		input.left_click = window.isDown(Window::Mouse::LEFT_CLICK);
+		input.right_click = window.isDown(Window::Mouse::RIGHT_CLICK);
 	});
 }
