@@ -1,4 +1,5 @@
-
+#ifndef DVZ_VOXEL_CONSTANTS_HPP
+#define DVZ_VOXEL_CONSTANTS_HPP
 #include "core/common.hpp"
 #include <glm/glm.hpp>
 
@@ -7,7 +8,7 @@ namespace DVZ::Voxel {
 	constexpr i32 CHUNK_SHIFT_Y = 7;
 	constexpr i32 CHUNK_SHIFT_Z = 4;
 
-	constexpr i32 CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
+	constexpr i32 CHUNK_SHIFT_MAX = glm::max(glm::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
 
 	constexpr i32 CHUNK_X = 1 << CHUNK_SHIFT_X;
 	constexpr i32 CHUNK_Y = 1 << CHUNK_SHIFT_Y;
@@ -26,3 +27,4 @@ namespace DVZ::Voxel {
 	constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
 
 }
+#endif

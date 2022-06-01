@@ -1,3 +1,5 @@
+#ifndef DVZ_CHUNK_DATA_HPP
+#define DVZ_CHUNK_DATA_HPP
 #include "core/voxel/VoxelConstants.hpp"
 #include "core/voxel/block.hpp"
 
@@ -19,3 +21,4 @@ namespace DVZ::Voxel {
 		std::array<BlockType, CHUNK_SIZE> data;
 	};
 }
+#endif

@@ -1,3 +1,5 @@
+#ifndef DVZ_ICHUNK_HPP
+#define DVZ_ICHUNK_HPP
 #include "core/voxel/block.hpp"
 #include "core/voxel/VoxelConstants.hpp"
 #include "core/voxel/ChunkData.hpp"
@@ -39,3 +41,4 @@ namespace DVZ::Voxel {
 	};
 
 }
+#endif

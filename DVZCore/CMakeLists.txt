@@ -27,6 +27,7 @@ set(HEADER_FILES
 	"./include/core/voxel/chunk.hpp"
 	"./include/core/voxel/ChunkData.hpp"
 	"./include/core/voxel/IChunk.hpp"
+	"./include/core/voxel/IVoxelWorld.hpp"
 	"./include/core/voxel/VoxelConstants.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"
 )

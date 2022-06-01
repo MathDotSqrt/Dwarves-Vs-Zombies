@@ -4,6 +4,7 @@
 
 #include "core/voxel/chunk.hpp"
 #include "client/util/util.hpp"
+
 #include <vector>
 #include <optional>
 #include <unordered_map>

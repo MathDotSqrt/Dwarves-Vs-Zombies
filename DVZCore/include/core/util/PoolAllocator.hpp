@@ -1,3 +1,5 @@
+#ifndef DVZ_POOL_ALLOCATOR_HPP
+#define DVZ_POOL_ALLOCATOR_HPP
 #include <memory>
 #include <vector>
 #include <functional>
@@ -10,13 +12,13 @@ namespace DVZ {
 	template<typename T>
 	class PoolAllocator {
 	public:
-		static PoolAllocator* getInstance() {
-			static PoolAllocator allocator;
+		static PoolAllocator* getInstance(size_t instances=0) {
+			static PoolAllocator allocator(instances);
 			return &allocator;
 		}
 
 		AllocatorHandle<T> allocate() {
-			const auto free_item = [this](T* item) {this->free(item)};
+			const auto free_item = [this](T* item) {this->free(item); };
 
 			if (pool.size() > 0) {
 				T* item = pool.back();
@@ -43,10 +45,11 @@ namespace DVZ {
 		}
 
 		void free(T* handle) {
-			pool.push_back(std::unique_ptr<T>{handle});
+			pool.push_back(handle);
 		}
 
 		std::vector<T*> pool;
 	};
 
 }
+#endif

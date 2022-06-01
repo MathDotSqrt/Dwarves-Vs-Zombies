@@ -13,7 +13,7 @@ const ChunkCoords& IChunk::getChunkCoords() const {
 }
 
 BlockType IChunk::getBlock(const BlockCoords& coords) const {
-	data->getBlock(coords);
+	return data->getBlock(coords);
 }
 
 bool IChunk::setBlock(const BlockCoords& coords, BlockType type) {
