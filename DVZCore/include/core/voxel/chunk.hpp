@@ -4,6 +4,7 @@
 
 #include "core/voxel/block.hpp"
 #include "core/collision/AABB.hpp"
+#include "core/voxel/VoxelConstants.hpp"
 
 #include <glm/glm.hpp>
 
@@ -14,27 +15,27 @@
 
 namespace DVZ::Voxel {
 	
-	constexpr int CHUNK_SHIFT_X = 4;
-	constexpr int CHUNK_SHIFT_Y = 7;
-	constexpr int CHUNK_SHIFT_Z = 4;
+	//constexpr int CHUNK_SHIFT_X = 4;
+	//constexpr int CHUNK_SHIFT_Y = 7;
+	//constexpr int CHUNK_SHIFT_Z = 4;
 
-	constexpr int CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
+	//constexpr int CHUNK_SHIFT_MAX = std::max(std::max(CHUNK_SHIFT_X, CHUNK_SHIFT_Y), CHUNK_SHIFT_Z);
 
-	constexpr int CHUNK_X = 1 << CHUNK_SHIFT_X;
-	constexpr int CHUNK_Y = 1 << CHUNK_SHIFT_Y;
-	constexpr int CHUNK_Z = 1 << CHUNK_SHIFT_Z;
-	constexpr int CHUNK_SIZE = CHUNK_X * CHUNK_Y * CHUNK_Z;
+	//constexpr int CHUNK_X = 1 << CHUNK_SHIFT_X;
+	//constexpr int CHUNK_Y = 1 << CHUNK_SHIFT_Y;
+	//constexpr int CHUNK_Z = 1 << CHUNK_SHIFT_Z;
+	//constexpr int CHUNK_SIZE = CHUNK_X * CHUNK_Y * CHUNK_Z;
 
-	using BlockIndex = u8;
-	using ChunkIndex = i32;
-	using WorldIndex = i32;
+	//using BlockIndex = u8;
+	//using ChunkIndex = i32;
+	//using WorldIndex = i32;
 
-	using BlockCoords = glm::vec<3, BlockIndex>;
-	using ChunkCoords = glm::vec<3, ChunkIndex>;
-	using WorldCoords = glm::vec<3, WorldIndex>;
+	//using BlockCoords = glm::vec<3, BlockIndex>;
+	//using ChunkCoords = glm::vec<3, ChunkIndex>;
+	//using WorldCoords = glm::vec<3, WorldIndex>;
 
-	constexpr BlockCoords MAX_BLOCK_COORDS{CHUNK_X - 1, CHUNK_Y  - 1, CHUNK_Z - 1};
-	constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
+	//constexpr BlockCoords MAX_BLOCK_COORDS{CHUNK_X - 1, CHUNK_Y  - 1, CHUNK_Z - 1};
+	//constexpr BlockCoords MIN_BLOCK_COORDS{ 0, 0, 0 };
 
 	struct CompressedChunk {
 		ChunkCoords coords = ChunkCoords{0};

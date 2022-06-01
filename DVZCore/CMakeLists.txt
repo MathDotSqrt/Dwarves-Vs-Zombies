@@ -14,6 +14,7 @@ set(HEADER_FILES
 	"./include/core/util/CircularBuffer.hpp"
 	"./include/core/util/Frustum.hpp"
 	"./include/core/util/math.hpp"
+	"./include/core/util/PoolAllocator.hpp"
 	"./include/core/util/serialization.hpp"
 	"./include/core/util/SpiralIter.hpp"
 	"./include/core/util/Timer.hpp"
@@ -24,6 +25,7 @@ set(HEADER_FILES
 
 	"./include/core/voxel/block.hpp"
 	"./include/core/voxel/chunk.hpp"
+	"./include/core/voxel/ChunkData.hpp"
 	"./include/core/voxel/IChunk.hpp"
 	"./include/core/voxel/VoxelConstants.hpp"
 	"./include/core/voxel/VoxelCollision.hpp"
@@ -43,6 +45,8 @@ set(SOURCE_FILES
 
 	"./src/voxel/block.cpp"
 	"./src/voxel/chunk.cpp"
+	"./src/voxel/ChunkData.cpp"
+	"./src/voxel/IChunk.cpp"
 	"./src/voxel/VoxelCollision.cpp"
 )
 
