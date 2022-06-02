@@ -24,11 +24,11 @@ bool IChunk::setBlock(const BlockCoords& coords, BlockType type) {
 	return false;
 }
 
-CompressedChunk IChunk::compress() const {
-	return CompressedChunk{ getChunkCoords(), getUpdateCount(), data->compress()};
+CompressedChunk2 IChunk::compress() const {
+	return CompressedChunk2{ getChunkCoords(), getUpdateCount(), data->compress()};
 }
 
-bool IChunk::decompress(const CompressedChunk& chunk) {
+bool IChunk::decompress(const CompressedChunk2& chunk) {
 	coords = chunk.coords;
 	updateCount = chunk.updateCount;
 	return data->decompress(chunk.data);

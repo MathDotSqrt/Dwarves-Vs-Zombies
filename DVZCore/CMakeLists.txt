@@ -48,6 +48,8 @@ set(SOURCE_FILES
 	"./src/voxel/chunk.cpp"
 	"./src/voxel/ChunkData.cpp"
 	"./src/voxel/IChunk.cpp"
+	"./src/voxel/IVoxelWorld.cpp"
+	"./src/voxel/VoxelConstants.cpp"
 	"./src/voxel/VoxelCollision.cpp"
 )
 

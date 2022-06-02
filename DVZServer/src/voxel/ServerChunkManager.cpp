@@ -1,7 +1,5 @@
 #include "server/voxel/ServerChunkManager.hpp"
 
-#include "core/voxel/IVoxelWorld.hpp"
-
 #include "core/util/util.hpp"
 #include "core/util/SpiralIter.hpp"
 

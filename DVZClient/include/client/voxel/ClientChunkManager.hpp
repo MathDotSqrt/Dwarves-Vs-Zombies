@@ -4,6 +4,7 @@
 
 #include "core/voxel/chunk.hpp"
 #include "client/util/util.hpp"
+#include "core/voxel/IVoxelWorld.hpp"
 
 #include <vector>
 #include <optional>
@@ -28,11 +29,11 @@ namespace DVZ::Voxel {
 		}
 	};
 
-	struct VoxelRaycastResult {
-		WorldCoords coords;
-		glm::vec3 normal;
-		BlockType type;
-	};
+	//struct VoxelRaycastResult {
+	//	WorldCoords coords;
+	//	glm::vec3 normal;
+	//	BlockType type;
+	//};
 
 	class ClientChunkManager {
 	public:

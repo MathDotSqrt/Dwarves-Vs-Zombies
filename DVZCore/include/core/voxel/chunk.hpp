@@ -89,39 +89,39 @@ namespace DVZ::Voxel {
 		ChunkData data;
 	};
 
-	BlockIndex toBlockXIndex(WorldIndex index);
-	BlockIndex toBlockYIndex(WorldIndex index);
-	BlockIndex toBlockZIndex(WorldIndex index);
-	ChunkIndex toChunkXIndex(WorldIndex index);
-	ChunkIndex toChunkYIndex(WorldIndex index);
-	ChunkIndex toChunkZIndex(WorldIndex index);
+	//BlockIndex toBlockXIndex(WorldIndex index);
+	//BlockIndex toBlockYIndex(WorldIndex index);
+	//BlockIndex toBlockZIndex(WorldIndex index);
+	//ChunkIndex toChunkXIndex(WorldIndex index);
+	//ChunkIndex toChunkYIndex(WorldIndex index);
+	//ChunkIndex toChunkZIndex(WorldIndex index);
 
-	BlockCoords toBlockCoords(const WorldCoords& coords);
-	ChunkCoords toChunkCoords(const WorldCoords& coords);
-	ChunkCoords toChunkCoords(const glm::vec3& coords);
-	WorldCoords toWorldCoords(const glm::vec3& coords);
-	WorldCoords toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords);
+	//BlockCoords toBlockCoords(const WorldCoords& coords);
+	//ChunkCoords toChunkCoords(const WorldCoords& coords);
+	//ChunkCoords toChunkCoords(const glm::vec3& coords);
+	//WorldCoords toWorldCoords(const glm::vec3& coords);
+	//WorldCoords toWorldCoords(const ChunkCoords& chunkCoords, const BlockCoords& blockCoords);
 
 	Collision::AABB getChunkAABB(const ChunkCoords& chunkCoords);
 }
 
-namespace std {
-	template<>
-	struct hash<DVZ::Voxel::ChunkCoords> {
-
-		size_t expand(size_t x) const {
-			x &= 0x3FF;
-			x = (x | (x << 16)) & 4278190335;
-			x = (x | (x << 8)) & 251719695;
-			x = (x | (x << 4)) & 3272356035;
-			x = (x | (x << 2)) & 1227133513;
-			return x;
-		}
-
-		std::size_t operator()(const DVZ::Voxel::ChunkCoords& coords) const {
-			return expand(coords.x) + (expand(coords.y) << 1) + (expand(coords.z) << 2);
-		}
-	};
-}
+//namespace std {
+//	template<>
+//	struct hash<DVZ::Voxel::ChunkCoords> {
+//
+//		size_t expand(size_t x) const {
+//			x &= 0x3FF;
+//			x = (x | (x << 16)) & 4278190335;
+//			x = (x | (x << 8)) & 251719695;
+//			x = (x | (x << 4)) & 3272356035;
+//			x = (x | (x << 2)) & 1227133513;
+//			return x;
+//		}
+//
+//		std::size_t operator()(const DVZ::Voxel::ChunkCoords& coords) const {
+//			return expand(coords.x) + (expand(coords.y) << 1) + (expand(coords.z) << 2);
+//		}
+//	};
+//}
 
 #endif

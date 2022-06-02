@@ -2,6 +2,7 @@
 #define DVZ_SERVER_CHUNK_MANAGER_HPP
 
 #include "core/voxel/chunk.hpp"
+#include "core/voxel/IVoxelWorld.hpp"
 #include <unordered_map>
 #include <entt/entt.hpp>
 

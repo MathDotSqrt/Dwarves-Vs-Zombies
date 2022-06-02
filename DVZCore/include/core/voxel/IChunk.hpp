@@ -12,7 +12,7 @@
 
 namespace DVZ::Voxel {
 
-	struct CompressedChunk {
+	struct CompressedChunk2 {
 		ChunkCoords coords ;
 		i32 updateCount;
 		std::vector<u8> data;
@@ -27,8 +27,8 @@ namespace DVZ::Voxel {
 		virtual BlockType getBlock(const BlockCoords& coords) const;
 		virtual bool setBlock(const BlockCoords& coords, BlockType block);
 
-		virtual CompressedChunk compress() const;
-		virtual bool decompress(const CompressedChunk& chunk);
+		virtual CompressedChunk2 compress() const;
+		virtual bool decompress(const CompressedChunk2& chunk);
 
 		void incrementUpdateCount();
 		i32 getUpdateCount() const;
