@@ -55,8 +55,8 @@ void PhysicsSystem::tick(Engine& engine) {
 		//vel.y = 0;
 	});
 
-	//if (std::uniform_int_distribution<i32>(0, 200)(rng) == 0) {
-		for (int i = 0; i < 5; i++) {
+	if (std::uniform_int_distribution<i32>(0, 20)(rng) == 0) {
+		for (int i = 0; i < 500; i++) {
 			std::uniform_int_distribution<Voxel::WorldIndex> U(0, Voxel::CHUNK_X);
 			std::uniform_int_distribution<Voxel::WorldIndex> U2(0, Voxel::CHUNK_Y);
 
@@ -64,7 +64,7 @@ void PhysicsSystem::tick(Engine& engine) {
 			engine.getChunkManager().setBlock(coords, Voxel::BlockType::AIR);
 
 		}
-	//}
+	}
 
 	auto debug_view = registry.view<Velocity, Debug>();
 
