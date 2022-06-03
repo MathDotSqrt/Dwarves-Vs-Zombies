@@ -4,7 +4,7 @@
 #include "core/common.hpp"
 #include "core/time.hpp"
 
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/VoxelConstants.hpp"
 
 #include <vector>
 

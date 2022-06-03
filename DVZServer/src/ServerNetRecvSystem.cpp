@@ -20,11 +20,13 @@ ServerNetRecvSystem::ServerNetRecvSystem() {
 void ServerNetRecvSystem::init(Engine& engine){
 	auto& registry = engine.getRegistry();
 
-	entt::entity test = registry.create();
-	registry.emplace<Transformation>(test, glm::vec3{ 0, 100, 0 });
-	registry.emplace<Velocity>(test);
-	registry.emplace<Debug>(test, 0.0f);
-	registry.emplace<Network>(test);
+	for (int i = 0; i < 10; i++) {
+		entt::entity test = registry.create();
+		registry.emplace<Transformation>(test, glm::vec3{ 0, 100 - i * 5, 0 });
+		registry.emplace<Velocity>(test);
+		registry.emplace<Debug>(test, 0.0f + i);
+		registry.emplace<Network>(test);
+	}
 }
 
 void ServerNetRecvSystem::tick(Engine& engine) {

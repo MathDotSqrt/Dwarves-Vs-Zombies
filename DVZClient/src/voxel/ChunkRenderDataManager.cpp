@@ -11,7 +11,16 @@
 #include <spdlog/spdlog.h>
 #include <algorithm>
 
+using namespace DVZ;
 using namespace DVZ::Voxel;
+
+DVZ::Collision::AABB getChunkAABB(const ChunkCoords& coords) {
+	glm::vec3 size{ CHUNK_X, CHUNK_Y, CHUNK_Z };
+	
+	glm::vec3 min = glm::vec3(coords) * size;
+	glm::vec3 max = min + size;
+	return { min, max };
+}
 
 void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const ClientChunkManager& manager) {
 	Timer timer{"ChunkRenderDataManager::bufferDirtyChunks"};
@@ -26,36 +35,35 @@ void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const Cli
 	ChunkCoords render_radius{ ClientChunkManager::RENDER_RADIUS - 1, 0, ClientChunkManager::RENDER_RADIUS - 1 };
 
 	coords.clear();
-	Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
-		Collision::AABB aabb = Voxel::getChunkAABB(coord);
-		if (frustum.intersects(aabb)) {
-			coords.push_back(coord);
-		}
-	});
+	{
+		Timer timer{ "iterate_volume" };
+		Util::iterate_volume(playerCoords - render_radius, playerCoords + render_radius, [&](const ChunkCoords& coord) {
+			Collision::AABB aabb = getChunkAABB(coord);
+			if (frustum.intersects(aabb)) {
+				coords.push_back(coord);
+			}
+		});
+	}
 
-	std::sort(coords.begin(), coords.end(), [&](const ChunkCoords& left, const ChunkCoords& right) {
-		return chunkDistance(left) > chunkDistance(right);
-	});
+	{
+		Timer timer{ "sorting" };
+		std::sort(coords.begin(), coords.end(), [&](const ChunkCoords& left, const ChunkCoords& right) {
+			return chunkDistance(left) > chunkDistance(right);
+		});
+	}
 
+
+	Timer timer2{ "queued_chunks" };
 	while (queuedChunks.size() < MAX_CHUNK_MESH_QUEUE && coords.size() > 0) {
 		ChunkCoords coord = coords.back();
 		coords.pop_back();
 
-		const Chunk* chunk = manager.getChunk(coord);
+		const IChunk* chunk = manager.getChunk(coord);
 		if (chunk && chunkMeshUpdateCountMap[coord] != chunk->getUpdateCount()) {
 			ChunkNeighbors neighbors = manager.getChunkNeighbors(coord);
 			if (neighbors.isSurrounded()) {
-				if (mesherPool.size() > 0) {
-					auto& newMesher = mesherPool.back();
-					queuedChunks.emplace_back(std::move(newMesher));
-
-					mesherPool.pop_back();
-				}
-				else {
-					queuedChunks.emplace_back();
-				}
-
-				queuedChunks.back().loadChunkData(neighbors);
+				queuedChunks.emplace_back(PoolAllocator<ChunkMesher>::getInstance()->allocate());
+				queuedChunks.back()->loadChunkData(neighbors);
 				chunkMeshUpdateCountMap[coord] = chunk->getUpdateCount();
 			}
 		}
@@ -63,6 +71,7 @@ void ChunkRenderDataManager::bufferDirtyChunks(const Frustum& frustum, const Cli
 }
 
 void ChunkRenderDataManager::update() {
+	Timer timer{"ChunkRenderDataManager::update"};
 	std::lock_guard<std::mutex> g{ queue_mutex };
 
 
@@ -78,6 +87,8 @@ void ChunkRenderDataManager::clearRenderData() {
 }
 
 void ChunkRenderDataManager::cullFarChunks() {
+	Timer timer{ "ChunkRenderDataManager::cullFarChunks" };
+
 	//Removing all queued chunks if out of render distance
 	//auto iter = std::remove_if(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& chunk) {
 	//	assert(chunk.blocks);
@@ -106,6 +117,7 @@ void ChunkRenderDataManager::cullFarChunks() {
 }
 
 void ChunkRenderDataManager::meshChunks() {
+	Timer timer{ "ChunkRenderDataManager::meshChunks" };
 	meshChunksOnThread();
 	launchMesherThreads();
 	bufferMeshedChunks();
@@ -113,22 +125,20 @@ void ChunkRenderDataManager::meshChunks() {
 
 void ChunkRenderDataManager::meshChunksOnThread() {
 	const auto min = std::min(queuedChunks.size(), MIN_CHUNK_MESH);
-
-	std::for_each(queuedChunks.rbegin(), queuedChunks.rbegin() + min, [&](ChunkMesher& mesher) {
-		mesher.meshChunk();
-		if (mesher.getGeometry().size() > 0) {
-			const auto [iter, _] = renderableChunks.emplace(mesher.getCoords(), mesher.getCoords());
-			iter->second.bufferGeometry(mesher.getGeometry());
+	std::for_each(queuedChunks.rbegin(), queuedChunks.rbegin() + min, [&](auto& mesher) {
+		mesher->meshChunk();
+		if (mesher->getGeometry().size() > 0) {
+			const auto [iter, _] = renderableChunks.emplace(mesher->getCoords(), mesher->getCoords());
+			iter->second.bufferGeometry(mesher->getGeometry());
 		}
 	});
 
-	std::move(queuedChunks.rbegin(), queuedChunks.rbegin() + min, std::back_inserter(mesherPool));
 	queuedChunks.erase(queuedChunks.end() - min, queuedChunks.end());
 }
 
 void ChunkRenderDataManager::launchMesherThreads() {
-	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const ChunkMesher& left, const ChunkMesher& right) {
-		return chunkDistance(left.getCoords()) > chunkDistance(right.getCoords());
+	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const auto& left, const auto& right) {
+		return chunkDistance(left->getCoords()) > chunkDistance(right->getCoords());
 	});
 
 	while (queuedChunks.size() > 0 && futureChunkGeometries.size() < MAX_THREADS) {
@@ -138,26 +148,25 @@ void ChunkRenderDataManager::launchMesherThreads() {
 }
 
 void ChunkRenderDataManager::bufferMeshedChunks() {
-	auto iter = std::partition(futureChunkGeometries.begin(), futureChunkGeometries.end(), [](const std::future<ChunkMesher>& future) {
+	auto iter = std::partition(futureChunkGeometries.begin(), futureChunkGeometries.end(), [](const std::future<AllocatorHandle<ChunkMesher>>& future) {
 		return future.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
 	});
 
-	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<ChunkMesher>& future) {
+	std::for_each(iter, futureChunkGeometries.end(), [&](std::future<AllocatorHandle<ChunkMesher>>& future) {
 		assert(future.valid());
-		ChunkMesher mesher = future.get();
+		auto mesher = future.get();
 
-		if (mesher.getGeometry().size() > 0) {
-			const auto [iter, _] = renderableChunks.emplace(mesher.getCoords(), mesher.getCoords());
-			iter->second.bufferGeometry(mesher.getGeometry());
+		if (mesher->getGeometry().size() > 0) {
+			const auto [iter, _] = renderableChunks.emplace(mesher->getCoords(), mesher->getCoords());
+			iter->second.bufferGeometry(mesher->getGeometry());
 		}
-		mesherPool.emplace_back(std::move(mesher));
 	});
 
 	futureChunkGeometries.erase(iter, futureChunkGeometries.end());
 }
 
-ChunkMesher ChunkRenderDataManager::meshChunkAsync(ChunkMesher&& mesher) {
-	mesher.meshChunk();
+AllocatorHandle<ChunkMesher> ChunkRenderDataManager::meshChunkAsync(AllocatorHandle<ChunkMesher>&& mesher) {
+	mesher->meshChunk();
 	return std::move(mesher);
 }
 

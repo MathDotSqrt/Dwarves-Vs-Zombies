@@ -2,7 +2,7 @@
 #ifndef DVZ_CHUNK_RENDER_DATA_HPP
 #define DVZ_CHUNK_RENDER_DATA_HPP
 
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/VoxelConstants.hpp"
 #include "client/graphics/VAO.hpp"
 #include "client/graphics/VBO.hpp"
 #include "client/graphics/Geometry.hpp"

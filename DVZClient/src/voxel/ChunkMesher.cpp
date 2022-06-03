@@ -22,7 +22,8 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bz = 0; bz < CHUNK_Z; bz++) {
 				for (int bx = 0; bx < CHUNK_X; bx++) {
-					getPaddedBlock(bx, by, bz) = n.center->getBlock(bx, by, bz);
+					BlockCoords coords{ bx, by, bz };
+					getPaddedBlock(bx, by, bz) = n.center->getBlock(coords);
 				}
 			}
 		}
@@ -31,7 +32,8 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 	if (n.pz) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bx = 0; bx < CHUNK_X; bx++) {
-				getPaddedBlock(bx, by, CHUNK_Z) = n.pz->getBlock(bx, by, 0);
+				BlockCoords coords{ bx, by, 0 };
+				getPaddedBlock(bx, by, CHUNK_Z) = n.pz->getBlock(coords);
 			}
 		}
 	}
@@ -39,7 +41,8 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 	if (n.nz) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bx = 0; bx < CHUNK_X; bx++) {
-				getPaddedBlock(bx, by, -1) = n.nz->getBlock(bx, by, CHUNK_Z - 1);
+				BlockCoords coords{ bx, by, CHUNK_Z - 1 };
+				getPaddedBlock(bx, by, -1) = n.nz->getBlock(coords);
 			}
 		}
 	}
@@ -47,7 +50,8 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 	if (n.nx) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bz = 0; bz < CHUNK_Z; bz++) {
-				getPaddedBlock(-1, by, bz) = n.nx->getBlock(CHUNK_X - 1, by, bz);
+				BlockCoords coords{ CHUNK_X - 1, by, bz };
+				getPaddedBlock(-1, by, bz) = n.nx->getBlock(coords);
 			}
 		}
 	}
@@ -55,7 +59,8 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 	if (n.px) {
 		for (int by = 0; by < CHUNK_Y; by++) {
 			for (int bz = 0; bz < CHUNK_Z; bz++) {
-				getPaddedBlock(CHUNK_X, by, bz) = n.px->getBlock(0, by, bz);
+				BlockCoords coords{ 0, by, bz };
+				getPaddedBlock(CHUNK_X, by, bz) = n.px->getBlock(coords);
 			}
 		}
 	}

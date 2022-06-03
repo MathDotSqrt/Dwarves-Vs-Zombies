@@ -75,7 +75,7 @@ namespace DVZ{
 		std::unique_ptr<Net::NetClientManager> netManager;
 		std::unique_ptr<Voxel::ClientChunkManager> chunkManager;
 		std::unique_ptr<Voxel::ChunkRenderDataManager> chunkRenderDataManager;
-		std::thread updateThread;
+		std::unique_ptr<std::thread> updateThread;
 
 		std::vector<std::unique_ptr<Systems::System>> systems;
 

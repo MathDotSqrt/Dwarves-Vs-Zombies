@@ -16,54 +16,56 @@ ServerChunkManager::ServerChunkManager() {
 	for (ChunkIndex cx = -WORLD_RADIUS; cx <= WORLD_RADIUS; cx++) {
 		for (ChunkIndex cz = -WORLD_RADIUS; cz <= WORLD_RADIUS; cz++) {
 			//chunks[ChunkCoords{ cx, 0, cz }] = Chunk{ cx, 0, cz };
-			chunks[ChunkCoords{ cx, 0, cz }].generate(ChunkCoords{cx, 0, cz});
+			auto& [iter, _] = chunks.emplace(ChunkCoords{cx, 0, cz}, IChunk{ChunkCoords{cx, 0, cz}});
+			iter->second.generate();
 		}
 	}
 	spdlog::info("Done.");
 
 }
 
-bool ServerChunkManager::setBlock(const WorldCoords& coords, BlockType type) {
-	ChunkCoords chunk_coords = toChunkCoords(coords);
-	Chunk* chunk = getChunk(chunk_coords);
-	if (chunk != nullptr) {
-		compressedChunksCache.erase(chunk_coords);
-		BlockCoords block_coords = toBlockCoords(coords);
-		chunk->setBlock(block_coords, type);
-		return true;
-	}
-
-	return false;
-}
-
-Chunk* ServerChunkManager::getChunk(const ChunkCoords& coords) {
-	auto iter = chunks.find(coords);
-	if (iter != chunks.end()) {
-		return &(iter->second);
-	}
-	else {
-		return nullptr;
-	}
-}
-
-const Chunk* ServerChunkManager::getChunk(const ChunkCoords& coords) const {
-	auto iter = chunks.find(coords);
-	if (iter != chunks.end()) {
-		return &(iter->second);
-	}
-	else {
-		return nullptr;
-	}
-}
-
 BlockType ServerChunkManager::getBlock(const WorldCoords& coords) const {
 	ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
-	const Chunk* chunk = getChunk(chunk_coords);
+	const IChunk* chunk = getChunk(chunk_coords);
 	if (chunk == nullptr) {
 		return BlockType::AIR;
 	}
 
 	return chunk->getBlock(Voxel::toBlockCoords(coords));
+}
+
+bool ServerChunkManager::setBlock(const WorldCoords& coords, BlockType type) {
+	ChunkCoords chunk_coords = toChunkCoords(coords);
+	IChunk* chunk = getChunk(chunk_coords);
+	if (chunk != nullptr) {
+		BlockCoords block_coords = toBlockCoords(coords);
+		if (chunk->setBlock(block_coords, type)) {
+			compressedChunksCache.erase(chunk_coords);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+IChunk* ServerChunkManager::getChunk(const ChunkCoords& coords) {
+	auto iter = chunks.find(coords);
+	if (iter != chunks.end()) {
+		return &(iter->second);
+	}
+	else {
+		return nullptr;
+	}
+}
+
+const IChunk* ServerChunkManager::getChunk(const ChunkCoords& coords) const {
+	auto iter = chunks.find(coords);
+	if (iter != chunks.end()) {
+		return &(iter->second);
+	}
+	else {
+		return nullptr;
+	}
 }
 
 void ServerChunkManager::addPlayer(entt::entity id, const glm::vec3& world_pos) {
@@ -75,7 +77,7 @@ void ServerChunkManager::removePlayer(entt::entity id) {
 }
 
 void ServerChunkManager::ackChunk(entt::entity id, ChunkCoords coord, int ack) {
-	const Chunk* chunk_ptr = getChunk(coord);
+	const IChunk* chunk_ptr = getChunk(coord);
 	if (chunk_ptr) {
 		auto& oldAckNumber = playerChunks.at(id).chunkAckMap[chunk_ptr];
 		if (oldAckNumber < ack) {
@@ -97,7 +99,7 @@ std::vector<ChunkCoords> ServerChunkManager::getUnackedChunks(entt::entity id, c
 	SpiralRange<ChunkIndex> range{center, RENDER_RADIUS};
 	for (const auto& chunkCoord : range) {
 
-		const Chunk* chunk_ptr = getChunk(chunkCoord);
+		const IChunk* chunk_ptr = getChunk(chunkCoord);
 		if (chunk_ptr) {
 			if (find_with_default(state.chunkAckMap, chunk_ptr, 0) < chunk_ptr->getUpdateCount()) {
 				unackedChunks.push_back(chunkCoord);
@@ -117,9 +119,9 @@ const CompressedChunk* ServerChunkManager::getCompressedChunk(const ChunkCoords&
 		return &(iter->second);
 	}
 	
-	const Chunk* chunk_ptr = getChunk(coords);
+	const IChunk* chunk_ptr = getChunk(coords);
 	if (chunk_ptr) {
-		const auto& [iter, _] = compressedChunksCache.emplace(coords, chunk_ptr->compressChunk());
+		const auto& [iter, _] = compressedChunksCache.emplace(coords, chunk_ptr->compress());
 		return &(iter->second);
 	}
 	

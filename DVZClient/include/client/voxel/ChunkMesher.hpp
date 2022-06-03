@@ -2,7 +2,9 @@
 #ifndef DVZ_CHUNK_MESHER_HPP
 #define DVZ_CHUNK_MESHER_HPP
 
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/VoxelConstants.hpp"
+#include "core/voxel/block.hpp"
+
 #include "client/voxel/ChunkRenderData.hpp"
 
 namespace DVZ::Voxel {

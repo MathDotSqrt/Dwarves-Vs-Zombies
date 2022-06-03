@@ -18,7 +18,7 @@ namespace DVZ::Voxel {
 	private:
 		i32 toIndex(const BlockCoords& coords) const;
 
-		std::array<BlockType, CHUNK_SIZE> data;
+		std::array<BlockType, CHUNK_SIZE> block_data;
 	};
 }
 #endif

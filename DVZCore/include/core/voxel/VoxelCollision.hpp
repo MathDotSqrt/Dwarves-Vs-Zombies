@@ -2,7 +2,8 @@
 #ifndef DVZ_VOXEL_COLLISION_HPP
 #define DVZ_VOXEL_COLLISION_HPP
 
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/VoxelConstants.hpp"
+#include "core/voxel/block.hpp"
 #include "core/collision/AABB.hpp"
 #include <functional>
 #include <vector>

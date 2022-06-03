@@ -12,6 +12,29 @@ float intbound(float s, float ds) {
 	return (1 - s) / ds;
 }
 
+ChunkNeighbors IVoxelWorld::getChunkNeighbors(const ChunkCoords& coords) const {
+	constexpr ChunkCoords X{ 1, 0, 0 };
+	constexpr ChunkCoords Y{ 0, 1, 0 };
+	constexpr ChunkCoords Z{ 0, 0, 1 };
+
+	ChunkNeighbors n;
+	n.center = getChunk(coords);
+	n.nx = getChunk(coords - X);
+	n.px = getChunk(coords + X);
+	n.nz = getChunk(coords - Z);
+	n.pz = getChunk(coords + Z);
+
+	return n;
+}
+
+const WorldCoords& IVoxelWorld::getMinWorldBound() const {
+	return minBound;
+}
+
+const WorldCoords& IVoxelWorld::getMaxWorldBound() const {
+	return maxBound;
+}
+
 std::optional<VoxelRaycastResult> IVoxelWorld::raycast(const glm::vec3& origin, const glm::vec3& dir, float radius) const {
 	constexpr float epsilon = 0.001f;
 

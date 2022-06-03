@@ -7,7 +7,7 @@
 #include "core/util/serialization.hpp"
 
 #include "core/net/EntitySnapshotDelta.hpp"
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/IChunk.hpp"
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>

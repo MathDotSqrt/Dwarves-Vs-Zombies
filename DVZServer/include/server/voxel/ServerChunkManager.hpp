@@ -1,7 +1,7 @@
 #ifndef DVZ_SERVER_CHUNK_MANAGER_HPP
 #define DVZ_SERVER_CHUNK_MANAGER_HPP
 
-#include "core/voxel/chunk.hpp"
+#include "core/voxel/IChunk.hpp"
 #include "core/voxel/IVoxelWorld.hpp"
 #include <unordered_map>
 #include <entt/entt.hpp>
@@ -9,19 +9,19 @@
 namespace DVZ::Voxel {
 
 	struct NetChunkState {
-		std::unordered_map<const Chunk*, int> chunkAckMap;
+		std::unordered_map<const IChunk*, int> chunkAckMap;
 	};
 
-	class ServerChunkManager {
+	class ServerChunkManager : public IVoxelWorld{
 	public:
 		ServerChunkManager();
 
 
-		bool setBlock(const WorldCoords& coords, BlockType block);
-		Chunk* getChunk(const ChunkCoords& coords);
-		const Chunk* getChunk(const ChunkCoords& coords) const;
-		BlockType getBlock(const WorldCoords& coords) const;
-
+		BlockType getBlock(const WorldCoords& coords) const override;
+		bool setBlock(const WorldCoords& coords, BlockType block) override;
+		
+		IChunk* getChunk(const ChunkCoords& coords) override;
+		const IChunk* getChunk(const ChunkCoords& coords) const override;
 
 		void addPlayer(entt::entity id, const glm::vec3& world_position);
 		void removePlayer(entt::entity id);
@@ -34,7 +34,7 @@ namespace DVZ::Voxel {
 		constexpr static ChunkIndex RENDER_RADIUS = 15;
 
 
-		std::unordered_map<ChunkCoords, Chunk> chunks;
+		std::unordered_map<ChunkCoords, IChunk> chunks;
 
 		std::unordered_map<ChunkCoords, CompressedChunk> compressedChunksCache;
 

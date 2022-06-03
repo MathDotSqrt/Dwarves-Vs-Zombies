@@ -36,17 +36,17 @@ Engine::Engine(std::string_view ip) :
 	renderer(std::make_unique<Graphics::BasicRenderer>()),
 	netManager(std::make_unique<Net::NetClientManager>()),
 	chunkManager(std::make_unique<Voxel::ClientChunkManager>()),
-	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()),
-	updateThread(&Engine::updateLoop, this){
+	chunkRenderDataManager(std::make_unique<Voxel::ChunkRenderDataManager>()){
 	using namespace entt;
-
 	setIP(ip);
+
+	updateThread = std::make_unique<std::thread>(&Engine::updateLoop, this);
 }
 
 Engine::~Engine() {
 	signalStop();
 
-	updateThread.join();
+	updateThread->join();
 }
 
 void Engine::update() {

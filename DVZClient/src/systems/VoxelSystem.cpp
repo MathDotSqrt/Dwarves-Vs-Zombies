@@ -26,6 +26,15 @@ void VoxelSystem::gameTick(Engine& engine) {
 
 	manager.updatePlayerPosition(transform.pos);
 
+	//if (Voxel::IChunk* chunk = manager.getChunk(Voxel::ChunkCoords{ 0, 0, 0 });  chunk) {
+	//	chunk->incrementUpdateCount();
+	//}
+	//if (Voxel::IChunk* chunk = manager.getChunk(Voxel::ChunkCoords{ 1, 0, 0 });  chunk) {
+	//	chunk->incrementUpdateCount();
+	//}
+	//if (Voxel::IChunk* chunk = manager.getChunk(Voxel::ChunkCoords{ 0, 0, 1 });  chunk) {
+	//	chunk->incrementUpdateCount();
+	//}
 
 	const auto& window = Window::getInstance();
 

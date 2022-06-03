@@ -5,6 +5,7 @@
 #include "client/voxel/ChunkMesher.hpp"
 #include "client/voxel/ChunkRenderData.hpp"
 #include "core/util/Frustum.hpp"
+#include "core/util/PoolAllocator.hpp"
 
 #include <vector>
 #include <mutex>
@@ -32,27 +33,27 @@ namespace DVZ::Voxel {
 #else
 		constexpr static size_t MAX_THREADS = 8;
 #endif
-		constexpr static size_t MAX_CHUNK_MESH_QUEUE = MAX_THREADS * 2;
-		constexpr static size_t MIN_CHUNK_MESH = 4;
+		constexpr static size_t MIN_CHUNK_MESH = 3;
+		constexpr static size_t MAX_CHUNK_MESH_QUEUE = MAX_THREADS * 2 + MIN_CHUNK_MESH;
 
 		void cullFarChunks();
 		void meshChunks();
 		void meshChunksOnThread();
 		void launchMesherThreads();
 		void bufferMeshedChunks();
-		ChunkMesher meshChunkAsync(ChunkMesher &&);
+		AllocatorHandle<ChunkMesher> meshChunkAsync(AllocatorHandle<ChunkMesher>&&);
 		int chunkDistance(const ChunkCoords& coords) const;
 
 		ChunkCoords playerCoords{0};
 
 		std::mutex queue_mutex;
-		std::vector<ChunkMesher> queuedChunks;
-		std::vector<ChunkMesher> mesherPool;
+		std::vector<AllocatorHandle<ChunkMesher>> queuedChunks;
+		//std::vector<ChunkMesher> mesherPool;
 
 		std::unordered_map<ChunkCoords, ChunkRenderData> renderableChunks;
 
 		std::unordered_map<ChunkCoords, int> chunkMeshUpdateCountMap;
-		std::vector<std::future<ChunkMesher>> futureChunkGeometries;
+		std::vector<std::future<AllocatorHandle<ChunkMesher>>> futureChunkGeometries;
 	};
 }
 
