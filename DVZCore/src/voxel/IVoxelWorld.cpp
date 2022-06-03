@@ -1,6 +1,8 @@
 #include "core/voxel/IVoxelWorld.hpp"
 #include "core/util/math.hpp"
 
+#include <cmath>
+
 using namespace DVZ::Voxel;
 
 float intbound(float s, float ds) {
