@@ -124,6 +124,7 @@ void ChunkRenderDataManager::meshChunks() {
 }
 
 void ChunkRenderDataManager::meshChunksOnThread() {
+	Timer timer{ "ChunkRenderDataManager::meshChunksOnThread" };
 	const auto min = std::min(queuedChunks.size(), MIN_CHUNK_MESH);
 	std::for_each(queuedChunks.rbegin(), queuedChunks.rbegin() + min, [&](auto& mesher) {
 		mesher->meshChunk();
@@ -132,11 +133,13 @@ void ChunkRenderDataManager::meshChunksOnThread() {
 			iter->second.bufferGeometry(mesher->getGeometry());
 		}
 	});
+	Timer timer2{ "ChunkRenderDataManager::meshChunksOnThread_erase" };
 
 	queuedChunks.erase(queuedChunks.end() - min, queuedChunks.end());
 }
 
 void ChunkRenderDataManager::launchMesherThreads() {
+	Timer timer{ "ChunkRenderDataManager::launchMesherThreads" };
 	std::sort(queuedChunks.begin(), queuedChunks.end(), [&](const auto& left, const auto& right) {
 		return chunkDistance(left->getCoords()) > chunkDistance(right->getCoords());
 	});
@@ -148,6 +151,7 @@ void ChunkRenderDataManager::launchMesherThreads() {
 }
 
 void ChunkRenderDataManager::bufferMeshedChunks() {
+	Timer timer{ "ChunkRenderDataManager::bufferMeshedChunks" };
 	auto iter = std::partition(futureChunkGeometries.begin(), futureChunkGeometries.end(), [](const std::future<AllocatorHandle<ChunkMesher>>& future) {
 		return future.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
 	});

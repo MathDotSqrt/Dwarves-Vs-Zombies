@@ -14,7 +14,6 @@ namespace DVZ::Voxel {
 	public:
 		ChunkMesher();
 
-		//TODO: implement chunk neighbors
 		void loadChunkData(const ChunkNeighbors& neighbors);
 		const ChunkVertexVector& meshChunk();
 		void setCoords(const ChunkCoords& newCoords);
