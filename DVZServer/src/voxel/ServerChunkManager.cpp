@@ -16,7 +16,7 @@ ServerChunkManager::ServerChunkManager() {
 	for (ChunkIndex cx = -WORLD_RADIUS; cx <= WORLD_RADIUS; cx++) {
 		for (ChunkIndex cz = -WORLD_RADIUS; cz <= WORLD_RADIUS; cz++) {
 			//chunks[ChunkCoords{ cx, 0, cz }] = Chunk{ cx, 0, cz };
-			auto& [iter, _] = chunks.emplace(std::make_pair(ChunkCoords{ cx, 0, cz }, IChunk{ ChunkCoords{cx, 0, cz} }));
+			const auto [iter, _] = chunks.emplace(ChunkCoords{cx, 0, cz}, IChunk{ChunkCoords{cx, 0, cz}});
 			iter->second.generate();
 		}
 	}
@@ -121,7 +121,7 @@ const CompressedChunk* ServerChunkManager::getCompressedChunk(const ChunkCoords&
 	
 	const IChunk* chunk_ptr = getChunk(coords);
 	if (chunk_ptr) {
-		const auto& [iter, _] = compressedChunksCache.emplace(std::make_pair(coords, chunk_ptr->compress()));
+		const auto [iter, _] = compressedChunksCache.emplace(coords, chunk_ptr->compress());
 		return &(iter->second);
 	}
 	
