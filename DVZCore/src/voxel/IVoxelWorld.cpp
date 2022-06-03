@@ -10,7 +10,7 @@ float intbound(float s, float ds) {
 		s = -s;
 		ds = -ds;
 	}
-	s = std::fmodf(s, 1.0f);
+	s = fmodf(s, 1.0f);
 	return (1 - s) / ds;
 }
 
