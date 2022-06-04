@@ -28,10 +28,11 @@ namespace DVZ::Voxel {
 		virtual CompressedChunk compress() const;
 		virtual bool decompress(const CompressedChunk& chunk);
 
+		virtual void incrementUpdateCount();
+
 		void generate();
 		const ChunkCoords& getChunkCoords() const;
 
-		void incrementUpdateCount();
 		i32 getUpdateCount() const;
 
 	protected:

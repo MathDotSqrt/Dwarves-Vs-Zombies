@@ -2,8 +2,9 @@
 #ifndef DVZ_CLIENT_CHUNK_MANAGER_HPP
 #define DVZ_CLIENT_CHUNK_MANAGER_HPP
 
-#include "core/voxel/chunk.hpp"
+#include "client/voxel/ClientChunk.hpp"
 #include "client/util/util.hpp"
+
 #include "core/voxel/IVoxelWorld.hpp"
 
 #include <vector>
@@ -30,6 +31,9 @@ namespace DVZ::Voxel {
 		IChunk* getChunk(const ChunkCoords& coords) override;
 		const IChunk* getChunk(const ChunkCoords& coords) const override;
 
+		ClientChunk* getClientChunk(const ChunkCoords& coords);
+		const ClientChunk* getClientChunk(const ChunkCoords& coords) const;
+
 		void updatePlayerPosition(const glm::vec3& pos);
 
 		const ChunkCoords& getPlayerChunkCoords() const;
@@ -47,7 +51,7 @@ namespace DVZ::Voxel {
 		ChunkCoords playerChunkCoords;
 		bool hasChanged = true;
 
-		std::unordered_map<ChunkCoords, IChunk> chunks;
+		std::unordered_map<ChunkCoords, ClientChunk> chunks;
 		std::unordered_map<ChunkCoords, CompressedChunk> compressedChunks;
 	};
 }

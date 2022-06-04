@@ -77,16 +77,18 @@ bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
 }
 
 const IChunk* ClientChunkManager::getChunk(const ChunkCoords& coords) const {
-	auto iter = chunks.find(coords);
-	if (iter != chunks.end()) {
-		return &(iter->second);
-	}
-	else {
-		return nullptr;
-	}
+	return getClientChunk(coords);
 }
 
 IChunk* ClientChunkManager::getChunk(const ChunkCoords& coords) {
+	return getClientChunk(coords);
+}
+
+ClientChunk* ClientChunkManager::getClientChunk(const ChunkCoords& coords) {
+	return const_cast<ClientChunk*>(const_cast<const ClientChunkManager*>(this)->getClientChunk(coords));
+}
+
+const ClientChunk* ClientChunkManager::getClientChunk(const ChunkCoords& coords) const {
 	auto iter = chunks.find(coords);
 	if (iter != chunks.end()) {
 		return &(iter->second);
@@ -153,7 +155,7 @@ IChunk* ClientChunkManager::getChunkOrAllocate(const ChunkCoords& coords) {
 		return &(iter->second);
 	}
 	else {
-		const auto&[iter, _] = chunks.emplace(coords, IChunk{coords});
+		const auto&[iter, _] = chunks.emplace(coords, ClientChunk{coords});
 		return &(iter->second);
 	}
 }

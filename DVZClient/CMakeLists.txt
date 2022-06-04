@@ -42,6 +42,7 @@ set(HEADER_FILES
 	"./include/client/voxel/ChunkMesher.hpp"
 	"./include/client/voxel/ChunkRenderData.hpp"
 	"./include/client/voxel/ChunkRenderDataManager.hpp"
+	"./include/client/voxel/ClientChunk.hpp"
 	"./include/client/voxel/ClientChunkManager.hpp"
 
 )
@@ -81,6 +82,7 @@ set(SOURCE_FILES
 	"./src/voxel/ChunkMesher.cpp"
 	"./src/voxel/ChunkRenderData.cpp"
 	"./src/voxel/ChunkRenderDataManager.cpp"
+	"./src/voxel/ClientChunk.cpp"
 	"./src/voxel/ClientChunkManager.cpp"
 
 )

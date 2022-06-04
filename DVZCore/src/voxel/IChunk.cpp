@@ -10,10 +10,6 @@ IChunk::IChunk(const ChunkCoords& coords) : coords(coords), updateCount(0) {
 	data = PoolAllocator<IChunkData>::getInstance(30 * 30)->allocate();
 }
 
-const ChunkCoords& IChunk::getChunkCoords() const {
-	return coords;
-}
-
 BlockType IChunk::getBlock(const BlockCoords& coords) const {
 	return data->getBlock(coords);
 }
@@ -34,6 +30,10 @@ bool IChunk::decompress(const CompressedChunk& chunk) {
 	coords = chunk.coords;
 	updateCount = chunk.updateCount;
 	return data->decompress(chunk.data);
+}
+
+void IChunk::incrementUpdateCount() {
+	updateCount += 1;
 }
 
 void IChunk::generate() {
@@ -86,8 +86,8 @@ void IChunk::generate() {
 	incrementUpdateCount();
 }
 
-void IChunk::incrementUpdateCount() {
-	updateCount += 1;
+const ChunkCoords& IChunk::getChunkCoords() const {
+	return coords;
 }
 
 i32 IChunk::getUpdateCount() const {
