@@ -13,20 +13,13 @@ namespace DVZ::Voxel {
 
 		bool decompress(const CompressedChunk& compressed) override;
 
-		void incrementPX();
-		void incrementNX();
-		void incrementPZ();
-		void incrementNZ();
+		void incrementRenderUpdateCount();
 
-		i32 getPX() const;
-		i32 getNX() const;
-		i32 getPZ() const;
-		i32 getNZ() const;
+		i32 getRenderUpdateCount() const;
+
 	private:
-		i32 pxRenderUpdateCount = 0;
-		i32 nxRenderUpdateCount = 0;
-		i32 pzRenderUpdateCount = 0;
-		i32 nzRenderUpdateCount = 0;
+		i32 renderUpdateCount = 0;
+		
 	};
 
 }

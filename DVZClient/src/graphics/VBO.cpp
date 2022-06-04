@@ -26,6 +26,8 @@ constexpr GLenum toGL(VBO::BufferHint type) {
 		return GL_STATIC_DRAW;
 	case VBO::BufferHint::STREAM_DRAW:
 		return GL_STREAM_DRAW;
+	case VBO::BufferHint::DYNAMIC_DRAW:
+		return GL_DYNAMIC_DRAW;
 	default:
 		assert(false);
 		return 0;
@@ -72,7 +74,7 @@ void VBO::bufferOrphan() {
 
 void VBO::bufferData(size_t bytes, void* data, BufferHint hint) {
 	assert(bytes != 0);
-	spdlog::debug("VBO[{}]: buffered {} bytes", vboID, bytes);
+	//spdlog::debug("VBO[{}]: buffered {} bytes", vboID, bytes);
 	glBufferData(toGL(type), bytes, data, toGL(hint));
 	this->bytes = bytes;
 }

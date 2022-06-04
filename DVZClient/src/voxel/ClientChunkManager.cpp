@@ -36,9 +36,9 @@ bool ClientChunkManager::setBlock(const WorldCoords& coords, BlockType block) {
 
 	const auto update_chunk = [this](const WorldCoords& coords) {
 		ChunkCoords chunk_coords = Voxel::toChunkCoords(coords);
-		IChunk* chunk = getChunk(chunk_coords);
+		ClientChunk* chunk = getClientChunk(chunk_coords);
 		if (chunk) {
-			chunk->incrementUpdateCount();
+			chunk->incrementRenderUpdateCount();
 		}
 	};
 
@@ -142,6 +142,19 @@ void ClientChunkManager::decompressChunks() {
 		if (chunk->getUpdateCount() < compressed.updateCount) {
 			if (!chunk->decompress(compressed)) {
 				spdlog::warn("Failed to decompress chunk: <{},{},{}>", coords.x, coords.y, coords.z);
+			}
+
+			if (ClientChunk* neighbor = getClientChunk(chunk->getChunkCoords() + ChunkCoords{ 1, 0, 0 }); neighbor) {
+				neighbor->incrementRenderUpdateCount();
+			}
+			if (ClientChunk* neighbor = getClientChunk(chunk->getChunkCoords() + ChunkCoords{ -1, 0, 0 }); neighbor) {
+				neighbor->incrementRenderUpdateCount();
+			}
+			if (ClientChunk* neighbor = getClientChunk(chunk->getChunkCoords() + ChunkCoords{ 0, 0, 1 }); neighbor) {
+				neighbor->incrementRenderUpdateCount();
+			}
+			if (ClientChunk* neighbor = getClientChunk(chunk->getChunkCoords() + ChunkCoords{ 0, 0, -1 }); neighbor) {
+				neighbor->incrementRenderUpdateCount();
 			}
 		}
 	}

@@ -29,6 +29,26 @@ ChunkNeighbors IVoxelWorld::getChunkNeighbors(const ChunkCoords& coords) const {
 	return n;
 }
 
+ChunkNeighbors IVoxelWorld::getChunkNeighbors(const IChunk* chunk) const {
+	constexpr ChunkCoords X{ 1, 0, 0 };
+	constexpr ChunkCoords Y{ 0, 1, 0 };
+	constexpr ChunkCoords Z{ 0, 0, 1 };
+
+	ChunkNeighbors n;
+	if (chunk == nullptr) {
+		return n;
+	}
+	const ChunkCoords& coords = chunk->getChunkCoords();
+
+	n.center = chunk;
+	n.nx = getChunk(coords - X);
+	n.px = getChunk(coords + X);
+	n.nz = getChunk(coords - Z);
+	n.pz = getChunk(coords + Z);
+
+	return n;
+}
+
 const WorldCoords& IVoxelWorld::getMinWorldBound() const {
 	return minBound;
 }

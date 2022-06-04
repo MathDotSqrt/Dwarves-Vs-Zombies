@@ -1,5 +1,6 @@
 #include "client/voxel/ChunkRenderData.hpp"
 
+#include "core/util/Timer.hpp"
 
 #include <numeric>
 #include <spdlog/spdlog.h>
@@ -21,7 +22,7 @@ ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : 
 
 	if (master_ebo == nullptr) {
 		master_ebo = std::make_unique<Graphics::VBO>(Graphics::VBO::BufferType::ELEMENT_ARRAY_BUFFER);
-		expandMasterEBO(6000);
+		expandMasterEBO(60000);
 	}
 	vao.bind();
 	vbo.bind();
@@ -47,7 +48,7 @@ void ChunkRenderData::bufferGeometry(const ChunkVertexVector& v) {
 	}
 
 	vbo.bind();
-	vbo.bufferData(v);
+	vbo.bufferData(v, Graphics::VBO::BufferHint::DYNAMIC_DRAW);
 	vbo.unbind();
 
 	//6 indices per quad

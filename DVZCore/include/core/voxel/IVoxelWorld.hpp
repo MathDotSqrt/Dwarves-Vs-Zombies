@@ -41,6 +41,7 @@ namespace DVZ::Voxel {
 		virtual const IChunk* getChunk(const ChunkCoords& coords) const = 0;
 
 		virtual ChunkNeighbors getChunkNeighbors(const ChunkCoords& coords) const;
+		virtual ChunkNeighbors getChunkNeighbors(const IChunk* chunk) const;
 
 		virtual const WorldCoords& getMinWorldBound() const;
 		virtual const WorldCoords& getMaxWorldBound() const;

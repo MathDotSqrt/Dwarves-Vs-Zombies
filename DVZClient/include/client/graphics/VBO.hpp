@@ -18,7 +18,8 @@ namespace DVZ::Graphics {
 
 		enum class BufferHint : GLenum {
 			STATIC_DRAW,
-			STREAM_DRAW
+			STREAM_DRAW,
+			DYNAMIC_DRAW
 		};
 
 		VBO(BufferType type);
@@ -40,7 +41,14 @@ namespace DVZ::Graphics {
 		template<typename T>
 		void bufferData(const std::vector<T>& data, BufferHint hint = BufferHint::STATIC_DRAW) {
 			void* data_ptr = (void*)data.data();
-			bufferData(sizeof(T) * data.size(), data_ptr);
+			size_t num_bytes = sizeof(T) * data.size();
+
+			if (num_bytes > getNumBytes()) {
+				bufferData(num_bytes, data_ptr, hint);
+			}
+			else {
+				bufferSubData(0, num_bytes, data_ptr);
+			}
 		}
 
 		template<typename T>

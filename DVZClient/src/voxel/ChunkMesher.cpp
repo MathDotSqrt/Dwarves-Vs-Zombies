@@ -67,6 +67,7 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors& n) {
 }
 
 const ChunkVertexVector& ChunkMesher::meshChunk() {
+	Timer timer{ "ChunkMesher::meshChunk" };
 	geometry.clear();
 
 	for (int by = 0; by < CHUNK_Y; by++) {

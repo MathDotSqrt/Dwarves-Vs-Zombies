@@ -35,7 +35,8 @@ namespace DVZ::Voxel {
 #endif
 		constexpr static size_t MIN_CHUNK_MESH = 3;
 		constexpr static size_t MAX_CHUNK_MESH_QUEUE = MAX_THREADS * 2 + MIN_CHUNK_MESH;
-
+		
+		std::vector<ChunkCoords> getSortedCoords(const ChunkCoords& playerCoords, const Frustum& frustum) const;
 		void cullFarChunks();
 		void meshChunks();
 		void meshChunksOnThread();
@@ -52,7 +53,7 @@ namespace DVZ::Voxel {
 
 		std::unordered_map<ChunkCoords, ChunkRenderData> renderableChunks;
 
-		std::unordered_map<ChunkCoords, int> chunkMeshUpdateCountMap;
+		std::unordered_map<ChunkCoords, i32> chunkMeshUpdateCountMap;
 		std::vector<std::future<AllocatorHandle<ChunkMesher>>> futureChunkGeometries;
 	};
 }
