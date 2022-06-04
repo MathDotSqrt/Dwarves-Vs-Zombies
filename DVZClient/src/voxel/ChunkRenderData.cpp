@@ -26,7 +26,7 @@ ChunkRenderData::ChunkRenderData(ChunkIndex cx, ChunkIndex cy, ChunkIndex cz) : 
 	}
 	vao.bind();
 	vbo.bind();
-	vao.addVertexAttribPtr<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib, BlockTextureCoordAttrib>();
+	vao.addVertexAttribPtr<BlockPositionAttrib, BlockNormalAttrib, BlockTextureCoordAttrib>();
 	vbo.unbind();
 	master_ebo->bind();
 	vao.unbind();
@@ -65,6 +65,10 @@ const DVZ::Graphics::VAO& ChunkRenderData::getVAO() const {
 
 const DVZ::Graphics::VBO& ChunkRenderData::getEBO() const {
 	return *ChunkRenderData::master_ebo;
+}
+
+i32 ChunkRenderData::getNumIndices() const {
+	return (i32)vbo.getNumBytes() / sizeof(BlockVertex) * 6;
 }
 
 void ChunkRenderData::expandMasterEBO(size_t newQuadSize) {

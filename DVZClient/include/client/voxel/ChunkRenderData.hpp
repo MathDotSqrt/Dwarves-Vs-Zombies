@@ -15,9 +15,9 @@
 namespace DVZ::Voxel {
 	using BlockPositionAttrib = Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec<4, BlockIndex>>;
 	using BlockNormalAttrib = Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::i8vec4>;
-	using BlockColorAttrib = Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec4>;
+	//using BlockColorAttrib = Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec4>;
 	using BlockTextureCoordAttrib = Graphics::Attrib<TEXCOORD_ATTRIB_LOCATION, glm::u8vec4>;
-	using BlockVertex = Graphics::Geometry<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib, BlockTextureCoordAttrib>::GeometryVertex;
+	using BlockVertex = Graphics::Geometry<BlockPositionAttrib, BlockNormalAttrib, BlockTextureCoordAttrib>::GeometryVertex;
 
 
 	using ChunkVertexVector = std::vector<BlockVertex>;
@@ -35,6 +35,8 @@ namespace DVZ::Voxel {
 		const ChunkCoords& getCoords() const;
 		const Graphics::VAO& getVAO() const;
 		const Graphics::VBO& getEBO() const;
+
+		i32 getNumIndices() const;
 
 	private:
 

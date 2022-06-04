@@ -80,7 +80,7 @@ void VBO::bufferData(size_t bytes, void* data, BufferHint hint) {
 }
 
 void VBO::bufferSubData(size_t offset, size_t bytes, void* data) {
-	spdlog::debug("VBO[{}]: sub-buffered {} bytes", vboID, bytes);
+	//spdlog::debug("VBO[{}]: sub-buffered {} bytes", vboID, bytes);
 	assert(bytes <= this->bytes);
 	glBufferSubData(toGL(type), offset, bytes, data);
 }

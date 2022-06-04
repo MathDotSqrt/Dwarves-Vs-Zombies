@@ -87,15 +87,14 @@ void BasicRenderer::render(const InterpolatedScene& scene, const Voxel::ChunkRen
 		const Graphics::VAO& vao = chunk.getVAO();
 		const Graphics::VBO& ebo = chunk.getEBO();
 
+
 		glm::vec3 chunk_world_pos = glm::vec3(coords) * Voxel::BLOCK_WIDTH * glm::vec3(Voxel::CHUNK_X, Voxel::CHUNK_Y, Voxel::CHUNK_Z);
 
 		chunk_shader->setUniform1i("u_tex_atlas", 0);
 		chunk_shader->setUniform3f("u_pos", chunk_world_pos);
 		chunk_shader->setUniformMat4("VP", VP);
 		vao.bind();
-		ebo.bind();
-		glDrawElements(GL_TRIANGLES, (GLsizei)(ebo.getNumBytes() / sizeof(Voxel::ChunkRenderData::EBOIndexType)), GL_UNSIGNED_INT, 0);
-		ebo.unbind();
+		glDrawElements(GL_TRIANGLES, (GLsizei)(chunk.getNumIndices()), GL_UNSIGNED_INT, 0);
 		vao.unbind();
 		
 	}
