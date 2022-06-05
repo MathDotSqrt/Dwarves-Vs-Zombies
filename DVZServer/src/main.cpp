@@ -26,7 +26,7 @@ int main() {
 			}
 			else {
 				spdlog::info("Command: {}", line);
-				if (line == "perf") {
+				if (line == "p" || line == "perf") {
 					engine.enablePerfPrint();
 				}
 			}

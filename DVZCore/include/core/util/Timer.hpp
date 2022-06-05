@@ -36,12 +36,14 @@ namespace DVZ {
 		~RootTimer();
 
 		void enablePrint();
+		void enablePrint(Timer::duration_type max_thresh);
 
 	private:
 		std::string_view m_name;
 		std::string m_thread_id;
 		Timer* m_timer = nullptr;
 		bool m_enabled_print = false;
+		Timer::duration_type m_max_thresh = Timer::duration_type{0};
 	};
 
 	class MasterTimer {
@@ -50,6 +52,8 @@ namespace DVZ {
 
 		std::string printTimer() const;
 		void clearTimer();
+
+		Timer::duration_type getMaxTimer() const;
 	private:
 		friend class Timer;
 

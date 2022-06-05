@@ -42,13 +42,23 @@ RootTimer::~RootTimer() {
 
 	MasterTimer::getInstance()->clearTimer();
 
-	if (m_enabled_print) {
+	bool should_print = m_enabled_print;
+
+	if (m_max_thresh > Timer::duration_type{ 0 }) {
+		should_print |= (MasterTimer::getInstance()->getMaxTimer() > m_max_thresh);
+	}
+
+	if (should_print) {
 		spdlog::info("{}: [{}]\n{}", m_name, m_thread_id, MasterTimer::getInstance()->printTimer());
 	}
 }
 
 void RootTimer::enablePrint() {
 	m_enabled_print = true;
+}
+
+void RootTimer::enablePrint(Timer::duration_type max) {
+	m_max_thresh = max;
 }
 
 MasterTimer::Node::Node(std::string_view name) : name(name), duration(0), duration_buffer(20) {
@@ -106,6 +116,10 @@ void MasterTimer::clearTimer() {
 			stack.push_back(value.get());
 		}
 	}
+}
+
+Timer::duration_type MasterTimer::getMaxTimer() const {
+	return m_timer_stack.back()->duration;
 }
 
 void MasterTimer::pushTimer(const Timer* timer) {
