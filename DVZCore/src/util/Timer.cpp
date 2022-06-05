@@ -102,13 +102,15 @@ std::string MasterTimer::printTimer() const {
 }
 
 void MasterTimer::clearTimer() {
-	std::vector<Node*> stack = { m_timer_stack.back() };
+	m_max_duration = Timer::duration_type{ 0 };
 
+	std::vector<Node*> stack = { m_timer_stack.back() };
 	while (stack.size()) {
 		Node* current_ptr = stack.back();
 		stack.pop_back();
 
 		//current_ptr->duration_buffer.insert(current_ptr->duration);
+		m_max_duration = std::max(m_max_duration, current_ptr->duration);
 		current_ptr->duration_buffer.insert(current_ptr->duration);
 		current_ptr->duration = Timer::duration_type{ 0 };
 
@@ -119,7 +121,7 @@ void MasterTimer::clearTimer() {
 }
 
 Timer::duration_type MasterTimer::getMaxTimer() const {
-	return m_timer_stack.back()->duration;
+	return m_max_duration;
 }
 
 void MasterTimer::pushTimer(const Timer* timer) {

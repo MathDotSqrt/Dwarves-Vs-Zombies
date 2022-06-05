@@ -76,5 +76,6 @@ namespace DVZ {
 
 		std::unique_ptr<Node> m_root;
 		std::vector<Node*> m_timer_stack;
+		Timer::duration_type m_max_duration = Timer::duration_type{0};
 	};
 }
