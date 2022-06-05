@@ -56,16 +56,16 @@ void PhysicsSystem::tick(Engine& engine) {
 	});
 
 	//if (std::uniform_int_distribution<i32>(0, 20)(rng) == 0) {
-	if (true) {
-		for (int i = 0; i < 5; i++) {
-			std::uniform_int_distribution<Voxel::WorldIndex> U(0, Voxel::CHUNK_X);
-			std::uniform_int_distribution<Voxel::WorldIndex> U2(0, Voxel::CHUNK_Y);
+	//if (true) {
+	//	for (int i = 0; i < 5; i++) {
+	//		std::uniform_int_distribution<Voxel::WorldIndex> U(0, Voxel::CHUNK_X);
+	//		std::uniform_int_distribution<Voxel::WorldIndex> U2(0, Voxel::CHUNK_Y);
 
-			Voxel::WorldCoords coords{ U(rng), U2(rng), U(rng) };
-			engine.getChunkManager().setBlock(coords, Voxel::BlockType::AIR);
+	//		Voxel::WorldCoords coords{ U(rng), U2(rng), U(rng) };
+	//		engine.getChunkManager().setBlock(coords, Voxel::BlockType::AIR);
 
-		}
-	}
+	//	}
+	//}
 
 	auto debug_view = registry.view<Velocity, Debug>();
 
