@@ -68,7 +68,7 @@ void Engine::updateLoop() {
 			tick();
 			accum -= DT;
 
-			root.enablePrint(std::chrono::milliseconds{10});
+			root.enablePrint(std::chrono::milliseconds{15});
 			if (shouldPrintPerf) {
 				root.enablePrint();
 				shouldPrintPerf = false;

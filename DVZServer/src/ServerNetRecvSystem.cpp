@@ -79,6 +79,8 @@ void ServerNetRecvSystem::onMessage(Engine& engine, std::string_view data, HStea
 }
 
 void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HSteamNetConnection conn){
+	Timer timer{ "ServerNetRecvSystem::onClientJoin" };
+	
 	Net::SB_ClientJoinPacket packet;
 	if (Net::deserializePacketData(data, packet)) {
 		spdlog::info("Welcome: {}", packet.name);
@@ -106,6 +108,7 @@ void ServerNetRecvSystem::onClientJoin(Engine& engine, std::string_view data, HS
 }
 
 void ServerNetRecvSystem::onClientDisconnected(Engine& engine, std::string_view, HSteamNetConnection conn) {
+	Timer timer{ "ServerNetRecvSystem::onClientDisconnected" };
 	spdlog::info("Good Bye!");
 	auto& registry = engine.getRegistry();
 	auto& netManager = engine.getNetManager();
@@ -126,6 +129,7 @@ void ServerNetRecvSystem::onPlayerPositionVel(Engine& engine, std::string_view d
 }
 
 void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Timer timer{ "ServerNetRecvSystem::onPlayerInput" };
 	Net::SB_PlayerInput packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& registry = engine.getRegistry();
@@ -145,6 +149,7 @@ void ServerNetRecvSystem::onPlayerInput(Engine& engine, std::string_view data, H
 }
 
 void ServerNetRecvSystem::onAckEntityStateDelta(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Timer timer{ "ServerNetRecvSystem::onAckEntityStateDelta" };
 	Net::SB_AckEntitySnapshoDelta packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& manager = engine.getNetManager();
@@ -153,6 +158,7 @@ void ServerNetRecvSystem::onAckEntityStateDelta(Engine& engine, std::string_view
 }
 
 void ServerNetRecvSystem::onAckChunkData(Engine& engine, std::string_view data, HSteamNetConnection conn) {
+	Timer timer{ "ServerNetRecvSystem::onAckChunkData" };
 	Net::SB_AckChunkData packet;
 	if (Net::deserializePacketData(data, packet)) {
 		auto& netManager = engine.getNetManager();
