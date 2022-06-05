@@ -30,10 +30,13 @@ void ServerNetSendSystem::tick(Engine& engine) {
 	auto& netManager = engine.getNetManager();
 	auto& chunkManager = engine.getChunkManager();
 	
-	netManager.setEntitySnapshot(std::make_shared<Net::EntitySnapshot>(engine));
+	{
+		Timer timer2{ "compute_snapshot" };
+		netManager.setEntitySnapshot(std::make_shared<Net::EntitySnapshot>(engine));
+	}
 
+	Timer timer3{ "send_player" };
 	auto view = registry.view<NetPlayer, Transformation>();
-
 	for (entt::entity player : view) {
 
 		HSteamNetConnection connection = netManager.getConnectionHandle(player);
@@ -45,13 +48,16 @@ void ServerNetSendSystem::tick(Engine& engine) {
 			netManager.sendMessage(packet, connection, false);
 		}
 
-		Net::CB_EntitySnapshotDeltaPacket deltaPacket;
-		deltaPacket.delta = netManager.getClientSnapshotDelta(connection);
-		deltaPacket.server_time = engine.getTimeElapsed();
-		netManager.sendMessage(deltaPacket, connection, false);
+		{
+			Timer timer4{ "send_state" };
+			Net::CB_EntitySnapshotDeltaPacket deltaPacket;
+			deltaPacket.delta = netManager.getClientSnapshotDelta(connection);
+			deltaPacket.server_time = engine.getTimeElapsed();
+			netManager.sendMessage(deltaPacket, connection, false);
+		}
 
 
-
+		Timer timer5{ "send_chunk" };
 		auto& netPlayer = view.get<NetPlayer>(player);
 		if (netPlayer.shouldSend) {
 			for (const Voxel::ChunkCoords& coords : netPlayer.unackedChunks) {
