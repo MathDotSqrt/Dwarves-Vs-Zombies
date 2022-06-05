@@ -2,6 +2,7 @@
 
 #include "core/util/util.hpp"
 #include "core/util/SpiralIter.hpp"
+#include "core/util/Timer.hpp"
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/component_wise.hpp>
@@ -87,6 +88,7 @@ void ServerChunkManager::ackChunk(entt::entity id, ChunkCoords coord, int ack) {
 }
 
 std::vector<ChunkCoords> ServerChunkManager::getUnackedChunks(entt::entity id, const glm::vec3& world_pos, int N) const {
+	Timer timer{"ServerChunkManager::getUnackedChunks"};
 	std::vector<ChunkCoords> unackedChunks;
 
 	if (N <= 0) {
